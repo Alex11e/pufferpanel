@@ -36,6 +36,11 @@ func activityFromRequest(c *gin.Context) (action, serverID, details string) {
 		switch c.Request.Method { case http.MethodGet: action = "server.file.read"; case http.MethodPut, http.MethodPost: action = "server.file.write"; case http.MethodDelete: action = "server.file.delete" }
 		return
 	}
+	if len(parts) >= 5 && parts[3] == "plugins" && parts[4] == "download" && c.Request.Method == http.MethodPost {
+		action = "server.plugin.install"
+		details = "plugins/"
+		return
+	}
 	if len(parts) >= 5 && parts[3] == "backup" && parts[4] == "create" && c.Request.Method == http.MethodPost { action = "server.backup.create" }
 	return
 }

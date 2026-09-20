@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -97,6 +100,8 @@ func registerServers(g *gin.RouterGroup) {
 	g.DELETE("/:serverId/file/*filename", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, proxyServerRequest)
 	g.POST("/:serverId/file/*filename", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, proxyServerRequest)
 	g.OPTIONS("/:serverId/file/*filename", response.CreateOptions("GET", "PUT", "DELETE", "POST"))
+	g.POST("/:serverId/plugins/download", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, downloadPlugin)
+	g.OPTIONS("/:serverId/plugins/download", response.CreateOptions("POST"))
 
 	g.GET("/:serverId/console", middleware.RequiresPermission(scopes.ScopeServerConsole), middleware.ResolveServerPanel, proxyServerRequest)
 	g.POST("/:serverId/console", middleware.RequiresPermission(scopes.ScopeServerSendCommand), middleware.ResolveServerPanel, proxyServerRequest)
@@ -1361,6 +1366,94 @@ func proxyServerRequest(c *gin.Context) {
 	}
 
 	c.Abort()
+}
+
+const maxPluginDownloadSize = 64 * 1024 * 1024
+
+type pluginDownloadRequest struct {
+	URL string `json:"url"`
+}
+
+// downloadPlugin downloads a Java plugin from a public HTTPS URL directly to the
+// server's plugins directory. This avoids browser CORS restrictions while the
+// host and file checks prevent it being used as an arbitrary file proxy.
+func downloadPlugin(c *gin.Context) {
+	request := &pluginDownloadRequest{}
+	if err := c.ShouldBindJSON(request); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+
+	pluginURL, err := url.ParseRequestURI(request.URL)
+	if err != nil || pluginURL.Scheme != "https" || pluginURL.Hostname() == "" {
+		response.HandleError(c, errors.New("a public HTTPS plugin URL is required"), http.StatusBadRequest)
+		return
+	}
+	if !isPublicPluginHost(pluginURL.Hostname()) {
+		response.HandleError(c, errors.New("plugin URL must resolve to a public address"), http.StatusBadRequest)
+		return
+	}
+
+	fileName := filepath.Base(pluginURL.Path)
+	if fileName == "." || fileName == "/" || !strings.HasSuffix(strings.ToLower(fileName), ".jar") {
+		response.HandleError(c, errors.New("plugin URL must point to a .jar file"), http.StatusBadRequest)
+		return
+	}
+
+	client := &http.Client{
+		Timeout: 90 * time.Second,
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	remoteResponse, err := client.Get(pluginURL.String())
+	if response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	defer utils.CloseResponse(remoteResponse)
+	if remoteResponse.StatusCode < http.StatusOK || remoteResponse.StatusCode >= http.StatusMultipleChoices {
+		response.HandleError(c, errors.New("plugin download returned an unsuccessful status"), http.StatusBadGateway)
+		return
+	}
+	if remoteResponse.ContentLength > maxPluginDownloadSize {
+		response.HandleError(c, errors.New("plugin file is larger than 64 MiB"), http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	contents, err := io.ReadAll(io.LimitReader(remoteResponse.Body, maxPluginDownloadSize+1))
+	if response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	if len(contents) > maxPluginDownloadSize {
+		response.HandleError(c, errors.New("plugin file is larger than 64 MiB"), http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	server := getServerFromGin(c)
+	nodeService := &services.Node{DB: middleware.GetDatabase(c)}
+	headers := http.Header{"Content-Type": []string{"application/java-archive"}}
+	nodeResponse, err := nodeService.CallNode(&server.Node, http.MethodPut, "/daemon/server/"+server.Identifier+"/file/plugins/"+url.PathEscape(fileName), io.NopCloser(bytes.NewReader(contents)), headers)
+	defer utils.CloseResponse(nodeResponse)
+	if (nodeResponse == nil || nodeResponse.StatusCode == 0) && response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	if nodeResponse.StatusCode < http.StatusOK || nodeResponse.StatusCode >= http.StatusMultipleChoices {
+		response.HandleError(c, errors.New("node could not save the plugin"), http.StatusBadGateway)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
+func isPublicPluginHost(host string) bool {
+	addresses, err := net.LookupIP(host)
+	if err != nil || len(addresses) == 0 {
+		return false
+	}
+	for _, address := range addresses {
+		if address.IsPrivate() || address.IsLoopback() || address.IsLinkLocalUnicast() || address.IsLinkLocalMulticast() || address.IsUnspecified() {
+			return false
+		}
+	}
+	return true
 }
 
 func proxyHttpRequest(c *gin.Context, path string, ns *services.Node, node *models.Node) {

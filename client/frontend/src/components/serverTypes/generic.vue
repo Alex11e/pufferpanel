@@ -23,6 +23,10 @@ const Files = defineAsyncComponent({
   loader: () => import('../server/Files.vue'),
   loadingComponent: Loader
 })
+const Plugins = defineAsyncComponent({
+  loader: () => import('../server/Plugins.vue'),
+  loadingComponent: Loader
+})
 const Settings = defineAsyncComponent({
   loader: () => import('../server/Settings.vue'),
   loadingComponent: Loader
@@ -136,6 +140,15 @@ onUnmounted(() => {
         hotkey="t f"
       >
         <files :server="server" />
+      </tab>
+      <tab
+        v-if="server.hasScope('server.files.view')"
+        id="plugins"
+        :title="t('servers.Plugins')"
+        icon="files"
+        hotkey="t p"
+      >
+        <plugins :server="server" />
       </tab>
       <tab
         v-if="server.hasScope('server.data.view') || server.hasScope('server.flags.view')"
