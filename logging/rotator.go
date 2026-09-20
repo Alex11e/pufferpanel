@@ -6,7 +6,6 @@ import (
 	"os/signal"
 	"path"
 	"sync"
-	"syscall"
 )
 
 type Rotator struct {
@@ -36,16 +35,21 @@ func (r *Rotator) Rotate(newBackend io.WriteCloser) {
 	defer r.Unlock()
 	oldBacker := r.backer
 	r.backer = newBackend
-	_ = oldBacker.Close()
+	if oldBacker != nil {
+		_ = oldBacker.Close()
+	}
 }
 
 func (r *Rotator) StartRotation(dir string) {
 	go func(directory string) {
+		rotationSignal := logRotationSignal()
+		if rotationSignal == nil {
+			return
+		}
 		sig := make(chan os.Signal, 1)
-		for {
-			signal.Notify(sig, syscall.SIGUSR1)
-
-			<-sig
+		signal.Notify(sig, rotationSignal)
+		defer signal.Stop(sig)
+		for range sig {
 
 			newFile, err := os.OpenFile(path.Join(directory, "pufferpanel.log"), os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 			if err != nil {
