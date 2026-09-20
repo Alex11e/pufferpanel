@@ -28,6 +28,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	registerSelf(rg.Group("/self"))
 	registerSettings(rg.Group("/settings"))
 	registerUserSettings(rg.Group("/userSettings"))
+	registerAdmin(rg.Group("/admin"))
 	rg.GET("/activity", middleware.RequiresPermission(scopes.ScopeAdmin), getRecentActivity)
 
 	rg.GET("/config", panelConfig)

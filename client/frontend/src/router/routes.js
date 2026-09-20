@@ -46,6 +46,17 @@ export default (api) => [
     name: 'ServerCreate'
   },
   {
+    path: '/admin',
+    component: () => import('@/views/AdminDashboard.vue'),
+    name: 'AdminDashboard',
+    meta: {
+      tkey: 'Admin központ',
+      permission: 'admin',
+      icon: 'admin',
+      hotkey: 'g a'
+    }
+  },
+  {
     path: '/servers/view/:id',
     component: () => import('@/views/ServerView.vue'),
     name: 'ServerView'
