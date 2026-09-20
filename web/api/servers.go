@@ -102,6 +102,8 @@ func registerServers(g *gin.RouterGroup) {
 	g.OPTIONS("/:serverId/file/*filename", response.CreateOptions("GET", "PUT", "DELETE", "POST"))
 	g.POST("/:serverId/plugins/download", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, downloadPlugin)
 	g.OPTIONS("/:serverId/plugins/download", response.CreateOptions("POST"))
+	g.GET("/:serverId/plugins/search", middleware.RequiresPermission(scopes.ScopeServerFileView), searchModrinthPlugins)
+	g.GET("/:serverId/plugins/modrinth/:projectId/version", middleware.RequiresPermission(scopes.ScopeServerFileView), getModrinthPluginVersion)
 
 	g.GET("/:serverId/console", middleware.RequiresPermission(scopes.ScopeServerConsole), middleware.ResolveServerPanel, proxyServerRequest)
 	g.POST("/:serverId/console", middleware.RequiresPermission(scopes.ScopeServerSendCommand), middleware.ResolveServerPanel, proxyServerRequest)
@@ -1369,9 +1371,53 @@ func proxyServerRequest(c *gin.Context) {
 }
 
 const maxPluginDownloadSize = 64 * 1024 * 1024
+const modrinthAPIBase = "https://api.modrinth.com/v2"
 
 type pluginDownloadRequest struct {
 	URL string `json:"url"`
+}
+
+func searchModrinthPlugins(c *gin.Context) {
+	query := strings.TrimSpace(c.Query("query"))
+	if query == "" || len(query) > 100 {
+		response.HandleError(c, errors.New("a plugin search query of up to 100 characters is required"), http.StatusBadRequest)
+		return
+	}
+	endpoint, _ := url.Parse(modrinthAPIBase + "/search")
+	params := endpoint.Query()
+	params.Set("query", query)
+	params.Set("limit", "12")
+	params.Set("index", "downloads")
+	params.Set("facets", `[["all_project_types:plugin"]]`)
+	endpoint.RawQuery = params.Encode()
+	request, _ := http.NewRequest(http.MethodGet, endpoint.String(), nil)
+	request.Header.Set("User-Agent", "PufferPanel/3 plugin manager")
+	remoteResponse, err := pufferpanel.Http().Do(request)
+	defer utils.CloseResponse(remoteResponse)
+	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) { return }
+	if remoteResponse.StatusCode != http.StatusOK { response.HandleError(c, errors.New("plugin catalogue is unavailable"), http.StatusBadGateway); return }
+	c.DataFromReader(http.StatusOK, remoteResponse.ContentLength, "application/json", remoteResponse.Body, nil)
+}
+
+func getModrinthPluginVersion(c *gin.Context) {
+	projectID := c.Param("projectId")
+	endpoint, _ := url.Parse(modrinthAPIBase + "/project/" + url.PathEscape(projectID) + "/version")
+	params := endpoint.Query()
+	params.Set("loaders", `["paper","purpur","spigot","bukkit"]`)
+	if gameVersion := strings.TrimSpace(c.Query("gameVersion")); gameVersion != "" { params.Set("game_versions", "[\""+gameVersion+"\"]") }
+	params.Set("featured", "true")
+	params.Set("include_changelog", "false")
+	endpoint.RawQuery = params.Encode()
+	request, _ := http.NewRequest(http.MethodGet, endpoint.String(), nil)
+	request.Header.Set("User-Agent", "PufferPanel/3 plugin manager")
+	remoteResponse, err := pufferpanel.Http().Do(request)
+	defer utils.CloseResponse(remoteResponse)
+	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) { return }
+	if remoteResponse.StatusCode != http.StatusOK { response.HandleError(c, errors.New("plugin version is unavailable"), http.StatusBadGateway); return }
+	var versions []struct { VersionNumber string `json:"version_number"`; Files []struct { URL string `json:"url"`; Filename string `json:"filename"`; Primary bool `json:"primary"` } `json:"files"` }
+	if err = json.NewDecoder(remoteResponse.Body).Decode(&versions); response.HandleError(c, err, http.StatusBadGateway) { return }
+	for _, version := range versions { for _, file := range version.Files { if file.Primary || len(version.Files) == 1 { c.JSON(http.StatusOK, gin.H{"url": file.URL, "filename": file.Filename, "version": version.VersionNumber}); return } } }
+	response.HandleError(c, errors.New("no compatible plugin version was found"), http.StatusNotFound)
 }
 
 // downloadPlugin downloads a Java plugin from a public HTTPS URL directly to the

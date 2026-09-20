@@ -14,6 +14,9 @@ const props = defineProps({ server: { type: Object, required: true } })
 
 const plugins = ref(null)
 const pluginUrl = ref('')
+const catalogueQuery = ref('')
+const catalogue = ref([])
+const searching = ref(false)
 const installing = ref(false)
 const uploading = ref(false)
 const input = ref(null)
@@ -62,6 +65,29 @@ async function installFromUrl() {
   }
 }
 
+async function searchCatalogue() {
+  if (!catalogueQuery.value.trim()) return
+  searching.value = true
+  try {
+    const result = await api.get(`/api/servers/${props.server.id}/plugins/search`, { query: catalogueQuery.value.trim() })
+    catalogue.value = result.data.hits || []
+  } finally {
+    searching.value = false
+  }
+}
+
+async function installCataloguePlugin(plugin) {
+  installing.value = true
+  try {
+    const version = await api.get(`/api/servers/${props.server.id}/plugins/modrinth/${plugin.project_id}/version`)
+    await api.post(`/api/servers/${props.server.id}/plugins/download`, { url: version.data.url })
+    toast.success(t('servers.PluginInstalled'))
+    await refresh()
+  } finally {
+    installing.value = false
+  }
+}
+
 function deletePlugin(plugin) {
   events.emit('confirm', t('servers.ConfirmPluginDelete', { name: plugin.name }), {
     text: t('files.Delete'), icon: 'remove', color: 'error', action: async () => {
@@ -100,6 +126,22 @@ async function restart() {
       </div>
     </div>
 
+    <div class="catalogue">
+      <h3 v-text="t('servers.PluginCatalogue')" />
+      <div class="catalogue-search">
+        <text-field v-model="catalogueQuery" :label="t('servers.PluginSearch')" @keyup.enter="searchCatalogue" />
+        <btn color="primary" :disabled="searching || !catalogueQuery.trim()" @click="searchCatalogue"><icon :name="searching ? 'loading' : 'search'" :spin="searching" /> {{ t('servers.PluginSearch') }}</btn>
+      </div>
+      <div v-if="catalogue.length" class="catalogue-list">
+        <div v-for="plugin in catalogue" :key="plugin.project_id" class="plugin">
+          <img v-if="plugin.icon_url" :src="plugin.icon_url" :alt="plugin.title" class="plugin-icon" />
+          <icon v-else name="file" />
+          <div class="name"><strong>{{ plugin.title }}</strong><small>{{ plugin.description }}</small></div>
+          <btn v-if="canEdit" variant="text" :disabled="installing" @click="installCataloguePlugin(plugin)"><icon name="download" /> {{ t('servers.PluginInstall') }}</btn>
+        </div>
+      </div>
+    </div>
+
     <loader v-if="plugins === null" />
     <div v-else-if="plugins.length === 0" class="alert info" v-text="t('servers.NoPlugins')" />
     <div v-else class="plugin-list">
@@ -121,7 +163,13 @@ async function restart() {
 .plugin-url :deep(.text-field) { flex: 1; min-width: min(100%, 20rem); }
 input[type="file"] { display: none; }
 .plugin-list { display: grid; gap: .5rem; margin-bottom: 1rem; }
+.catalogue { margin: 1.5rem 0; }
+.catalogue-search { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+.catalogue-search :deep(.text-field) { flex: 1; min-width: min(100%, 20rem); }
+.catalogue-list { display: grid; gap: .5rem; margin-top: .75rem; }
 .plugin { display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem; background: var(--background-secondary); border-radius: .4rem; }
-.plugin .name { flex: 1; overflow-wrap: anywhere; }
+.plugin .name { flex: 1; overflow-wrap: anywhere; display: grid; gap: .2rem; }
+.plugin .name small { color: var(--text-muted); }
+.plugin-icon { width: 2rem; height: 2rem; border-radius: .3rem; object-fit: cover; }
 .plugin .size { color: var(--text-muted); font-size: .85em; }
 </style>

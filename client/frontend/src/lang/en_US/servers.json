@@ -44,6 +44,8 @@
   "PluginUrl": "HTTPS URL of a .jar plugin",
   "PluginInstall": "Install from URL",
   "PluginUrlHint": "Only public HTTPS URLs ending in .jar are accepted; the maximum file size is 64 MiB.",
+  "PluginCatalogue": "Online Minecraft plugin catalogue",
+  "PluginSearch": "Search Modrinth plugins",
   "NoPlugins": "No JAR plugins were found in the plugins folder.",
   "PluginInstalled": "Plugin installed. Restart the server to activate it.",
   "PluginUploaded": "Plugin uploaded. Restart the server to activate it.",

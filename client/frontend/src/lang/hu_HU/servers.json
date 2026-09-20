@@ -44,6 +44,8 @@
   "PluginUrl": "Plugin .jar HTTPS URL-je",
   "PluginInstall": "Telepítés URL-ből",
   "PluginUrlHint": "Csak publikus, .jar végű HTTPS URL engedélyezett; a maximális fájlméret 64 MiB.",
+  "PluginCatalogue": "Online Minecraft plugin katalógus",
+  "PluginSearch": "Modrinth pluginok keresése",
   "NoPlugins": "Nincs JAR plugin a plugins mappában.",
   "PluginInstalled": "Plugin telepítve. Az aktiváláshoz indítsd újra a szervert.",
   "PluginUploaded": "Plugin feltöltve. Az aktiváláshoz indítsd újra a szervert.",
