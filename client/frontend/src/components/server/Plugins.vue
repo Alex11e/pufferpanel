@@ -40,6 +40,7 @@ async function upload(event) {
   if (files.length === 0) return
   uploading.value = true
   try {
+    await props.server.createFolder('plugins')
     for (const file of files) await props.server.uploadFile(`plugins/${file.name}`, file)
     toast.success(t('servers.PluginUploaded'))
     await refresh()

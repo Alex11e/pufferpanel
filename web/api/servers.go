@@ -1399,6 +1399,18 @@ func downloadPlugin(c *gin.Context) {
 		return
 	}
 
+	server := getServerFromGin(c)
+	nodeService := &services.Node{DB: middleware.GetDatabase(c)}
+	folderResponse, err := nodeService.CallNode(&server.Node, http.MethodPut, "/daemon/server/"+server.Identifier+"/file/plugins?folder=true", nil, http.Header{})
+	defer utils.CloseResponse(folderResponse)
+	if (folderResponse == nil || folderResponse.StatusCode == 0) && response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	if folderResponse.StatusCode < http.StatusOK || folderResponse.StatusCode >= http.StatusMultipleChoices {
+		response.HandleError(c, errors.New("node could not create the plugins directory"), http.StatusBadGateway)
+		return
+	}
+
 	client := &http.Client{
 		Timeout: 90 * time.Second,
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
@@ -1428,8 +1440,6 @@ func downloadPlugin(c *gin.Context) {
 		return
 	}
 
-	server := getServerFromGin(c)
-	nodeService := &services.Node{DB: middleware.GetDatabase(c)}
 	headers := http.Header{"Content-Type": []string{"application/java-archive"}}
 	nodeResponse, err := nodeService.CallNode(&server.Node, http.MethodPut, "/daemon/server/"+server.Identifier+"/file/plugins/"+url.PathEscape(fileName), io.NopCloser(bytes.NewReader(contents)), headers)
 	defer utils.CloseResponse(nodeResponse)
