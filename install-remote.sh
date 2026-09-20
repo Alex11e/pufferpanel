@@ -79,7 +79,8 @@ if ! $SUDO docker compose version >/dev/null 2>&1; then
 fi
 
 if [[ -d "$INSTALL_DIR/.git" ]]; then
-  $SUDO git -C "$INSTALL_DIR" fetch origin "$BRANCH"
+	$SUDO git -C "$INSTALL_DIR" remote set-url origin "$REPOSITORY"
+	$SUDO git -C "$INSTALL_DIR" fetch origin "$BRANCH"
   $SUDO git -C "$INSTALL_DIR" checkout "$BRANCH"
   $SUDO git -C "$INSTALL_DIR" pull --ff-only origin "$BRANCH"
 else

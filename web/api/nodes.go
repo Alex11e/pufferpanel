@@ -35,11 +35,10 @@ func registerNodes(g *gin.RouterGroup) {
 	g.Handle("OPTIONS", "/:id/deployment", response.CreateOptions("GET"))
 
 	g.Handle("GET", "/:id/allocations", middleware.RequiresPermission(scopes.ScopeNodesView), listAllocations)
-	g.Handle("POST", "/:id/allocations/:serverId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, allocatePort)
-	g.Handle("DELETE", "/:id/allocations/:allocationId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, releasePort)
+	g.Handle("POST", "/:id/allocations/:resourceId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, allocatePort)
+	g.Handle("DELETE", "/:id/allocations/:resourceId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, releasePort)
 	g.Handle("OPTIONS", "/:id/allocations", response.CreateOptions("GET"))
-	g.Handle("OPTIONS", "/:id/allocations/:serverId", response.CreateOptions("POST"))
-	g.Handle("OPTIONS", "/:id/allocations/:allocationId", response.CreateOptions("DELETE"))
+	g.Handle("OPTIONS", "/:id/allocations/:resourceId", response.CreateOptions("POST", "DELETE"))
 }
 
 func listAllocations(c *gin.Context) {
@@ -55,7 +54,7 @@ func allocatePort(c *gin.Context) {
 	db := middleware.GetDatabase(c)
 	node, err := (&services.Node{DB: db}).Get(id)
 	if response.HandleError(c, err, http.StatusInternalServerError) { return }
-	server, err := (&services.Server{DB: db}).Get(c.Param("serverId"))
+	server, err := (&services.Server{DB: db}).Get(c.Param("resourceId"))
 	if response.HandleError(c, err, http.StatusBadRequest) { return }
 	if server.NodeID != node.ID { c.JSON(http.StatusBadRequest, gin.H{"error": "server does not belong to this node"}); return }
 	allocation, err := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
@@ -69,7 +68,7 @@ func releasePort(c *gin.Context) {
 	if !ok {
 		return
 	}
-	allocationID, err := strconv.ParseUint(c.Param("allocationId"), 10, 32)
+	allocationID, err := strconv.ParseUint(c.Param("resourceId"), 10, 32)
 	if response.HandleError(c, err, http.StatusBadRequest) {
 		return
 	}
