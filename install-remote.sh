@@ -24,6 +24,42 @@ remove_if_confirmed() {
   fi
 }
 
+create_user() {
+  local username email password confirm role
+  ask_yes_no "Létrehozol most egy PufferPanel felhasználót?" || return 0
+
+  printf 'Felhasználónév: ' >/dev/tty
+  read -r username </dev/tty
+  printf 'E-mail cím: ' >/dev/tty
+  read -r email </dev/tty
+  printf 'Jelszó: ' >/dev/tty
+  read -r -s password </dev/tty
+  printf '\nJelszó újra: ' >/dev/tty
+  read -r -s confirm </dev/tty
+  printf '\n' >/dev/tty
+
+  if [[ -z "$username" || -z "$email" || -z "$password" ]]; then
+    echo "A felhasználónév, e-mail cím és jelszó kötelező." >&2
+    return 1
+  fi
+  if [[ "$password" != "$confirm" ]]; then
+    echo "A két jelszó nem egyezik." >&2
+    return 1
+  fi
+
+  echo "1) Normál felhasználó"
+  echo "2) Adminisztrátor"
+  printf 'Szerepkör: ' >/dev/tty
+  read -r role </dev/tty
+  case "$role" in
+    1) $SUDO docker exec pufferpanel /pufferpanel/bin/pufferpanel user add --name "$username" --email "$email" --password "$password" ;;
+    2) $SUDO docker exec pufferpanel /pufferpanel/bin/pufferpanel user add --name "$username" --email "$email" --password "$password" --admin ;;
+    *) echo "Érvénytelen szerepkör." >&2; return 1 ;;
+  esac
+  unset password confirm
+  echo "Felhasználó létrehozva: $username"
+}
+
 uninstall_panel() {
   echo "PufferPanel teljes eltávolítás — minden elemhez külön megerősítés kell."
   if command -v docker >/dev/null 2>&1 && ask_yes_no "Leállítod és eltávolítod a PufferPanel konténert?"; then
@@ -98,4 +134,5 @@ if ! $SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" up -d --bu
   $SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" logs --tail 200 pufferpanel >&2 || true
   exit 1
 fi
+create_user
 echo "PufferPanel is ready at http://$(hostname -I | awk '{print $1}'):8080"

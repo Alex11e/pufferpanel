@@ -21,6 +21,27 @@ function Remove-PanelFiles {
     }
 }
 
+function New-PanelUser {
+    if (-not (Confirm-Removal 'Létrehozol most egy PufferPanel felhasználót?')) { return }
+    $Username = Read-Host 'Felhasználónév'
+    $Email = Read-Host 'E-mail cím'
+    $Password = Read-Host 'Jelszó' -AsSecureString
+    $Confirm = Read-Host 'Jelszó újra' -AsSecureString
+    $PasswordText = [System.Net.NetworkCredential]::new('', $Password).Password
+    $ConfirmText = [System.Net.NetworkCredential]::new('', $Confirm).Password
+    if ([string]::IsNullOrWhiteSpace($Username) -or [string]::IsNullOrWhiteSpace($Email) -or [string]::IsNullOrWhiteSpace($PasswordText)) { throw 'A felhasználónév, e-mail cím és jelszó kötelező.' }
+    if ($PasswordText -cne $ConfirmText) { throw 'A két jelszó nem egyezik.' }
+    Write-Host '1) Normál felhasználó'
+    Write-Host '2) Adminisztrátor'
+    $Role = Read-Host 'Szerepkör'
+    $Arguments = @('exec', 'pufferpanel', '/pufferpanel/bin/pufferpanel', 'user', 'add', '--name', $Username, '--email', $Email, '--password', $PasswordText)
+    if ($Role -eq '2') { $Arguments += '--admin' }
+    elseif ($Role -ne '1') { throw 'Érvénytelen szerepkör.' }
+    & docker @Arguments
+    if ($LASTEXITCODE -ne 0) { throw 'A felhasználó létrehozása sikertelen.' }
+    Write-Host "Felhasználó létrehozva: $Username"
+}
+
 Write-Host '1) PufferPanel eltávolítása'
 Write-Host '2) PufferPanel telepítése vagy frissítése'
 $InstallAction = Read-Host 'Választás'
@@ -51,4 +72,5 @@ if ($LASTEXITCODE -ne 0) {
     & docker compose -f $Compose logs --tail 200 pufferpanel
     throw 'A PufferPanel nem indult el. A fenti Docker naplóban látható a hiba.'
 }
+New-PanelUser
 Write-Host 'PufferPanel is available at http://localhost:8080'

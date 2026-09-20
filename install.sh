@@ -17,6 +17,24 @@ remove_if_confirmed() {
   if [ -e "$target" ] && ask_yes_no "Törlöd ezt: $label ($target)?"; then rm -rf -- "$target"; else echo "Megőrizve: $label"; fi
 }
 
+create_user() {
+  ask_yes_no "Létrehozol most egy PufferPanel felhasználót?" || return 0
+  printf 'Felhasználónév: ' >&2; read -r username </dev/tty
+  printf 'E-mail cím: ' >&2; read -r email </dev/tty
+  printf 'Jelszó: ' >&2; stty -echo </dev/tty; read -r password </dev/tty; stty echo </dev/tty; printf '\n' >&2
+  printf 'Jelszó újra: ' >&2; stty -echo </dev/tty; read -r confirm </dev/tty; stty echo </dev/tty; printf '\n' >&2
+  if [ -z "$username" ] || [ -z "$email" ] || [ -z "$password" ]; then echo "A felhasználónév, e-mail cím és jelszó kötelező." >&2; return 1; fi
+  if [ "$password" != "$confirm" ]; then echo "A két jelszó nem egyezik." >&2; return 1; fi
+  echo "1) Normál felhasználó"; echo "2) Adminisztrátor"; printf 'Szerepkör: ' >&2; read -r role </dev/tty
+  case "$role" in
+    1) docker exec pufferpanel /pufferpanel/bin/pufferpanel user add --name "$username" --email "$email" --password "$password" ;;
+    2) docker exec pufferpanel /pufferpanel/bin/pufferpanel user add --name "$username" --email "$email" --password "$password" --admin ;;
+    *) echo "Érvénytelen szerepkör." >&2; return 1 ;;
+  esac
+  unset password confirm
+  echo "Felhasználó létrehozva: $username"
+}
+
 uninstall_panel() {
   if command -v docker >/dev/null 2>&1 && ask_yes_no "Leállítod és eltávolítod a PufferPanel konténert?"; then docker compose -f "$COMPOSE" down --remove-orphans 2>/dev/null || true; fi
   if command -v docker >/dev/null 2>&1 && ask_yes_no "Törlöd a pufferpanel-custom:latest Docker image-et?"; then docker image rm pufferpanel-custom:latest 2>/dev/null || true; fi
@@ -52,4 +70,5 @@ if ! docker compose -f "$COMPOSE" up -d --build --wait --wait-timeout 120; then
   docker compose -f "$COMPOSE" logs --tail 200 pufferpanel >&2 || true
   exit 1
 fi
+create_user
 echo "PufferPanel is available at http://localhost:8080"
