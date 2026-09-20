@@ -115,6 +115,12 @@ async function addAllocation() {
   toast.success(t('nodes.PortAllocated', { port: allocation.port }))
 }
 
+async function releaseAllocation(allocation) {
+  await api.node.releasePort(route.params.id, allocation.id)
+  allocations.value = allocations.value.filter(item => item.id !== allocation.id)
+  toast.success(t('nodes.PortReleased', { port: allocation.port }))
+}
+
 function allocationSummary() {
   const total = Number(portRangeEnd.value) - Number(portRangeStart.value) + 1
   const used = allocations.value.length
@@ -219,7 +225,10 @@ function closeDeploy() {
       <div class="allocations">
         <text-field v-model="allocationServerId" :label="t('nodes.ServerId')" />
         <btn :disabled="!allocationServerId" @click="addAllocation()"><icon name="plus" />{{ t('nodes.AddPort') }}</btn>
-        <div v-for="allocation in allocations" :key="allocation.id" class="subline">{{ allocation.port }} · {{ allocation.protocols }} · {{ allocation.serverId }}</div>
+        <div v-for="allocation in allocations" :key="allocation.id" class="subline">
+          {{ allocation.port }} · {{ allocation.protocols }} · {{ allocation.serverId }}
+          <btn variant="icon" :title="t('nodes.ReleasePort')" @click="releaseAllocation(allocation)"><icon name="remove" /></btn>
+        </div>
         <div class="subline" v-text="allocationSummary()" />
       </div>
       <btn :disabled="!canSubmit()" color="primary" @click="submit()"><icon name="save" />{{ t('nodes.Update') }}</btn>

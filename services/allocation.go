@@ -35,3 +35,14 @@ func (s *Allocation) List(nodeID uint) ([]models.Allocation, error) {
 	err := s.DB.Where("node_id = ?", nodeID).Order("port").Find(&allocations).Error
 	return allocations, err
 }
+
+func (s *Allocation) Delete(nodeID, allocationID uint) error {
+	result := s.DB.Where("id = ? AND node_id = ?", allocationID, nodeID).Delete(&models.Allocation{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}

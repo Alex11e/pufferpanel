@@ -36,8 +36,10 @@ func registerNodes(g *gin.RouterGroup) {
 
 	g.Handle("GET", "/:id/allocations", middleware.RequiresPermission(scopes.ScopeNodesView), listAllocations)
 	g.Handle("POST", "/:id/allocations/:serverId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, allocatePort)
+	g.Handle("DELETE", "/:id/allocations/:allocationId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, releasePort)
 	g.Handle("OPTIONS", "/:id/allocations", response.CreateOptions("GET"))
 	g.Handle("OPTIONS", "/:id/allocations/:serverId", response.CreateOptions("POST"))
+	g.Handle("OPTIONS", "/:id/allocations/:allocationId", response.CreateOptions("DELETE"))
 }
 
 func listAllocations(c *gin.Context) {
@@ -60,6 +62,34 @@ func allocatePort(c *gin.Context) {
 	if err == services.ErrNoPortAvailable { c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"}); return }
 	if response.HandleError(c, err, http.StatusInternalServerError) { return }
 	c.JSON(http.StatusCreated, allocation)
+}
+
+func releasePort(c *gin.Context) {
+	nodeID, ok := validateId(c)
+	if !ok {
+		return
+	}
+	allocationID, err := strconv.ParseUint(c.Param("allocationId"), 10, 32)
+	if response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	db := middleware.GetDatabase(c)
+	var allocation models.Allocation
+	if err = db.Where("id = ? AND node_id = ?", uint(allocationID), nodeID).First(&allocation).Error; response.HandleError(c, err, http.StatusNotFound) {
+		return
+	}
+	server, err := (&services.Server{DB: db}).Get(allocation.ServerIdentifier)
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if server.Port == allocation.Port {
+		c.JSON(http.StatusConflict, gin.H{"error": "the primary server port cannot be released"})
+		return
+	}
+	if err = (&services.Allocation{DB: db}).Delete(nodeID, uint(allocationID)); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Get nodes

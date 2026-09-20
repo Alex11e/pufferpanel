@@ -46,6 +46,8 @@
   "AddPort": "Szabad port hozzáadása",
   "PortAllocated": "{port} port kiosztva",
   "PortsUsed": "port használatban",
+  "ReleasePort": "Port felszabadítása",
+  "PortReleased": "{port} port felszabadítva",
   "WithPrivateAddress": "Használj másik ip/portot a két szerver közötti kommunikációhoz",
   "WithPrivateAddressHint": "Ez a külön cím akkor használatos, amikor a főcsomópont kommunikál az új csomóponttal. Olyan esetekben hasznos, mint pl.: a csomópontok azonos hálózaton vannak NAT mögött.",
   "LocalNodeEdit": "A helyi csomópont nem rendelkezik szerkeszthető beállításokkal\n\nAz ezen a csomóponton elhelyezett kiszolgálókkal megjelenített állomás megváltoztatásához állítsa be a panelek fő url-jét a panel beállításaiban.",

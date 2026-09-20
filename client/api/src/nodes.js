@@ -20,6 +20,11 @@ export class NodeApi {
 
   async allocatePort(id, serverId) { const res = await this._api.post(`/api/nodes/${id}/allocations/${serverId}`); return res.data }
 
+  async releasePort(id, allocationId) {
+    await this._api.delete(`/api/nodes/${id}/allocations/${allocationId}`)
+    return true
+  }
+
   async list() {
     const res = await this._api.get('/api/nodes')
     return res.data
