@@ -47,6 +47,10 @@ const Admin = defineAsyncComponent({
   loader: () => import('../server/Admin.vue'),
   loadingComponent: Loader
 })
+const Activity = defineAsyncComponent({
+  loader: () => import('../server/Activity.vue'),
+  loadingComponent: Loader
+})
 
 const { t } = useI18n()
 const events = inject('events')
@@ -180,6 +184,15 @@ onUnmounted(() => {
         <backup :server="server" />
       </tab>
       <tab
+		v-if="server.hasScope('server.view')"
+		id="activity"
+		:title="t('servers.Activity')"
+		icon="stats"
+		hotkey="t y"
+	  >
+		<activity :server="server" />
+	  </tab>
+	  <tab
         v-if="server.hasScope('server.definition.view') || server.hasScope('server.delete')"
         id="admin"
         :title="t('servers.Admin')"

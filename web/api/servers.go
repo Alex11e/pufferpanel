@@ -31,6 +31,7 @@ func registerServers(g *gin.RouterGroup) {
 	g.Handle("OPTIONS", "", response.CreateOptions("GET"))
 
 	g.Handle("GET", "/:serverId", middleware.RequiresPermission(scopes.ScopeServerView), middleware.ResolveServerPanel, getServer)
+	g.Handle("GET", "/:serverId/activity", middleware.RequiresPermission(scopes.ScopeServerView), middleware.ResolveServerPanel, getServerActivity)
 	g.Handle("PUT", "/:serverId", middleware.RequiresPermission(scopes.ScopeServerCreate), middleware.HasTransaction, createServer)
 	g.Handle("DELETE", "/:serverId", middleware.RequiresPermission(scopes.ScopeServerDelete), middleware.ResolveServerPanel, middleware.HasTransaction, deleteServer)
 	g.Handle("OPTIONS", "/:serverId", response.CreateOptions("PUT", "GET", "POST", "DELETE"))

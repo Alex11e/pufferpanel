@@ -20,6 +20,12 @@ This fork includes a portable Docker installer. From the repository root run
 It stores configuration, data and logs in `data/`, and starts the panel at
 `http://localhost:8080`. Docker Engine/Desktop with Docker Compose v2 is required.
 
+For a fresh Debian/Ubuntu server, use the remote installer:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh)
+```
+
 ### What's different about PufferPanel?
 In addition to being a free and open source project, PufferPanel provides an easy-to-use interface for everyone from individual users to large networks. We strive to create a friendly community, and we would love for you to join us.
 

@@ -1,5 +1,8 @@
 {
   "Servers": "Servers",
+  "Activity": "Activity",
+  "NoActivity": "No recorded activity yet.",
+  "NoDetails": "No additional details",
   "Add": "Add Server",
   "Console": "Console",
   "SFTPInfo": "SFTP Information",

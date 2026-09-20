@@ -19,6 +19,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.Use(middleware.NeedsDatabase)
 	rg.Use(middleware.AuthMiddleware)
 	rg.Use(middleware.AddVersionHeader)
+	rg.Use(recordActivity)
 	registerNodes(rg.Group("/nodes"))
 	registerServers(rg.Group("/servers"))
 	registerUsers(rg.Group("/users"))

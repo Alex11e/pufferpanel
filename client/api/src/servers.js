@@ -249,6 +249,11 @@ export class ServerApi {
     return true
   }
 
+  async getActivity(id) {
+    const res = await this._api.get(`/api/servers/${id}/activity`)
+    return res.data
+  }
+
   async setAutomaticBackup(id, enabled, retention) {
     await this._api.put(`/api/servers/${id}/backup/automatic`, { enabled, retention })
     return true
@@ -426,6 +431,10 @@ class Server {
 
   async getStats() {
     return await this._api.server.getStats(this.id)
+  }
+
+  async getActivity() {
+    return await this._api.server.getActivity(this.id)
   }
 
   async setAutomaticBackup(enabled, retention) {

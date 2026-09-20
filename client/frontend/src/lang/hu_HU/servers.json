@@ -1,5 +1,8 @@
 {
   "Servers": "Szerverek",
+  "Activity": "Aktivitás",
+  "NoActivity": "Még nincs rögzített aktivitás.",
+  "NoDetails": "Nincs további részlet",
   "Add": "Új szerver",
   "Console": "Konzol",
   "SFTPInfo": "SFTP információk",
