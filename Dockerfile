@@ -52,7 +52,7 @@ ARG curseforgeKey=''
 
 RUN xx-apk add musl-dev gcc
 RUN xx-go build -buildvcs=false -tags "$tags" -ldflags "-X 'github.com/pufferpanel/pufferpanel/v3/config.curseforgeKey=$curseforgeKey' -X 'github.com/pufferpanel/pufferpanel/v3.Hash=$sha' -X 'github.com/pufferpanel/pufferpanel/v3.Version=$version'" -o /pufferpanel/pufferpanel github.com/pufferpanel/pufferpanel/v3/cmd
-RUN if [[ "$BUILDPLATFORM" -eq "$TARGETPLATFORM" ]]; then go test ./...; fi
+RUN if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then go test ./...; fi
 RUN xx-verify /pufferpanel/pufferpanel
 
 ###

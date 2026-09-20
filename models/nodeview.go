@@ -144,7 +144,7 @@ func (n *NodeView) Valid(allowEmpty bool) error {
 		return pufferpanel.ErrFieldEqual("sftpPort", "privatePort")
 	}
 	if n.PortRangeStart != 0 && n.PortRangeEnd != 0 && n.PortRangeStart > n.PortRangeEnd {
-		return pufferpanel.ErrFieldNotBetween("portRangeEnd", int(n.PortRangeStart), 65535)
+		return pufferpanel.ErrFieldNotBetween("portRangeEnd", int64(n.PortRangeStart), 65535)
 	}
 
 	return nil
