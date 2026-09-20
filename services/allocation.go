@@ -9,7 +9,7 @@ import (
 
 var ErrNoPortAvailable = errors.New("no free port is available in this node range")
 
-type Allocation struct { DB *gorm.DB }
+type Allocation struct{ DB *gorm.DB }
 
 // AllocateNext finds the first unused port in the node's configured range.
 // The database unique index is the final guard against concurrent requests.
@@ -17,14 +17,31 @@ func (s *Allocation) AllocateNext(node *models.Node, serverID string) (*models.A
 	for candidate := int(node.PortRangeStart); candidate <= int(node.PortRangeEnd); candidate++ {
 		port := uint16(candidate)
 		var legacy models.Server
-		if s.DB.Where("node_id = ? AND port = ?", node.ID, port).First(&legacy).Error == nil { continue }
+		// LocalNode is virtual: its servers have a NULL node_id rather than the
+		// in-memory node ID (0). Include those older primary-port records so an
+		// automatic allocation never reuses a LocalNode port already in use.
+		legacyQuery := s.DB.Where("port = ?", port)
+		if node.IsLocal() {
+			legacyQuery = legacyQuery.Where("node_id IS NULL")
+		} else {
+			legacyQuery = legacyQuery.Where("node_id = ?", node.ID)
+		}
+		if legacyQuery.First(&legacy).Error == nil {
+			continue
+		}
 		allocation := &models.Allocation{NodeID: node.ID, ServerIdentifier: serverID, Port: port, Protocols: "tcp,udp"}
 		err := s.DB.Create(allocation).Error
-		if err == nil { return allocation, nil }
+		if err == nil {
+			return allocation, nil
+		}
 		// A duplicate means a competing request has claimed this port; continue.
-		if errors.Is(err, gorm.ErrDuplicatedKey) { continue }
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			continue
+		}
 		var existing models.Allocation
-		if s.DB.Where("node_id = ? AND port = ?", node.ID, port).First(&existing).Error == nil { continue }
+		if s.DB.Where("node_id = ? AND port = ?", node.ID, port).First(&existing).Error == nil {
+			continue
+		}
 		return nil, err
 	}
 	return nil, ErrNoPortAvailable
