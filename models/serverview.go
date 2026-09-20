@@ -16,6 +16,8 @@ type ServerView struct {
 	Port         uint16           `json:"port,omitempty"`
 	Subdomain    string           `json:"subdomain,omitempty"`
 	Allocations  []Allocation     `json:"allocations,omitempty"`
+	AutoBackupEnabled bool         `json:"autoBackupEnabled"`
+	AutoBackupRetention uint       `json:"autoBackupRetention,omitempty"`
 	Type         string           `json:"type"`
 	Icon         string           `json:"icon,omitempty"`
 	CanGetStatus bool             `json:"canGetStatus,omitempty"`
@@ -34,6 +36,7 @@ func FromServer(server *Server) *ServerView {
 		IP:         server.IP,
 		Port:       server.Port,
 		Subdomain: server.Subdomain, Allocations: server.Allocations,
+		AutoBackupEnabled: server.AutoBackupEnabled, AutoBackupRetention: server.AutoBackupRetention,
 		Type:       server.Type,
 		Icon:       server.Icon,
 		Node:       FromNode(&server.Node),

@@ -249,6 +249,11 @@ export class ServerApi {
     return true
   }
 
+  async setAutomaticBackup(id, enabled, retention) {
+    await this._api.put(`/api/servers/${id}/backup/automatic`, { enabled, retention })
+    return true
+  }
+
   async deleteBackup(id, backupId) {
     await this._api.delete(`/api/servers/${id}/backup/${backupId}`)
     return true
@@ -310,6 +315,8 @@ class Server {
     this.node = serverData.server.node
     this.port = serverData.server.port
     this.subdomain = serverData.server.subdomain
+    this.autoBackupEnabled = serverData.server.autoBackupEnabled
+    this.autoBackupRetention = serverData.server.autoBackupRetention || 24
     this.type = serverData.server.type
     this._scopes = serverData.permissions.scopes
     this._api = api
@@ -419,6 +426,12 @@ class Server {
 
   async getStats() {
     return await this._api.server.getStats(this.id)
+  }
+
+  async setAutomaticBackup(enabled, retention) {
+    await this._api.server.setAutomaticBackup(this.id, enabled, retention)
+    this.autoBackupEnabled = enabled
+    this.autoBackupRetention = retention
   }
 
   async getQuery() {

@@ -13,4 +13,9 @@
     "Deleted":"Backup deleted successfully",
     "DeletePrompt":"Permanently delete backup",
     "DeletePromptBody":"Do you really want to delete the backup permanently?"
+    ,"AutomaticHeader":"Automatic backups"
+    ,"AutomaticEnabled":"Create an automatic backup every hour"
+    ,"AutomaticHint":"Runs hourly while the panel is online. The primary server must be offline for a backup to be created."
+    ,"Retention":"Backups to keep (1–168)"
+    ,"AutomaticSaved":"Automatic backup settings saved"
 }

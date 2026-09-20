@@ -6,6 +6,7 @@ import Loader from '@/components/ui/Loader.vue'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import TextField from '@/components/ui/TextField.vue'
+import Toggle from '@/components/ui/Toggle.vue'
 
 const { t, locale } = useI18n()
 const toast = inject('toast')
@@ -18,11 +19,20 @@ const backups = ref(null)
 const backupName = ref("")
 const backupRunning = ref(false)
 const loading = ref(false)
+const automaticEnabled = ref(false)
+const automaticRetention = ref(24)
 const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
 
 onMounted(async () => {
+  automaticEnabled.value = props.server.autoBackupEnabled
+  automaticRetention.value = props.server.autoBackupRetention || 24
   await loadBackups()
 })
+
+async function saveAutomaticBackup() {
+  await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value))
+  toast.success(t('backup.AutomaticSaved'))
+}
 
 async function loadBackups() {
   backups.value = await props.server.getBackups()
@@ -141,6 +151,12 @@ const intl = new Intl.DateTimeFormat(
         <icon v-if="!isBackingUp()" name="plus" />
         <icon v-else name="loading" spin /> {{ t('backup.Create') }}
       </btn>
+    </div>
+    <div v-if="server.hasScope('server.backup.create')" class="automatic-backup">
+      <h3 v-text="t('backup.AutomaticHeader')" />
+      <toggle v-model="automaticEnabled" :label="t('backup.AutomaticEnabled')" :hint="t('backup.AutomaticHint')" />
+      <text-field v-model="automaticRetention" :label="t('backup.Retention')" type="number" />
+      <btn color="primary" :disabled="automaticRetention < 1 || automaticRetention > 168" @click="saveAutomaticBackup()"><icon name="save" />{{ t('common.Save') }}</btn>
     </div>
 
     <div class="group-header">

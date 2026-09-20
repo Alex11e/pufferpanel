@@ -144,6 +144,7 @@ func internalRun() (terminate chan bool, success bool) {
 		if config.DaemonEnabled.Value() {
 			services.SyncNodeToConfig()
 		}
+		services.StartAutomaticBackups()
 	}
 
 	if config.DaemonEnabled.Value() {

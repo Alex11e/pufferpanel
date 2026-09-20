@@ -123,6 +123,8 @@ func registerServers(g *gin.RouterGroup) {
 	g.OPTIONS("/:serverId/backup/:backupId", response.CreateOptions("GET", "DELETE"))
 	g.POST("/:serverId/backup/create", middleware.RequiresPermission(scopes.ScopeServerBackupCreate), middleware.ResolveServerPanel, createBackup)
 	g.OPTIONS("/:serverId/backup/create", response.CreateOptions("POST"))
+	g.PUT("/:serverId/backup/automatic", middleware.RequiresPermission(scopes.ScopeServerBackupCreate), middleware.ResolveServerPanel, middleware.HasTransaction, updateAutomaticBackup)
+	g.OPTIONS("/:serverId/backup/automatic", response.CreateOptions("PUT"))
 	g.POST("/:serverId/backup/restore/:backupId", middleware.RequiresPermission(scopes.ScopeServerBackupRestore), middleware.ResolveServerPanel, restoreBackup)
 	g.OPTIONS("/:serverId/backup/restore/:backupId", response.CreateOptions("POST"))
 	g.GET("/:serverId/backup/download/:backupId", middleware.RequiresPermission(scopes.ScopeServerBackupView), middleware.ResolveServerPanel, downloadBackup)
@@ -1085,6 +1087,27 @@ func createBackup(c *gin.Context) {
 		return
 	}
 
+	c.Status(http.StatusNoContent)
+}
+
+func updateAutomaticBackup(c *gin.Context) {
+	server := getServerFromGin(c)
+	var settings struct {
+		Enabled   bool `json:"enabled"`
+		Retention uint `json:"retention"`
+	}
+	if err := c.ShouldBindJSON(&settings); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if settings.Retention == 0 || settings.Retention > 168 {
+		response.HandleError(c, pufferpanel.ErrFieldNotBetween("retention", 1, 168), http.StatusBadRequest)
+		return
+	}
+	server.AutoBackupEnabled = settings.Enabled
+	server.AutoBackupRetention = settings.Retention
+	if err := (&services.Server{DB: middleware.GetDatabase(c)}).Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
 	c.Status(http.StatusNoContent)
 }
 
