@@ -1,0 +1,4 @@
+# Shell scripts are executed inside Linux containers.  Keeping their line
+# endings LF prevents commands such as "run\r" when the repository is cloned
+# or edited on Windows.
+*.sh text eol=lf

@@ -60,7 +60,7 @@ FROM alpine
 
 EXPOSE 8080 5657
 RUN mkdir -p /etc/pufferpanel && \
-    mkdir -p /var/lib/pufferpanel /var/lib/pufferpanel/servers /var/lib/pufferpanel/binaries /var/lib/pufferpanel/cache && \
+    mkdir -p /var/lib/pufferpanel /var/lib/pufferpanel/backups /var/lib/pufferpanel/servers /var/lib/pufferpanel/binaries /var/lib/pufferpanel/cache && \
     mkdir -p /var/log/pufferpanel
     #addgroup --system -g 1000 pufferpanel && \
     #adduser -D -H --home /var/lib/pufferpanel --ingroup pufferpanel -u 1000 pufferpanel && \
@@ -77,6 +77,11 @@ ENV GIN_MODE=release \
 COPY --from=builder --chmod=755 /pufferpanel /pufferpanel/bin
 COPY --from=builder --chmod=755 /build/pufferpanel/entrypoint.sh /pufferpanel/bin/entrypoint.sh
 COPY --from=builder --chmod=755 /build/pufferpanel/config.docker.json /etc/pufferpanel/config.json
+
+# A checkout created on Windows can contain CRLF line endings despite Git
+# attributes. Normalize the runtime script inside the Linux image as a final
+# safeguard, otherwise /bin/sh receives commands such as "run\r" and exits.
+RUN sed -i 's/\r$//' /pufferpanel/bin/entrypoint.sh
 
 VOLUME /etc/pufferpanel
 VOLUME /var/lib/pufferpanel

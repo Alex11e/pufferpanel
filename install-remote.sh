@@ -87,9 +87,15 @@ else
   $SUDO git clone --branch "$BRANCH" --single-branch "$REPOSITORY" "$INSTALL_DIR"
 fi
 
-$SUDO mkdir -p "$INSTALL_DIR/data/config" "$INSTALL_DIR/data/data" "$INSTALL_DIR/data/logs"
+$SUDO mkdir -p "$INSTALL_DIR/data/config" "$INSTALL_DIR/data/data/backups" "$INSTALL_DIR/data/data/servers" "$INSTALL_DIR/data/data/binaries" "$INSTALL_DIR/data/data/cache" "$INSTALL_DIR/data/logs"
 if [[ ! -f "$INSTALL_DIR/data/config/config.json" ]]; then
   $SUDO cp "$INSTALL_DIR/config.docker.json" "$INSTALL_DIR/data/config/config.json"
 fi
-$SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" up -d --build
+
+if ! $SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" up -d --build --wait --wait-timeout 120; then
+  echo "A panel nem indult el. Az alábbi napló segít megtalálni a hibát:" >&2
+  $SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" ps >&2 || true
+  $SUDO docker compose -f "$INSTALL_DIR/deploy/docker-compose.yml" logs --tail 200 pufferpanel >&2 || true
+  exit 1
+fi
 echo "PufferPanel is ready at http://$(hostname -I | awk '{print $1}'):8080"

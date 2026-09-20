@@ -36,7 +36,7 @@ if ($LASTEXITCODE -ne 0) {
     throw 'Docker Compose v2 is required.'
 }
 
-foreach ($Directory in @('data/config', 'data/data', 'data/logs')) {
+foreach ($Directory in @('data/config', 'data/data/backups', 'data/data/servers', 'data/data/binaries', 'data/data/cache', 'data/logs')) {
     New-Item -ItemType Directory -Force -Path (Join-Path $Root $Directory) | Out-Null
 }
 
@@ -45,6 +45,10 @@ if (-not (Test-Path $Config)) {
     Copy-Item (Join-Path $Root 'config.docker.json') $Config
 }
 
-& docker compose -f $Compose up -d --build
-if ($LASTEXITCODE -ne 0) { throw 'PufferPanel could not be started. Check Docker Desktop and try again.' }
+& docker compose -f $Compose up -d --build --wait --wait-timeout 120
+if ($LASTEXITCODE -ne 0) {
+    & docker compose -f $Compose ps
+    & docker compose -f $Compose logs --tail 200 pufferpanel
+    throw 'A PufferPanel nem indult el. A fenti Docker naplóban látható a hiba.'
+}
 Write-Host 'PufferPanel is available at http://localhost:8080'

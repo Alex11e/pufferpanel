@@ -41,10 +41,15 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-mkdir -p "$ROOT/data/config" "$ROOT/data/data" "$ROOT/data/logs"
+mkdir -p "$ROOT/data/config" "$ROOT/data/data/backups" "$ROOT/data/data/servers" "$ROOT/data/data/binaries" "$ROOT/data/data/cache" "$ROOT/data/logs"
 if [ ! -f "$ROOT/data/config/config.json" ]; then
   cp "$ROOT/config.docker.json" "$ROOT/data/config/config.json"
 fi
 
-docker compose -f "$COMPOSE" up -d --build
+if ! docker compose -f "$COMPOSE" up -d --build --wait --wait-timeout 120; then
+  echo "A panel nem indult el. Az alábbi napló segít megtalálni a hibát:" >&2
+  docker compose -f "$COMPOSE" ps >&2 || true
+  docker compose -f "$COMPOSE" logs --tail 200 pufferpanel >&2 || true
+  exit 1
+fi
 echo "PufferPanel is available at http://localhost:8080"

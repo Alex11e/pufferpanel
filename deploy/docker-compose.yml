@@ -6,6 +6,12 @@ services:
     image: pufferpanel-custom:latest
     container_name: pufferpanel
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 3 -O /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
     ports:
       - "8080:8080"
       - "5657:5657"
