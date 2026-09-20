@@ -12,6 +12,13 @@
   "SearchServers": "Search servers",
   "AllTags": "All tags",
   "ToggleFavorite": "Toggle favorite",
+  "RecentActivity": "Recent activity",
+  "activity": {
+    "server.file.read": "viewed a file",
+    "server.file.write": "updated a file",
+    "server.file.delete": "deleted a file",
+    "server.backup.create": "created a backup"
+  },
   "Add": "Add Server",
   "Console": "Console",
   "SFTPInfo": "SFTP Information",

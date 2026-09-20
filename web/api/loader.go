@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
+	"github.com/pufferpanel/pufferpanel/v3/scopes"
 )
 
 const MaxPageSize = 100
@@ -27,6 +28,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	registerSelf(rg.Group("/self"))
 	registerSettings(rg.Group("/settings"))
 	registerUserSettings(rg.Group("/userSettings"))
+	rg.GET("/activity", middleware.RequiresPermission(scopes.ScopeAdmin), getRecentActivity)
 
 	rg.GET("/config", panelConfig)
 }

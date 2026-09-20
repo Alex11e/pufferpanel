@@ -12,6 +12,13 @@
   "SearchServers": "Szerverek keresése",
   "AllTags": "Minden címke",
   "ToggleFavorite": "Kedvenc ki- vagy bekapcsolása",
+  "RecentActivity": "Legutóbbi aktivitások",
+  "activity": {
+    "server.file.read": "megtekintett egy fájlt",
+    "server.file.write": "módosított egy fájlt",
+    "server.file.delete": "törölt egy fájlt",
+    "server.backup.create": "biztonsági mentést készített"
+  },
   "Add": "Új szerver",
   "Console": "Konzol",
   "SFTPInfo": "SFTP információk",

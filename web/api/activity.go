@@ -49,3 +49,12 @@ func getServerActivity(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, records)
 }
+
+func getRecentActivity(c *gin.Context) {
+	var records []models.Activity
+	if err := middleware.GetDatabase(c).Order("created_at DESC").Limit(12).Find(&records).Error; err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, records)
+}

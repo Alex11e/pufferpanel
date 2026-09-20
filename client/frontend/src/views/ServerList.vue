@@ -19,6 +19,7 @@ const firstEntry = ref(null)
 const search = ref('')
 const selectedTag = ref('')
 const favorites = ref(JSON.parse(localStorage.getItem('favoriteServers') || '[]'))
+const recentActivity = ref([])
 let interval = null
 
 const tags = computed(() => [...new Set(servers.value.flatMap(server => (server.tags || '').split(',').map(tag => tag.trim()).filter(Boolean)))].sort())
@@ -74,6 +75,7 @@ onMounted(() => {
   interval = setInterval(refreshServerStatus, 30 * 1000)
   nextTick(() => {
     loadPage()
+    if (api.auth.hasScope('admin')) api.server.getRecentActivity().then(records => { recentActivity.value = records })
     window.addEventListener('scroll', onScroll)
   })
 })
@@ -104,6 +106,8 @@ function toggleFavorite(id) {
   favorites.value = favorites.value.includes(id) ? favorites.value.filter(item => item !== id) : [...favorites.value, id]
   localStorage.setItem('favoriteServers', JSON.stringify(favorites.value))
 }
+
+function activityLabel(action) { return t(`servers.activity.${action}`) }
 </script>
 
 <template>
@@ -143,6 +147,14 @@ function toggleFavorite(id) {
         </router-link>
       </div>
     </div>
+    <section v-if="recentActivity.length" class="recent-activity">
+      <h2 v-text="t('servers.RecentActivity')" />
+      <div v-for="record in recentActivity" :key="record.id" class="activity-row">
+        <icon name="stats" />
+        <span>{{ record.username }} · {{ activityLabel(record.action) }}</span>
+        <small>{{ record.serverId }} · {{ record.ipAddress }}</small>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -155,5 +167,8 @@ function toggleFavorite(id) {
 .tag-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
 .server-wrapper { position: relative; }
 .favorite { position: absolute; top: 8px; right: 8px; z-index: 2; }
+.recent-activity { margin-top: 28px; }
+.activity-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--color-background-secondary); }
+.activity-row small { margin-left: auto; color: var(--color-text-secondary); }
 @media (max-width: 640px) { .server-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 </style>
