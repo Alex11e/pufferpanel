@@ -17,6 +17,8 @@ type Server struct {
 
 	IP   string `gorm:"" json:"-" validate:"omitempty,ip|fqdn"`
 	Port uint16 `gorm:"" json:"-" validate:"omitempty"`
+	Subdomain string `gorm:"column:subdomain;size:253;uniqueIndex" json:"-" validate:"omitempty,fqdn"`
+	Allocations []Allocation `gorm:"foreignKey:ServerIdentifier;references:Identifier" json:"-"`
 
 	Type string `gorm:"NOT NULL;default='generic'" json:"-" validate:"required,printascii"`
 	Icon string `gorm:"" json:"-"`

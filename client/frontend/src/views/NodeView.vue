@@ -26,6 +26,12 @@ const publicPort = ref('8080')
 const privateHost = ref('')
 const privatePort = ref('8080')
 const sftpPort = ref('5657')
+const portRangeStart = ref('1000')
+const portRangeEnd = ref('8000')
+const firewallEnabled = ref(false)
+const subdomainBase = ref('')
+const allocations = ref([])
+const allocationServerId = ref('')
 const currentStep = ref(1)
 const featuresFetched = ref(null)
 const features = ref({})
@@ -38,6 +44,11 @@ onMounted(async () => {
   privateHost.value = node.privateHost
   privatePort.value = node.privatePort
   sftpPort.value = node.sftpPort
+  portRangeStart.value = node.portRangeStart || 1000
+  portRangeEnd.value = node.portRangeEnd || 8000
+  firewallEnabled.value = node.firewallEnabled
+  subdomainBase.value = node.subdomainBase
+  allocations.value = await api.node.allocations(route.params.id)
   withPrivateHost.value = !(node.publicHost === node.privateHost && node.publicPort === node.privatePort)
   deploymentData = await api.node.deployment(route.params.id)
   if (route.query.created) {
@@ -80,7 +91,10 @@ async function submit() {
     name: name.value,
     publicHost: publicHost.value,
     publicPort: publicPort.value,
-    sftpPort: sftpPort.value
+    sftpPort: sftpPort.value,
+    portRangeStart: portRangeStart.value,
+    portRangeEnd: portRangeEnd.value,
+    firewallEnabled: firewallEnabled.value, subdomainBase: subdomainBase.value
   }
   if (withPrivateHost.value) {
     node.privateHost = privateHost.value
@@ -91,6 +105,20 @@ async function submit() {
   }
   await api.node.update(route.params.id, node)
   toast.success(t('nodes.Updated'))
+}
+
+async function addAllocation() {
+  if (!allocationServerId.value) return
+  const allocation = await api.node.allocatePort(route.params.id, allocationServerId.value)
+  allocations.value.push(allocation)
+  allocationServerId.value = ''
+  toast.success(t('nodes.PortAllocated', { port: allocation.port }))
+}
+
+function allocationSummary() {
+  const total = Number(portRangeEnd.value) - Number(portRangeStart.value) + 1
+  const used = allocations.value.length
+  return `${used} / ${total} ${t('nodes.PortsUsed')}`
 }
 
 async function deleteNode() {
@@ -183,6 +211,17 @@ function closeDeploy() {
       <text-field v-if="withPrivateHost" v-model="privateHost" class="private-host" :label="t('nodes.PrivateHost')" />
       <text-field v-if="withPrivateHost" v-model="privatePort" class="private-port" :label="t('nodes.PrivatePort')" type="number" />
       <text-field v-model="sftpPort" class="sftp-port" :label="t('nodes.SftpPort')" type="number" />
+      <h3 v-text="t('nodes.PortAllocation')" />
+      <text-field v-model="portRangeStart" :label="t('nodes.PortRangeStart')" type="number" />
+      <text-field v-model="portRangeEnd" :label="t('nodes.PortRangeEnd')" type="number" />
+      <toggle v-model="firewallEnabled" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
+      <text-field v-model="subdomainBase" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
+      <div class="allocations">
+        <text-field v-model="allocationServerId" :label="t('nodes.ServerId')" />
+        <btn :disabled="!allocationServerId" @click="addAllocation()"><icon name="plus" />{{ t('nodes.AddPort') }}</btn>
+        <div v-for="allocation in allocations" :key="allocation.id" class="subline">{{ allocation.port }} · {{ allocation.protocols }} · {{ allocation.serverId }}</div>
+        <div class="subline" v-text="allocationSummary()" />
+      </div>
       <btn :disabled="!canSubmit()" color="primary" @click="submit()"><icon name="save" />{{ t('nodes.Update') }}</btn>
       <btn color="error" @click="deleteNode()"><icon name="remove" />{{ t('nodes.Delete') }}</btn>
       <btn @click="deploymentOpen = true" v-text="t('nodes.Deploy')" />

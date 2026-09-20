@@ -33,6 +33,33 @@ func registerNodes(g *gin.RouterGroup) {
 
 	g.Handle("GET", "/:id/deployment", middleware.RequiresPermission(scopes.ScopeNodesDeploy), deployNode)
 	g.Handle("OPTIONS", "/:id/deployment", response.CreateOptions("GET"))
+
+	g.Handle("GET", "/:id/allocations", middleware.RequiresPermission(scopes.ScopeNodesView), listAllocations)
+	g.Handle("POST", "/:id/allocations/:serverId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.HasTransaction, allocatePort)
+	g.Handle("OPTIONS", "/:id/allocations", response.CreateOptions("GET"))
+	g.Handle("OPTIONS", "/:id/allocations/:serverId", response.CreateOptions("POST"))
+}
+
+func listAllocations(c *gin.Context) {
+	id, ok := validateId(c); if !ok { return }
+	as := &services.Allocation{DB: middleware.GetDatabase(c)}
+	allocations, err := as.List(id)
+	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	c.JSON(http.StatusOK, allocations)
+}
+
+func allocatePort(c *gin.Context) {
+	id, ok := validateId(c); if !ok { return }
+	db := middleware.GetDatabase(c)
+	node, err := (&services.Node{DB: db}).Get(id)
+	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	server, err := (&services.Server{DB: db}).Get(c.Param("serverId"))
+	if response.HandleError(c, err, http.StatusBadRequest) { return }
+	if server.NodeID != node.ID { c.JSON(http.StatusBadRequest, gin.H{"error": "server does not belong to this node"}); return }
+	allocation, err := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
+	if err == services.ErrNoPortAvailable { c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"}); return }
+	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	c.JSON(http.StatusCreated, allocation)
 }
 
 // @Summary Get nodes

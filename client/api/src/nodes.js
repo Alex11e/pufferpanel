@@ -10,9 +10,15 @@ export class NodeApi {
       ...node,
       publicPort: Number(node.publicPort),
       privatePort: Number(node.privatePort),
-      sftpPort: Number(node.sftpPort)
+      sftpPort: Number(node.sftpPort),
+      portRangeStart: Number(node.portRangeStart),
+      portRangeEnd: Number(node.portRangeEnd)
     }
   }
+
+  async allocations(id) { const res = await this._api.get(`/api/nodes/${id}/allocations`); return res.data }
+
+  async allocatePort(id, serverId) { const res = await this._api.post(`/api/nodes/${id}/allocations/${serverId}`); return res.data }
 
   async list() {
     const res = await this._api.get('/api/nodes')

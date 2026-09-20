@@ -14,6 +14,8 @@ type ServerView struct {
 	Users        []ServerUserView `json:"users,omitempty"`
 	IP           string           `json:"ip,omitempty"`
 	Port         uint16           `json:"port,omitempty"`
+	Subdomain    string           `json:"subdomain,omitempty"`
+	Allocations  []Allocation     `json:"allocations,omitempty"`
 	Type         string           `json:"type"`
 	Icon         string           `json:"icon,omitempty"`
 	CanGetStatus bool             `json:"canGetStatus,omitempty"`
@@ -31,6 +33,7 @@ func FromServer(server *Server) *ServerView {
 		NodeId:     server.NodeID,
 		IP:         server.IP,
 		Port:       server.Port,
+		Subdomain: server.Subdomain, Allocations: server.Allocations,
 		Type:       server.Type,
 		Icon:       server.Icon,
 		Node:       FromNode(&server.Node),

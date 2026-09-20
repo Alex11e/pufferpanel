@@ -18,6 +18,10 @@ type Node struct {
 	PublicPort  uint16 `gorm:"column:public_port;not null;default:8080" json:"-" validate:"required,min=1,max=65535,nefield=SFTPPort"`
 	PrivatePort uint16 `gorm:"column:private_port;not null;default:8080" json:"-" validate:"required,min=1,max=65535,nefield=SFTPPort"`
 	SFTPPort    uint16 `gorm:"column:sftp_port;not null;default:5657" json:"-" validate:"required,min=1,max=65535,nefield=PublicPort,nefield=PrivatePort"`
+	PortRangeStart uint16 `gorm:"column:port_range_start;not null;default:1000" json:"-" validate:"min=1,max=65535"`
+	PortRangeEnd uint16 `gorm:"column:port_range_end;not null;default:8000" json:"-" validate:"min=1,max=65535,gtefield=PortRangeStart"`
+	FirewallEnabled bool `gorm:"column:firewall_enabled;not null;default:false" json:"-"`
+	SubdomainBase string `gorm:"column:subdomain_base;size:253" json:"-" validate:"omitempty,fqdn"`
 
 	Secret string `gorm:"column:secret;not null;size=36" json:"-" validate:"required"`
 
@@ -58,6 +62,8 @@ var LocalNode = &Node{
 	PublicPort:  8080,
 	PrivatePort: 8080,
 	SFTPPort:    5657,
+	PortRangeStart: 1000,
+	PortRangeEnd: 8000,
 	Local:       true,
 }
 

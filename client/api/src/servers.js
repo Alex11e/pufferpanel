@@ -309,6 +309,7 @@ class Server {
     this.name = serverData.server.name
     this.node = serverData.server.node
     this.port = serverData.server.port
+    this.subdomain = serverData.server.subdomain
     this.type = serverData.server.type
     this._scopes = serverData.permissions.scopes
     this._api = api

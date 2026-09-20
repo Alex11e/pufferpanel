@@ -17,6 +17,7 @@ import (
 
 var dbObjects = []interface{}{
 	&models.Node{},
+	&models.Allocation{},
 	&models.Server{},
 	&models.User{},
 	&models.Template{},

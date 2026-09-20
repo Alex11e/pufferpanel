@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
@@ -11,11 +11,14 @@ import TextField from '@/components/ui/TextField.vue'
 const { t } = useI18n()
 const api = inject('api')
 const events = inject('events')
+const router = useRouter()
 const templatesLoaded = ref(false)
 const templatesByRepo = ref([])
 const firstEntry = ref(null)
 const addingRepo = ref(false)
 const currentRepo = ref({name: '', url: '', branch: ''})
+const importingEgg = ref(false)
+const eggJson = ref('')
 
 onMounted(async () => {
   loadTemplates()
@@ -71,6 +74,18 @@ function canAddRepo() {
   if (!currentRepo.value.url || currentRepo.value.url === '') return false
   return true
 }
+
+async function importEgg() {
+  let egg
+  try {
+    egg = JSON.parse(eggJson.value)
+  } catch (_) {
+    return
+  }
+  const template = await api.template.importPterodactyl(egg)
+  sessionStorage.setItem('copiedTemplate', JSON.stringify(template, undefined, 4))
+  router.push({ name: 'TemplateCreate', query: { copy: true } })
+}
 </script>
 
 <template>
@@ -100,6 +115,7 @@ function canAddRepo() {
         </div>
       </div>
       <div v-if="templatesLoaded">
+        <a v-if="$api.auth.hasScope('templates.local.edit')" class="repo createLink" @click="importingEgg = true"><icon name="plus" /> {{t('templates.ImportPterodactyl')}}</a>
         <a v-if="$api.auth.hasScope('templates.repo.create')" class="repo createLink" @click="addingRepo = true"><icon name="plus" /> {{t('templates.AddRepo')}}</a>
       </div>
       <div v-else class="list-item">
@@ -113,6 +129,13 @@ function canAddRepo() {
         <text-field v-model="currentRepo.branch" :label="t('templates.RepoBranch')" />
         <btn v-hotkey="'Escape'" color="error" @click="resetAddRepo()"><icon name="close" />{{ t('common.Cancel') }}</btn>
         <btn :disabled="!canAddRepo()" color="primary" @click="addRepo()"><icon name="save" />{{ t('templates.AddRepo') }}</btn>
+      </div>
+    </overlay>
+    <overlay v-model="importingEgg" :title="t('templates.ImportPterodactyl')" closable>
+      <div class="actions">
+        <textarea v-model="eggJson" rows="12" :placeholder="t('templates.PasteEgg')" />
+        <btn color="error" @click="importingEgg = false"><icon name="close" />{{ t('common.Cancel') }}</btn>
+        <btn :disabled="!eggJson" color="primary" @click="importEgg()"><icon name="save" />{{ t('templates.Import') }}</btn>
       </div>
     </overlay>
   </div>

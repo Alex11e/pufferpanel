@@ -72,6 +72,7 @@ onUnmounted(() => {
 })
 
 function getServerAddress(server) {
+	if (server.subdomain) return server.subdomain
   let ip = server.node.publicHost
   if (server.ip && server.ip !== '0.0.0.0') {
     ip = server.ip

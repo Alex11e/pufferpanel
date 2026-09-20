@@ -19,6 +19,10 @@ const publicPort = ref('8080')
 const privateHost = ref('')
 const privatePort = ref('8080')
 const sftpPort = ref('5657')
+const portRangeStart = ref('1000')
+const portRangeEnd = ref('8000')
+const firewallEnabled = ref(false)
+const subdomainBase = ref('')
 
 function canCreate() {
   if (!name.value) return false
@@ -38,7 +42,11 @@ async function create() {
     name: name.value,
     publicHost: publicHost.value,
     publicPort: publicPort.value,
-    sftpPort: sftpPort.value
+    sftpPort: sftpPort.value,
+    portRangeStart: portRangeStart.value,
+    portRangeEnd: portRangeEnd.value,
+    firewallEnabled: firewallEnabled.value,
+    subdomainBase: subdomainBase.value
   }
   if (withPrivateHost.value) {
     node.privateHost = privateHost.value
@@ -63,6 +71,11 @@ async function create() {
     <text-field v-if="withPrivateHost" v-model="privateHost" class="private-host" :label="t('nodes.PrivateHost')" />
     <text-field v-if="withPrivateHost" v-model="privatePort" class="private-port" :label="t('nodes.PrivatePort')" type="number" />
     <text-field v-model="sftpPort" class="sftp-port" :label="t('nodes.SftpPort')" type="number" />
+    <h2 v-text="t('nodes.PortAllocation')" />
+    <text-field v-model="portRangeStart" :label="t('nodes.PortRangeStart')" type="number" />
+    <text-field v-model="portRangeEnd" :label="t('nodes.PortRangeEnd')" type="number" />
+    <toggle v-model="firewallEnabled" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
+    <text-field v-model="subdomainBase" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
     <btn :disabled="!canCreate()" color="primary" @click="create()"><icon name="save" />{{ t('nodes.Create') }}</btn>
   </div>
 </template>

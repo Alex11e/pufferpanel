@@ -72,4 +72,9 @@ export class TemplateApi {
     await this._api.delete(`/api/templates/${repo}`)
     return true
   }
+
+  async importPterodactyl(egg) {
+    const res = await this._api.post('/api/templates/import/pterodactyl', egg)
+    return res.data
+  }
 }

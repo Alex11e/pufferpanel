@@ -93,6 +93,8 @@
   "General": "Általános",
   "Hooks": "Hookok",
   "Import": "Sablon importálása",
+  "ImportPterodactyl": "Pterodactyl egg importálása",
+  "PasteEgg": "Illeszd be az egg JSON fájl tartalmát",
   "import": {
     "CommunityWarning": "Ezeket a sablonokat a közösség készítette, és mindenféle garancia nélkül bocsátja rendelkezésre"
   }

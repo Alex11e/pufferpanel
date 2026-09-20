@@ -14,6 +14,10 @@ type NodeView struct {
 	PublicPort  uint16 `json:"publicPort,omitempty"`
 	PrivatePort uint16 `json:"privatePort,omitempty"`
 	SFTPPort    uint16 `json:"sftpPort,omitempty"`
+	PortRangeStart uint16 `json:"portRangeStart,omitempty"`
+	PortRangeEnd uint16 `json:"portRangeEnd,omitempty"`
+	FirewallEnabled bool `json:"firewallEnabled"`
+	SubdomainBase string `json:"subdomainBase,omitempty"`
 	Local       bool   `json:"isLocal"`
 } //@name Node
 
@@ -28,6 +32,8 @@ func FromNode(n *Node) *NodeView {
 		PublicPort:  n.PublicPort,
 		PrivatePort: n.PrivatePort,
 		SFTPPort:    n.SFTPPort,
+		PortRangeStart: n.PortRangeStart, PortRangeEnd: n.PortRangeEnd,
+		FirewallEnabled: n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
 		Local:       n.IsLocal(),
 	}
 }
@@ -66,6 +72,10 @@ func (n *NodeView) CopyToModel(newModel *Node) {
 	if n.SFTPPort > 0 {
 		newModel.SFTPPort = n.SFTPPort
 	}
+	if n.PortRangeStart > 0 { newModel.PortRangeStart = n.PortRangeStart }
+	if n.PortRangeEnd > 0 { newModel.PortRangeEnd = n.PortRangeEnd }
+	newModel.FirewallEnabled = n.FirewallEnabled
+	newModel.SubdomainBase = n.SubdomainBase
 }
 
 func (n *NodeView) Valid(allowEmpty bool) error {
@@ -132,6 +142,9 @@ func (n *NodeView) Valid(allowEmpty bool) error {
 
 	if n.SFTPPort != 0 && n.SFTPPort == n.PrivatePort {
 		return pufferpanel.ErrFieldEqual("sftpPort", "privatePort")
+	}
+	if n.PortRangeStart != 0 && n.PortRangeEnd != 0 && n.PortRangeStart > n.PortRangeEnd {
+		return pufferpanel.ErrFieldNotBetween("portRangeEnd", int(n.PortRangeStart), 65535)
 	}
 
 	return nil

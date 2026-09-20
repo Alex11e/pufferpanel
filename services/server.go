@@ -100,6 +100,8 @@ func (ss *Server) Delete(id string) error {
 	if err != nil {
 		return err
 	}
+	err = ss.DB.Delete(models.Allocation{}, "server_identifier = ?", id).Error
+	if err != nil { return err }
 
 	err = ss.DB.Delete(model).Error
 	if err != nil {

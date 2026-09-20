@@ -13,6 +13,13 @@ PufferPanel is a web-based Game Server Management System. PufferPanel allows you
 ## Installation
 Please follow the installation guide for PufferPanel located [here](https://docs.pufferpanel.com/en/latest/installing.html).
 
+### Custom Docker installer
+
+This fork includes a portable Docker installer. From the repository root run
+`./install.sh` on Linux/macOS, or `./install.ps1` in PowerShell on Windows.
+It stores configuration, data and logs in `data/`, and starts the panel at
+`http://localhost:8080`. Docker Engine/Desktop with Docker Compose v2 is required.
+
 ### What's different about PufferPanel?
 In addition to being a free and open source project, PufferPanel provides an easy-to-use interface for everyone from individual users to large networks. We strive to create a friendly community, and we would love for you to join us.
 

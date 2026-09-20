@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -19,6 +20,8 @@ func registerTemplates(g *gin.RouterGroup) {
 	g.Handle("GET", "", middleware.RequiresPermission(scopes.ScopeTemplatesView), getRepos)
 	g.Handle("POST", "", middleware.RequiresPermission(scopes.ScopeTemplatesRepoCreate), addRepo)
 	g.Handle("OPTIONS", "", response.CreateOptions("GET", "POST"))
+	g.Handle("POST", "/import/pterodactyl", middleware.RequiresPermission(scopes.ScopeTemplatesLocalEdit), importPterodactylEgg)
+	g.Handle("OPTIONS", "/import/pterodactyl", response.CreateOptions("POST"))
 
 	g.Handle("GET", "/:repo", middleware.RequiresPermission(scopes.ScopeTemplatesView), getsTemplatesForRepo)
 	g.Handle("DELETE", "/:repo", middleware.RequiresPermission(scopes.ScopeTemplatesRepoDelete), deleteRepo)
@@ -29,6 +32,18 @@ func registerTemplates(g *gin.RouterGroup) {
 	g.Handle("PUT", "/0/:name", middleware.RequiresPermission(scopes.ScopeTemplatesLocalEdit), putTemplate)
 	g.Handle("OPTIONS", "/:repo/:name", response.CreateOptions("GET"))
 	g.Handle("OPTIONS", "/0/:name", response.CreateOptions("GET", "DELETE", "PUT"))
+}
+
+func importPterodactylEgg(c *gin.Context) {
+	var raw json.RawMessage
+	if err := c.ShouldBindJSON(&raw); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	template, err := pterodactylEggToTemplate(raw)
+	if response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	c.JSON(http.StatusOK, template)
 }
 
 // @Summary Get all repos

@@ -359,6 +359,9 @@ func createServer(c *gin.Context) {
 		Type:       postBody.Type.Type,
 		Icon:       postBody.Icon,
 	}
+	if node.SubdomainBase != "" {
+		server.Subdomain = server.Identifier + "." + node.SubdomainBase
+	}
 
 	users := make([]*models.User, len(postBody.Users))
 
@@ -374,6 +377,20 @@ func createServer(c *gin.Context) {
 	err = ss.Create(server)
 	if response.HandleError(c, err, http.StatusInternalServerError) {
 		return
+	}
+
+	// When a template exposes the conventional port variable, allocate it from
+	// the node range instead of trusting a user supplied port.
+	if _, usesPort := postBody.Variables["port"]; usesPort {
+		allocation, allocationErr := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
+		if allocationErr == services.ErrNoPortAvailable {
+			c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"})
+			return
+		}
+		if response.HandleError(c, allocationErr, http.StatusInternalServerError) { return }
+		server.Port = allocation.Port
+		postBody.Variables["port"] = pufferpanel.Variable{Type: pufferpanel.Type{Type: "integer"}, Value: int(allocation.Port)}
+		if err = ss.Update(server); response.HandleError(c, err, http.StatusInternalServerError) { return }
 	}
 
 	for _, v := range users {

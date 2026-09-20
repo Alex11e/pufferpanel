@@ -93,6 +93,8 @@
   "General": "General",
   "Hooks": "Hooks",
   "Import": "Import template",
+  "ImportPterodactyl": "Import Pterodactyl egg",
+  "PasteEgg": "Paste the contents of an egg JSON file",
   "import": {
     "CommunityWarning": "These templates are made by the community and provided without any warranties"
   }
