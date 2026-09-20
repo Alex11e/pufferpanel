@@ -47,7 +47,9 @@ ARG curseforgeKey=''
 
 RUN xx-apk add musl-dev gcc
 RUN xx-go build -buildvcs=false -tags "$tags" -ldflags "-X 'github.com/pufferpanel/pufferpanel/v3/config.curseforgeKey=$curseforgeKey' -X 'github.com/pufferpanel/pufferpanel/v3.Hash=$sha' -X 'github.com/pufferpanel/pufferpanel/v3.Version=$version'" -o /pufferpanel/pufferpanel github.com/pufferpanel/pufferpanel/v3/cmd
-RUN if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then go test ./...; fi
+# web/tests provisions Minecraft and Java from the internet. It is an
+# integration suite, not a prerequisite for producing a runnable image.
+RUN if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then go test $(go list ./... | grep -v '/web/tests$'); fi
 RUN xx-verify /pufferpanel/pufferpanel
 
 ###

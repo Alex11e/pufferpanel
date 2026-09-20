@@ -40,6 +40,15 @@ func (n *Node) IsValid() (err error) {
 }
 
 func (n *Node) BeforeSave(*gorm.DB) (err error) {
+	// Existing installations and programmatic node creation may not provide the
+	// optional allocation range. Keep the model valid while preserving the
+	// documented default range used by the database schema.
+	if n.PortRangeStart == 0 {
+		n.PortRangeStart = 1000
+	}
+	if n.PortRangeEnd == 0 {
+		n.PortRangeEnd = 8000
+	}
 	err = n.IsValid()
 	if err != nil {
 		return err
