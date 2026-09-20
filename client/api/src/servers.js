@@ -249,6 +249,11 @@ export class ServerApi {
     return true
   }
 
+  async updateMetadata(id, metadata) {
+    await this._api.put(`/api/servers/${id}/metadata`, metadata)
+    return true
+  }
+
   async getActivity(id) {
     const res = await this._api.get(`/api/servers/${id}/activity`)
     return res.data
@@ -322,6 +327,8 @@ class Server {
     this.subdomain = serverData.server.subdomain
     this.autoBackupEnabled = serverData.server.autoBackupEnabled
     this.autoBackupRetention = serverData.server.autoBackupRetention || 24
+    this.notes = serverData.server.notes || ''
+    this.tags = serverData.server.tags || ''
     this.type = serverData.server.type
     this._scopes = serverData.permissions.scopes
     this._api = api
@@ -441,6 +448,12 @@ class Server {
     await this._api.server.setAutomaticBackup(this.id, enabled, retention)
     this.autoBackupEnabled = enabled
     this.autoBackupRetention = retention
+  }
+
+  async updateMetadata(metadata) {
+    await this._api.server.updateMetadata(this.id, metadata)
+    this.notes = metadata.notes
+    this.tags = metadata.tags
   }
 
   async getQuery() {

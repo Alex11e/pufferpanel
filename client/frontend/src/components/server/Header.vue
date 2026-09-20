@@ -28,6 +28,7 @@ async function updateName() {
     <span class="name">
       {{ server.name }}
     </span>
+    <span v-if="server.tags" class="subline">{{ server.tags }}</span>
     <btn v-if="server.hasScope('server.name.edit')" class="rename" variant="icon" :tooltip="t('servers.EditName')" @click="edit = !edit"><icon name="edit" /></btn>
     <controls :server="server" />
   </h1>

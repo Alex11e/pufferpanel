@@ -39,6 +39,8 @@ func registerServers(g *gin.RouterGroup) {
 	g.Handle("PUT", "/:serverId/name/:name", middleware.RequiresPermission(scopes.ScopeServerEditName), middleware.ResolveServerPanel, middleware.HasTransaction, renameServer)
 	g.Handle("OPTIONS", "/:serverId/name", response.CreateOptions("PUT"))
 	g.Handle("OPTIONS", "/:serverId/name/:name", response.CreateOptions("PUT"))
+	g.Handle("PUT", "/:serverId/metadata", middleware.RequiresPermission(scopes.ScopeServerEditName), middleware.ResolveServerPanel, middleware.HasTransaction, updateServerMetadata)
+	g.Handle("OPTIONS", "/:serverId/metadata", response.CreateOptions("PUT"))
 
 	g.Handle("GET", "/:serverId/definition", middleware.RequiresPermission(scopes.ScopeServerViewDefinition), middleware.ResolveServerPanel, proxyServerRequest)
 	g.Handle("PUT", "/:serverId/definition", middleware.RequiresPermission(scopes.ScopeServerEditDefinition), middleware.ResolveServerPanel, middleware.HasTransaction, editServer)
@@ -1088,6 +1090,27 @@ func createBackup(c *gin.Context) {
 		return
 	}
 
+	c.Status(http.StatusNoContent)
+}
+
+func updateServerMetadata(c *gin.Context) {
+	server := getServerFromGin(c)
+	var metadata struct {
+		Notes string `json:"notes"`
+		Tags  string `json:"tags"`
+	}
+	if err := c.ShouldBindJSON(&metadata); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if len(metadata.Notes) > 2000 || len(metadata.Tags) > 255 {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	server.Notes = metadata.Notes
+	server.Tags = metadata.Tags
+	if err := (&services.Server{DB: middleware.GetDatabase(c)}).Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
 	c.Status(http.StatusNoContent)
 }
 

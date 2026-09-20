@@ -9,6 +9,7 @@ import Loader from '../ui/Loader.vue'
 import Overlay from '@/components/ui/Overlay.vue'
 import Tab from '@/components/ui/Tab.vue'
 import Tabs from '@/components/ui/Tabs.vue'
+import TextField from '@/components/ui/TextField.vue'
 
 import Variables from '@/components/template/Variables.vue'
 import Install from '@/components/template/Install.vue'
@@ -30,6 +31,8 @@ const edit = ref("")
 const editorOpen = ref(false)
 const serverJson = ref(null)
 const deleting = ref(false)
+const notes = ref('')
+const tags = ref('')
 
 function editDefinition() {
   edit.value = JSON.stringify(def.value, undefined, 4)
@@ -75,15 +78,27 @@ function definitionTabChanged(newTab) {
 }
 
 onMounted(async () => {
+	notes.value = props.server.notes
+	tags.value = props.server.tags
   if (props.server.hasScope('server.definition.view'))
     def.value = await props.server.getDefinition()
 })
+
+async function saveMetadata() {
+  await props.server.updateMetadata({ notes: notes.value, tags: tags.value })
+  toast.success(t('servers.MetadataSaved'))
+}
 </script>
 
 <template>
   <div class="admin">
     <h2 v-text="t('servers.Admin')" />
     <btn v-if="server.hasScope('server.definition.view')" v-hotkey="'a e'" variant="text" @click="editDefinition()"><icon name="edit" />{{ t('servers.EditDefinition') }}</btn>
+    <div v-if="server.hasScope('server.name.edit')" class="server-metadata">
+      <text-field v-model="tags" :label="t('servers.Tags')" :hint="t('servers.TagsHint')" />
+      <text-field v-model="notes" :label="t('servers.Notes')" />
+      <btn color="primary" @click="saveMetadata()"><icon name="save" />{{ t('common.Save') }}</btn>
+    </div>
     <btn v-if="server.hasScope('server.delete')" color="error" @click="deleteServer()"><icon name="remove" />{{ t('servers.Delete') }}</btn>
     <btn v-if="server.hasScope('server.delete')" color="error" variant="text" @click="deleteServer(true)"><icon name="remove" />{{ t('servers.ForceDelete') }}</btn>
 

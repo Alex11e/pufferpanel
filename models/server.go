@@ -21,6 +21,8 @@ type Server struct {
 	Allocations []Allocation `gorm:"foreignKey:ServerIdentifier;references:Identifier" json:"-"`
 	AutoBackupEnabled bool `gorm:"column:auto_backup_enabled;not null;default:false" json:"-"`
 	AutoBackupRetention uint `gorm:"column:auto_backup_retention;not null;default:24" json:"-" validate:"max=168"`
+	Notes string `gorm:"column:notes;size:2000" json:"-"`
+	Tags string `gorm:"column:tags;size:255" json:"-"`
 
 	Type string `gorm:"NOT NULL;default='generic'" json:"-" validate:"required,printascii"`
 	Icon string `gorm:"" json:"-"`
