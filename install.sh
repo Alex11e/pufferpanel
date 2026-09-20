@@ -18,6 +18,7 @@ remove_if_confirmed() {
 }
 
 create_user() {
+  if ! docker inspect -f '{{.State.Running}}' pufferpanel 2>/dev/null | grep -qx true; then echo "A PufferPanel konténer nem fut. Előbb válaszd a 2-es telepítés/frissítés opciót." >&2; return 1; fi
   ask_yes_no "Létrehozol most egy PufferPanel felhasználót?" || return 0
   printf 'Felhasználónév: ' >&2; read -r username </dev/tty
   printf 'E-mail cím: ' >&2; read -r email </dev/tty
@@ -46,9 +47,10 @@ uninstall_panel() {
 
 echo "1) PufferPanel eltávolítása"
 echo "2) PufferPanel telepítése vagy frissítése"
+echo "3) Felhasználó létrehozása"
 printf 'Választás: ' >&2
 read -r INSTALL_ACTION </dev/tty
-case "$INSTALL_ACTION" in 1) uninstall_panel; exit 0 ;; 2) ;; *) echo "Érvénytelen választás." >&2; exit 1 ;; esac
+case "$INSTALL_ACTION" in 1) uninstall_panel; exit 0 ;; 2) ;; 3) create_user; exit $? ;; *) echo "Érvénytelen választás." >&2; exit 1 ;; esac
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is required. Install Docker Engine and the Docker Compose plugin first." >&2

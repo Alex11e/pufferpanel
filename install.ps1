@@ -22,6 +22,7 @@ function Remove-PanelFiles {
 }
 
 function New-PanelUser {
+    if ((& docker inspect --format '{{.State.Running}}' pufferpanel 2>$null) -ne 'true') { throw 'A PufferPanel konténer nem fut. Előbb válaszd a 2-es telepítés/frissítés opciót.' }
     if (-not (Confirm-Removal 'Létrehozol most egy PufferPanel felhasználót?')) { return }
     $Username = Read-Host 'Felhasználónév'
     $Email = Read-Host 'E-mail cím'
@@ -44,8 +45,10 @@ function New-PanelUser {
 
 Write-Host '1) PufferPanel eltávolítása'
 Write-Host '2) PufferPanel telepítése vagy frissítése'
+Write-Host '3) Felhasználó létrehozása'
 $InstallAction = Read-Host 'Választás'
 if ($InstallAction -eq '1') { Remove-PanelFiles; exit 0 }
+if ($InstallAction -eq '3') { New-PanelUser; exit 0 }
 if ($InstallAction -ne '2') { throw 'Érvénytelen választás.' }
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {

@@ -26,6 +26,10 @@ remove_if_confirmed() {
 
 create_user() {
   local username email password confirm role
+  if ! $SUDO docker inspect -f '{{.State.Running}}' pufferpanel 2>/dev/null | grep -qx true; then
+    echo "A PufferPanel konténer nem fut. Előbb válaszd a 2-es telepítés/frissítés opciót." >&2
+    return 1
+  fi
   ask_yes_no "Létrehozol most egy PufferPanel felhasználót?" || return 0
 
   printf 'Felhasználónév: ' >/dev/tty
@@ -95,11 +99,13 @@ fi
 
 echo "1) PufferPanel eltávolítása"
 echo "2) PufferPanel telepítése vagy frissítése"
+echo "3) Felhasználó létrehozása"
 printf 'Választás: ' >/dev/tty
 read -r INSTALL_ACTION </dev/tty
 case "$INSTALL_ACTION" in
   1) uninstall_panel; exit 0 ;;
   2) ;;
+  3) create_user; exit $? ;;
   *) echo "Érvénytelen választás." >&2; exit 1 ;;
 esac
 
