@@ -22,6 +22,8 @@ var dbObjects = []interface{}{
 	&models.Announcement{},
 	&models.SupportTicket{},
 	&models.SupportTicketMessage{},
+	&models.ServerFolder{},
+	&models.ServerFolderItem{},
 	&models.Server{},
 	&models.User{},
 	&models.Template{},

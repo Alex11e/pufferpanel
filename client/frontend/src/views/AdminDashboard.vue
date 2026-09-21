@@ -115,6 +115,7 @@ onMounted(load)
         <router-link to="/users"><btn><icon name="users" /> Felhasználók kezelése</btn></router-link>
         <router-link to="/nodes"><btn><icon name="node" /> Node-ok és portok</btn></router-link>
         <router-link to="/templates"><btn><icon name="template" /> Sablonok és eggek</btn></router-link>
+        <a href="/api/admin/activity/export"><btn><icon name="download" /> Műveleti napló CSV</btn></a>
       </div>
       <section>
         <h2>Panel-közlemények</h2>

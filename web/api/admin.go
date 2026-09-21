@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/csv"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -49,10 +50,30 @@ func registerAdmin(g *gin.RouterGroup) {
 	g.GET("/ports", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminPortUsage)
 	g.GET("/backups", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminBackups)
 	g.POST("/servers/action", middleware.RequiresPermission(scopes.ScopeAdmin), runBulkServerAction)
+	g.GET("/activity/export", middleware.RequiresPermission(scopes.ScopeAdmin), exportAdminActivity)
 	g.OPTIONS("/overview", response.CreateOptions("GET"))
 	g.OPTIONS("/ports", response.CreateOptions("GET"))
 	g.OPTIONS("/backups", response.CreateOptions("GET"))
 	g.OPTIONS("/servers/action", response.CreateOptions("POST"))
+	g.OPTIONS("/activity/export", response.CreateOptions("GET"))
+}
+
+// exportAdminActivity gives admins a portable audit report without granting
+// database access. It is capped to keep a browser request bounded.
+func exportAdminActivity(c *gin.Context) {
+	var records []models.Activity
+	if err := middleware.GetDatabase(c).Order("created_at DESC").Limit(10000).Find(&records).Error; err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Header("Content-Type", "text/csv; charset=utf-8")
+	c.Header("Content-Disposition", "attachment; filename=pufferpanel-activity.csv")
+	writer := csv.NewWriter(c.Writer)
+	_ = writer.Write([]string{"id", "time_utc", "username", "action", "server_id", "details", "ip_address"})
+	for _, record := range records {
+		_ = writer.Write([]string{fmt.Sprint(record.ID), record.CreatedAt.UTC().Format(time.RFC3339), record.Username, record.Action, record.ServerIdentifier, record.Details, record.IPAddress})
+	}
+	writer.Flush()
 }
 
 type bulkServerActionRequest struct {
