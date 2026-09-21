@@ -131,7 +131,7 @@ onMounted(load)
       </section>
       <section>
         <h2>Tömeges szerverműveletek</h2>
-        <p class="hint">Az első 100 szerver közül választhatsz ki legfeljebb 25-öt. Minden végrehajtás előtt külön megerősítés szükséges.</p>
+        <p class="hint">A betöltött szerverek közül választhatsz ki legfeljebb 25-öt. Minden végrehajtás előtt külön megerősítés szükséges.</p>
         <div class="bulk-actions"><btn color="primary" :disabled="!selectedCount || actionRunning" @click="bulkAction('start')">Indítás ({{ selectedCount }})</btn><btn :disabled="!selectedCount || actionRunning" @click="bulkAction('restart')">Újraindítás</btn><btn color="error" :disabled="!selectedCount || actionRunning" @click="bulkAction('stop')">Leállítás</btn></div>
         <div class="server-select"><label v-for="server in adminServers" :key="server.id"><input v-model="selectedServers" type="checkbox" :value="server.id" :disabled="!selectedServers.includes(server.id) && selectedCount >= 25"> <span>{{ server.name }} <small>({{ server.id }})</small></span></label></div>
       </section>
