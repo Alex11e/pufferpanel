@@ -9,6 +9,8 @@ type SupportTicket struct {
 	UserID           uint      `json:"userId" gorm:"not null;index"`
 	ServerIdentifier string    `json:"serverId,omitempty" gorm:"size:20;index"`
 	Subject          string    `json:"subject" gorm:"not null;size:140"`
+	Category         string    `json:"category" gorm:"not null;size:30;default:technical"`
+	Priority         string    `json:"priority" gorm:"not null;size:20;default:normal;index"`
 	Status           string    `json:"status" gorm:"not null;size:20;default:open;index"`
 	CreatedAt        time.Time `json:"createdAt"`
 	UpdatedAt        time.Time `json:"updatedAt"`

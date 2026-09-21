@@ -19,6 +19,8 @@ type ticketView struct {
 	Username  string                        `json:"username"`
 	ServerID  string                        `json:"serverId,omitempty"`
 	Subject   string                        `json:"subject"`
+	Category  string                        `json:"category"`
+	Priority  string                        `json:"priority"`
 	Status    string                        `json:"status"`
 	CreatedAt string                        `json:"createdAt"`
 	UpdatedAt string                        `json:"updatedAt"`
@@ -44,7 +46,7 @@ func ticketIsAdmin(c *gin.Context, user *models.User) bool {
 }
 
 func ticketModelView(c *gin.Context, ticket *models.SupportTicket, includeMessages bool) ticketView {
-	view := ticketView{ID: ticket.ID, UserID: ticket.UserID, ServerID: ticket.ServerIdentifier, Subject: ticket.Subject, Status: ticket.Status, CreatedAt: ticket.CreatedAt.UTC().Format(time.RFC3339), UpdatedAt: ticket.UpdatedAt.UTC().Format(time.RFC3339)}
+	view := ticketView{ID: ticket.ID, UserID: ticket.UserID, ServerID: ticket.ServerIdentifier, Subject: ticket.Subject, Category: ticket.Category, Priority: ticket.Priority, Status: ticket.Status, CreatedAt: ticket.CreatedAt.UTC().Format(time.RFC3339), UpdatedAt: ticket.UpdatedAt.UTC().Format(time.RFC3339)}
 	var user models.User
 	if middleware.GetDatabase(c).Select("username").First(&user, ticket.UserID).Error == nil {
 		view.Username = user.Username
@@ -83,6 +85,8 @@ type createTicketRequest struct {
 	Subject  string `json:"subject"`
 	Message  string `json:"message"`
 	ServerID string `json:"serverId"`
+	Category string `json:"category"`
+	Priority string `json:"priority"`
 }
 
 func createTicket(c *gin.Context) {
@@ -92,12 +96,19 @@ func createTicket(c *gin.Context) {
 		return
 	}
 	request.Subject, request.Message, request.ServerID = strings.TrimSpace(request.Subject), strings.TrimSpace(request.Message), strings.TrimSpace(request.ServerID)
-	if request.Subject == "" || len(request.Subject) > 140 || request.Message == "" || len(request.Message) > 4000 || len(request.ServerID) > 20 {
+	request.Category, request.Priority = strings.ToLower(strings.TrimSpace(request.Category)), strings.ToLower(strings.TrimSpace(request.Priority))
+	if request.Category == "" {
+		request.Category = "technical"
+	}
+	if request.Priority == "" {
+		request.Priority = "normal"
+	}
+	if request.Subject == "" || len(request.Subject) > 140 || request.Message == "" || len(request.Message) > 4000 || len(request.ServerID) > 20 || !validTicketCategory(request.Category) || !validTicketPriority(request.Priority) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket"})
 		return
 	}
 	user := c.MustGet("user").(*models.User)
-	ticket := models.SupportTicket{UserID: user.ID, ServerIdentifier: request.ServerID, Subject: request.Subject, Status: "open"}
+	ticket := models.SupportTicket{UserID: user.ID, ServerIdentifier: request.ServerID, Subject: request.Subject, Category: request.Category, Priority: request.Priority, Status: "open"}
 	db := middleware.GetDatabase(c)
 	if err := db.Create(&ticket).Error; err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -172,7 +183,15 @@ func addTicketMessage(c *gin.Context) {
 }
 
 type ticketStatusRequest struct {
-	Status string `json:"status"`
+	Status   string `json:"status"`
+	Priority string `json:"priority"`
+}
+
+func validTicketCategory(value string) bool {
+	return value == "technical" || value == "billing" || value == "account" || value == "other"
+}
+func validTicketPriority(value string) bool {
+	return value == "low" || value == "normal" || value == "high" || value == "urgent"
 }
 
 func updateTicketStatus(c *gin.Context) {
@@ -191,11 +210,22 @@ func updateTicketStatus(c *gin.Context) {
 		return
 	}
 	request.Status = strings.ToLower(strings.TrimSpace(request.Status))
+	request.Priority = strings.ToLower(strings.TrimSpace(request.Priority))
+	if request.Status == "" {
+		request.Status = ticket.Status
+	}
+	if request.Priority == "" {
+		request.Priority = ticket.Priority
+	}
 	if request.Status != "closed" && !(admin && (request.Status == "open" || request.Status == "answered")) {
 		c.AbortWithStatus(http.StatusForbidden)
 		return
 	}
-	ticket.Status = request.Status
+	if !validTicketPriority(request.Priority) || (!admin && request.Priority != ticket.Priority) {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
+	ticket.Status, ticket.Priority = request.Status, request.Priority
 	if err := middleware.GetDatabase(c).Save(ticket).Error; err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
