@@ -30,6 +30,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	registerUserSettings(rg.Group("/userSettings"))
 	registerAdmin(rg.Group("/admin"))
 	registerAnnouncements(rg.Group("/announcements"))
+	registerTickets(rg.Group("/tickets"))
 	rg.GET("/activity", middleware.RequiresPermission(scopes.ScopeAdmin), getRecentActivity)
 
 	rg.GET("/config", panelConfig)

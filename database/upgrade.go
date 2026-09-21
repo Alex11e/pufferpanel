@@ -20,6 +20,8 @@ var dbObjects = []interface{}{
 	&models.Allocation{},
 	&models.Activity{},
 	&models.Announcement{},
+	&models.SupportTicket{},
+	&models.SupportTicketMessage{},
 	&models.Server{},
 	&models.User{},
 	&models.Template{},

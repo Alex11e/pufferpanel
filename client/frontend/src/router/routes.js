@@ -57,6 +57,17 @@ export default (api) => [
     }
   },
   {
+    path: '/support',
+    component: () => import('@/views/SupportTickets.vue'),
+    name: 'SupportTickets',
+    meta: {
+      tkey: 'Támogatás',
+      permission: true,
+      icon: 'help',
+      hotkey: 'g h'
+    }
+  },
+  {
     path: '/servers/view/:id',
     component: () => import('@/views/ServerView.vue'),
     name: 'ServerView'
