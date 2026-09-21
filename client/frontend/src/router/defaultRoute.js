@@ -3,5 +3,5 @@ export default function(api) {
     return { name: 'Login' }
   }
 
-  return { name: 'ServerList' }
+  return { name: 'Dashboard' }
 }

@@ -46,6 +46,17 @@ export default (api) => [
     name: 'ServerCreate'
   },
   {
+    path: '/dashboard',
+    component: () => import('@/views/Dashboard.vue'),
+    name: 'Dashboard',
+    meta: {
+      tkey: 'Kezdőlap',
+      permission: true,
+      icon: 'home',
+      hotkey: 'g d'
+    }
+  },
+  {
     path: '/admin',
     component: () => import('@/views/AdminDashboard.vue'),
     name: 'AdminDashboard',
