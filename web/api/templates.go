@@ -13,8 +13,11 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/services"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
+	"io"
 	"net/http"
 )
+
+const maxPterodactylEggSize = 2 * 1024 * 1024
 
 func registerTemplates(g *gin.RouterGroup) {
 	g.Handle("GET", "", middleware.RequiresPermission(scopes.ScopeTemplatesView), getRepos)
@@ -35,11 +38,23 @@ func registerTemplates(g *gin.RouterGroup) {
 }
 
 func importPterodactylEgg(c *gin.Context) {
-	var raw json.RawMessage
-	if err := c.ShouldBindJSON(&raw); response.HandleError(c, err, http.StatusBadRequest) {
+	// Egg exports are JSON and should be small. A strict cap prevents an import
+	// endpoint from being used to make the panel buffer an arbitrary request.
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxPterodactylEggSize)
+	raw, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		response.HandleError(c, err, http.StatusRequestEntityTooLarge)
 		return
 	}
-	template, err := pterodactylEggToTemplate(raw)
+	if len(raw) == 0 {
+		response.HandleError(c, errors.New("an egg JSON file is required"), http.StatusBadRequest)
+		return
+	}
+	var egg json.RawMessage
+	if err = json.Unmarshal(raw, &egg); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	template, err := pterodactylEggToTemplate(egg)
 	if response.HandleError(c, err, http.StatusBadRequest) {
 		return
 	}

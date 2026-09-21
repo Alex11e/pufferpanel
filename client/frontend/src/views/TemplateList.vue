@@ -11,6 +11,7 @@ import TextField from '@/components/ui/TextField.vue'
 const { t } = useI18n()
 const api = inject('api')
 const events = inject('events')
+const toast = inject('toast')
 const router = useRouter()
 const templatesLoaded = ref(false)
 const templatesByRepo = ref([])
@@ -19,6 +20,7 @@ const addingRepo = ref(false)
 const currentRepo = ref({name: '', url: '', branch: ''})
 const importingEgg = ref(false)
 const eggJson = ref('')
+const eggFileName = ref('')
 
 onMounted(async () => {
   loadTemplates()
@@ -80,11 +82,31 @@ async function importEgg() {
   try {
     egg = JSON.parse(eggJson.value)
   } catch (_) {
+    toast.error(t('templates.EggInvalid'))
     return
   }
   const template = await api.template.importPterodactyl(egg)
   sessionStorage.setItem('copiedTemplate', JSON.stringify(template, undefined, 4))
   router.push({ name: 'TemplateCreate', query: { copy: true } })
+}
+
+async function readEggFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) {
+    toast.error(t('templates.EggTooLarge'))
+    return
+  }
+  try {
+    eggJson.value = await file.text()
+    JSON.parse(eggJson.value)
+    eggFileName.value = file.name
+    toast.success(t('templates.EggLoaded', { name: file.name }))
+  } catch (_) {
+    eggJson.value = ''
+    eggFileName.value = ''
+    toast.error(t('templates.EggInvalid'))
+  }
 }
 </script>
 
@@ -133,6 +155,7 @@ async function importEgg() {
     </overlay>
     <overlay v-model="importingEgg" :title="t('templates.ImportPterodactyl')" closable>
       <div class="actions">
+        <label class="egg-file"><span>{{ t('templates.EggFile') }}</span><input accept="application/json,.json" type="file" @change="readEggFile" /><small v-if="eggFileName">{{ eggFileName }}</small></label>
         <textarea v-model="eggJson" rows="12" :placeholder="t('templates.PasteEgg')" />
         <btn color="error" @click="importingEgg = false"><icon name="close" />{{ t('common.Cancel') }}</btn>
         <btn :disabled="!eggJson" color="primary" @click="importEgg()"><icon name="save" />{{ t('templates.Import') }}</btn>

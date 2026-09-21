@@ -95,6 +95,10 @@
   "Import": "Sablon importálása",
   "ImportPterodactyl": "Pterodactyl egg importálása",
   "PasteEgg": "Illeszd be az egg JSON fájl tartalmát",
+  "EggFile": "Egg JSON fájl kiválasztása",
+  "EggLoaded": "Egg fájl betöltve: {name}",
+  "EggInvalid": "Az egg fájl nem érvényes JSON.",
+  "EggTooLarge": "Az egg fájl legfeljebb 2 MiB lehet.",
   "import": {
     "CommunityWarning": "Ezeket a sablonokat a közösség készítette, és mindenféle garancia nélkül bocsátja rendelkezésre"
   }

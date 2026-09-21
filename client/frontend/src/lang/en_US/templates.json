@@ -95,6 +95,10 @@
   "Import": "Import template",
   "ImportPterodactyl": "Import Pterodactyl egg",
   "PasteEgg": "Paste the contents of an egg JSON file",
+  "EggFile": "Select egg JSON file",
+  "EggLoaded": "Egg file loaded: {name}",
+  "EggInvalid": "The egg file is not valid JSON.",
+  "EggTooLarge": "The egg file must not exceed 2 MiB.",
   "import": {
     "CommunityWarning": "These templates are made by the community and provided without any warranties"
   }
