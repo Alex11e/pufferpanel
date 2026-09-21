@@ -19,6 +19,7 @@ var dbObjects = []interface{}{
 	&models.Node{},
 	&models.Allocation{},
 	&models.Activity{},
+	&models.Announcement{},
 	&models.Server{},
 	&models.User{},
 	&models.Template{},

@@ -1,7 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -45,9 +48,75 @@ func registerAdmin(g *gin.RouterGroup) {
 	g.GET("/overview", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminOverview)
 	g.GET("/ports", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminPortUsage)
 	g.GET("/backups", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminBackups)
+	g.POST("/servers/action", middleware.RequiresPermission(scopes.ScopeAdmin), runBulkServerAction)
 	g.OPTIONS("/overview", response.CreateOptions("GET"))
 	g.OPTIONS("/ports", response.CreateOptions("GET"))
 	g.OPTIONS("/backups", response.CreateOptions("GET"))
+	g.OPTIONS("/servers/action", response.CreateOptions("POST"))
+}
+
+type bulkServerActionRequest struct {
+	ServerIDs []string `json:"serverIds"`
+	Action    string   `json:"action"`
+}
+
+type bulkServerActionResult struct {
+	ServerID string `json:"serverId"`
+	Success  bool   `json:"success"`
+	Error    string `json:"error,omitempty"`
+}
+
+// runBulkServerAction intentionally accepts only non-destructive lifecycle
+// actions. The UI asks the administrator for confirmation before calling it.
+func runBulkServerAction(c *gin.Context) {
+	var request bulkServerActionRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	request.Action = strings.ToLower(strings.TrimSpace(request.Action))
+	if request.Action != "start" && request.Action != "restart" && request.Action != "stop" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "action must be start, restart, or stop"})
+		return
+	}
+	if len(request.ServerIDs) == 0 || len(request.ServerIDs) > 25 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "select between 1 and 25 servers"})
+		return
+	}
+
+	serverService := &services.Server{DB: middleware.GetDatabase(c)}
+	nodeService := &services.Node{DB: middleware.GetDatabase(c)}
+	results := make([]bulkServerActionResult, 0, len(request.ServerIDs))
+	seen := make(map[string]struct{}, len(request.ServerIDs))
+	for _, id := range request.ServerIDs {
+		id = strings.TrimSpace(id)
+		if id == "" {
+			continue
+		}
+		if _, duplicate := seen[id]; duplicate {
+			continue
+		}
+		seen[id] = struct{}{}
+		server, err := serverService.Get(id)
+		if err != nil {
+			results = append(results, bulkServerActionResult{ServerID: id, Error: "server not found"})
+			continue
+		}
+		res, err := nodeService.CallNode(&server.Node, http.MethodPost, "/daemon/server/"+url.PathEscape(server.Identifier)+"/"+request.Action, nil, nil)
+		if err != nil {
+			results = append(results, bulkServerActionResult{ServerID: id, Error: err.Error()})
+			continue
+		}
+		if res.Body != nil {
+			_ = res.Body.Close()
+		}
+		if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+			results = append(results, bulkServerActionResult{ServerID: id, Error: fmt.Sprintf("node returned HTTP %d", res.StatusCode)})
+			continue
+		}
+		results = append(results, bulkServerActionResult{ServerID: id, Success: true})
+	}
+	c.JSON(http.StatusOK, results)
 }
 
 func getAdminOverview(c *gin.Context) {

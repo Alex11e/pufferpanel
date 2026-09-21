@@ -26,6 +26,7 @@ const showError = ref(false)
 const showHotkeys = ref(false)
 const confirmOpen = ref(false)
 const confirm = ref({})
+const announcements = ref([])
 let lastWidth = window.innerWidth
 
 function showErrorDetails(e) {
@@ -125,17 +126,33 @@ onMounted(async () => {
   if (api.auth.isLoggedIn()) {
     user.value = await api.self.get()
     api.auth.reauth()
+    await loadAnnouncements()
   }
 })
 
 onUpdated(async () => {
   if (api.auth.isLoggedIn() && user.value == undefined) {
     user.value = await api.self.get()
+    await loadAnnouncements()
   }
   if (!api.auth.isLoggedIn() && user.value) {
     user.value = undefined
   }
 })
+
+async function loadAnnouncements() {
+  try {
+    const response = await api.get('/api/announcements')
+    announcements.value = (response.data || []).filter(item => localStorage.getItem(`announcement-dismissed-${item.id}`) !== item.updatedAt)
+  } catch {
+    // A temporary notification failure must never block using the panel.
+  }
+}
+
+function dismissAnnouncement(announcement) {
+  localStorage.setItem(`announcement-dismissed-${announcement.id}`, announcement.updatedAt)
+  announcements.value = announcements.value.filter(item => item.id !== announcement.id)
+}
 
 onUnmounted(() => {
   window.removeEventListener('resize', onResize)
@@ -222,6 +239,10 @@ function handleConfirm(title, ok, cancel) {
     <topbar :class="allowSidebar ? 'sidebar-exists' : ''" :user="user" @toggleSidebar="sidebarClosed = !sidebarClosed" />
     <sidebar v-if="allowSidebar" :closed="sidebarClosed" :right="!ltr" />
     <main class="main" @click="maybeCloseSidebar()">
+      <div v-for="announcement in announcements" :key="announcement.id" :class="['panel-announcement', `panel-announcement-${announcement.level}`]">
+        <div><strong>{{ announcement.title }}</strong><span>{{ announcement.message }}</span></div>
+        <btn variant="icon" tooltip="Bezárás" @click="dismissAnnouncement(announcement)"><icon name="close" /></btn>
+      </div>
       <router-view />
     </main>
     <overlay v-model="showError" :title="t('common.ErrorDetails')" closable>
@@ -247,3 +268,11 @@ function handleConfirm(title, ok, cancel) {
     <div id="toasts" />
   </div>
 </template>
+
+<style lang="scss">
+.panel-announcement { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:0 0 16px; padding:13px 16px; border-left:4px solid var(--color-primary); border-radius:7px; background:var(--color-background-secondary); }
+.panel-announcement strong, .panel-announcement span { display:block; }
+.panel-announcement span { margin-top:3px; white-space:pre-wrap; color:var(--color-text-secondary); }
+.panel-announcement-warning { border-color:var(--color-warning, #e6a700); }
+.panel-announcement-maintenance { border-color:var(--color-error); }
+</style>
