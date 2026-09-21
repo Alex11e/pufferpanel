@@ -2,10 +2,12 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
 	"github.com/pufferpanel/pufferpanel/v3/models"
+	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/scopes"
 	"github.com/pufferpanel/pufferpanel/v3/services"
 )
@@ -30,20 +32,22 @@ type AdminPortUsage struct {
 	Free     uint32           `json:"free"`
 }
 
+type AdminBackupView struct {
+	ID         uint   `json:"id"`
+	Name       string `json:"name"`
+	FileName   string `json:"fileName"`
+	ServerID   string `json:"serverId"`
+	ServerName string `json:"serverName"`
+	CreatedAt  string `json:"createdAt"`
+}
+
 func registerAdmin(g *gin.RouterGroup) {
 	g.GET("/overview", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminOverview)
 	g.GET("/ports", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminPortUsage)
-	g.OPTIONS("/overview", responseOptions("GET"))
-	g.OPTIONS("/ports", responseOptions("GET"))
-}
-
-// responseOptions keeps this small admin-only group independent from the
-// route registration helpers used by the older API groups.
-func responseOptions(methods ...string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Header("Allow", "OPTIONS, "+methods[0])
-		c.Status(http.StatusNoContent)
-	}
+	g.GET("/backups", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminBackups)
+	g.OPTIONS("/overview", response.CreateOptions("GET"))
+	g.OPTIONS("/ports", response.CreateOptions("GET"))
+	g.OPTIONS("/backups", response.CreateOptions("GET"))
 }
 
 func getAdminOverview(c *gin.Context) {
@@ -100,6 +104,22 @@ func getAdminPortUsage(c *gin.Context) {
 			free -= uint32(used)
 		}
 		result = append(result, AdminPortUsage{Node: models.FromNode(node), Used: used, Capacity: capacity, Free: free})
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func getAdminBackups(c *gin.Context) {
+	var backups []models.Backup
+	if err := middleware.GetDatabase(c).Preload("Server").Order("created_at DESC").Limit(25).Find(&backups).Error; err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	result := make([]AdminBackupView, 0, len(backups))
+	for _, backup := range backups {
+		result = append(result, AdminBackupView{
+			ID: backup.ID, Name: backup.Name, FileName: backup.FileName, ServerID: backup.ServerID,
+			ServerName: backup.Server.Name, CreatedAt: backup.CreatedAt.UTC().Format(time.RFC3339),
+		})
 	}
 	c.JSON(http.StatusOK, result)
 }

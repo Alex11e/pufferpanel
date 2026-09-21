@@ -9,19 +9,26 @@ const api = inject('api')
 const overview = ref(null)
 const ports = ref([])
 const activity = ref([])
+const backups = ref([])
 const loading = ref(true)
+const error = ref('')
 
 async function load() {
   loading.value = true
+  error.value = ''
   try {
-    const [overviewResponse, portsResponse, activityResponse] = await Promise.all([
+    const [overviewResponse, portsResponse, activityResponse, backupsResponse] = await Promise.all([
       api.get('/api/admin/overview'),
       api.get('/api/admin/ports'),
-      api.server.getRecentActivity()
+      api.server.getRecentActivity(),
+      api.get('/api/admin/backups')
     ])
     overview.value = overviewResponse.data
     ports.value = portsResponse.data || []
     activity.value = activityResponse || []
+    backups.value = backupsResponse.data || []
+  } catch {
+    error.value = 'Az admin adatok betöltése nem sikerült. Próbáld meg újra.'
   } finally {
     loading.value = false
   }
@@ -44,6 +51,7 @@ onMounted(load)
       <btn :disabled="loading" @click="load"><icon :name="loading ? 'loading' : 'reload'" :spin="loading" /> Frissítés</btn>
     </div>
     <loader v-if="loading && !overview" />
+    <div v-else-if="error" class="error">{{ error }}</div>
     <template v-else-if="overview">
       <div class="metrics">
         <div class="metric"><strong>{{ overview.servers }}</strong><span>Szerver</span></div>
@@ -70,6 +78,11 @@ onMounted(load)
         </div>
       </section>
       <section>
+        <h2>Legutóbbi biztonsági mentések</h2>
+        <div v-if="backups.length === 0" class="empty">Még nincs biztonsági mentés.</div>
+        <router-link v-for="backup in backups" v-else :key="backup.id" :to="`/servers/view/${backup.serverId}`" class="backup"><icon name="backup" /><span><strong>{{ backup.name }}</strong><small>{{ backup.serverName || backup.serverId }}</small></span><small>{{ new Date(backup.createdAt).toLocaleString() }}</small></router-link>
+      </section>
+      <section>
         <h2>Legutóbbi műveletek</h2>
         <div v-if="activity.length === 0" class="empty">Még nincs naplózott művelet.</div>
         <div v-for="record in activity" v-else :key="record.id" class="activity"><icon name="stats" /><span>{{ activityTitle(record) }}</span><small>{{ record.serverId }} · {{ record.ipAddress }}</small></div>
@@ -79,5 +92,5 @@ onMounted(load)
 </template>
 
 <style scoped lang="scss">
-.heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; } .heading h1 { display:flex; align-items:center; gap:10px; margin-bottom:4px; } .heading p, small { color:var(--color-text-secondary); } .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .metric, .access, section { background:var(--color-background-secondary); border-radius:8px; padding:16px; } .metric strong { display:block; font-size:1.8rem; } .metric span { color:var(--color-text-secondary); } .access { margin:16px 0; color:var(--color-success); display:flex; gap:10px; align-items:center; } .quick-links { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px; } section { margin-top:16px; } section h2 { margin-top:0; } .port-row, .activity { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--color-background); } .port-row:last-child, .activity:last-child { border-bottom:0; } .port-row small { display:block; } .usage { flex:1; height:8px; overflow:hidden; background:var(--color-background); border-radius:99px; } .usage span { display:block; height:100%; background:var(--color-primary); } .activity small { margin-left:auto; } .empty { color:var(--color-text-secondary); } @media (max-width:640px) { .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .heading { align-items:flex-start; flex-direction:column; } .activity small { display:none; } }
+.heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; } .heading h1 { display:flex; align-items:center; gap:10px; margin-bottom:4px; } .heading p, small { color:var(--color-text-secondary); } .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .metric, .access, section, .error { background:var(--color-background-secondary); border-radius:8px; padding:16px; } .metric strong { display:block; font-size:1.8rem; } .metric span { color:var(--color-text-secondary); } .access { margin:16px 0; color:var(--color-success); display:flex; gap:10px; align-items:center; } .error { color:var(--color-error); } .quick-links { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px; } section { margin-top:16px; } section h2 { margin-top:0; } .port-row, .activity, .backup { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--color-background); } .port-row:last-child, .activity:last-child, .backup:last-child { border-bottom:0; } .port-row small, .backup small { display:block; } .usage { flex:1; height:8px; overflow:hidden; background:var(--color-background); border-radius:99px; } .usage span { display:block; height:100%; background:var(--color-primary); } .activity small, .backup > small { margin-left:auto; } .backup { color:inherit; text-decoration:none; } .backup:hover { color:var(--color-primary); } .empty { color:var(--color-text-secondary); } @media (max-width:640px) { .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .heading { align-items:flex-start; flex-direction:column; } .activity small, .backup > small { display:none; } }
 </style>
