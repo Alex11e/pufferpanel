@@ -36,6 +36,17 @@ const currentStep = ref(1)
 const featuresFetched = ref(null)
 const features = ref({})
 
+function portValue(value) {
+  const port = Number(value)
+  return Number.isInteger(port) && port >= 1 && port <= 65535 ? port : null
+}
+
+function validRange() {
+  const start = portValue(portRangeStart.value)
+  const end = portValue(portRangeEnd.value)
+  return start !== null && end !== null && start <= end
+}
+
 onMounted(async () => {
   const node = await api.node.get(route.params.id)
   name.value = node.name
@@ -76,11 +87,12 @@ async function fetchFeatures() {
 function canSubmit() {
   if (!name.value) return false
   if (!publicHost.value) return false
-  if (!publicPort.value) return false
-  if (!sftpPort.value) return false
+  if (portValue(publicPort.value) === null) return false
+  if (portValue(sftpPort.value) === null) return false
+  if (!validRange()) return false
   if (withPrivateHost.value) {
     if (!privateHost.value) return false
-    if (!privatePort.value) return false
+    if (portValue(privatePort.value) === null) return false
   }
   return true
 }
@@ -90,18 +102,18 @@ async function submit() {
   const node = {
     name: name.value,
     publicHost: publicHost.value,
-    publicPort: publicPort.value,
-    sftpPort: sftpPort.value,
-    portRangeStart: portRangeStart.value,
-    portRangeEnd: portRangeEnd.value,
+    publicPort: portValue(publicPort.value),
+    sftpPort: portValue(sftpPort.value),
+    portRangeStart: portValue(portRangeStart.value),
+    portRangeEnd: portValue(portRangeEnd.value),
     firewallEnabled: firewallEnabled.value, subdomainBase: subdomainBase.value
   }
   if (withPrivateHost.value) {
     node.privateHost = privateHost.value
-    node.privatePort = privatePort.value
+    node.privatePort = portValue(privatePort.value)
   } else {
     node.privateHost = publicHost.value
-    node.privatePort = publicPort.value
+    node.privatePort = portValue(publicPort.value)
   }
   await api.node.update(route.params.id, node)
   toast.success(t('nodes.Updated'))
