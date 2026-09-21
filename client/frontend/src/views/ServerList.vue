@@ -8,6 +8,7 @@ import Btn from '@/components/ui/Btn.vue'
 import TextField from '@/components/ui/TextField.vue'
 
 const api = inject('api')
+const toast = inject('toast')
 const { t } = useI18n()
 
 const servers = ref([])
@@ -19,6 +20,7 @@ const firstEntry = ref(null)
 const search = ref('')
 const selectedTag = ref('')
 const selectedFolder = ref('')
+const selectedStatus = ref('')
 const favorites = ref(JSON.parse(localStorage.getItem('favoriteServers') || '[]'))
 const recentActivity = ref([])
 const folders = ref([])
@@ -29,7 +31,7 @@ const tags = computed(() => [...new Set(servers.value.flatMap(server => (server.
 const summary = computed(() => ({ total: servers.value.length, online: servers.value.filter(server => server.online === 'online').length, offline: servers.value.filter(server => server.online === 'offline').length, favorites: favorites.value.length }))
 const visibleServers = computed(() => servers.value.filter(server => {
   const text = `${server.name} ${server.type} ${server.tags || ''} ${server.node?.name || ''}`.toLowerCase()
-  return (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id))
+  return (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
 }).sort((a, b) => Number(favorites.value.includes(b.id)) - Number(favorites.value.includes(a.id)) || a.name.localeCompare(b.name)))
 
 function addServers(newServers) {
@@ -135,6 +137,13 @@ function toggleFavorite(id) {
 }
 
 function activityLabel(action) { return t(`servers.activity.${action}`) }
+
+async function copyAddress(server) {
+  try {
+    await navigator.clipboard.writeText(getServerAddress(server))
+    toast.success('A csatlakozási cím a vágólapra került.')
+  } catch { toast.error('A csatlakozási cím másolása nem sikerült.') }
+}
 </script>
 
 <template>
@@ -146,6 +155,7 @@ function activityLabel(action) { return t(`servers.activity.${action}`) }
       <div class="metric offline"><span>{{ summary.offline }}</span>{{ t('common.Offline') }}</div>
       <div class="metric"><span>{{ summary.favorites }}</span>{{ t('servers.Favorites') }}</div>
     </div>
+    <div class="status-filter"><btn :color="selectedStatus === '' ? 'primary' : undefined" @click="selectedStatus = ''">Minden állapot</btn><btn :color="selectedStatus === 'online' ? 'primary' : undefined" @click="selectedStatus = 'online'">Online</btn><btn :color="selectedStatus === 'offline' ? 'primary' : undefined" @click="selectedStatus = 'offline'">Offline</btn></div>
     <text-field v-model="search" :label="t('servers.SearchServers')" icon="search" />
     <div class="folder-tools">
       <select v-model="selectedFolder" aria-label="Szervermappa szűrése"><option value="">Minden szervermappa</option><option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">{{ folder.name }}</option></select>
@@ -160,6 +170,7 @@ function activityLabel(action) { return t(`servers.activity.${action}`) }
       <div v-for="server in visibleServers" :key="server.id" :class="['list-item', 'server-wrapper', `server-wrapper-${(server.icon || 'none')}`]">
         <btn class="favorite" variant="icon" :tooltip="t('servers.ToggleFavorite')" @click="toggleFavorite(server.id)"><icon :name="favorites.includes(server.id) ? 'star' : 'star-outline'" /></btn>
         <div class="folder-picker" @click.stop><select :value="folderForServer(server.id)" aria-label="Szerver mappája" @change="setServerFolder(server.id, $event)"><option value="">Nincs mappa</option><option v-for="folder in folders" :key="folder.id" :value="folder.id">{{ folder.name }}</option></select></div>
+        <btn class="copy-address" variant="icon" tooltip="Csatlakozási cím másolása" @click="copyAddress(server)"><icon name="content-copy" /></btn>
         <router-link :ref="setFirstEntry" :to="{ name: 'ServerView', params: { id: server.id } }">
           <div
             :class="['server', `server-${(server.icon || 'none')}`]"
@@ -197,12 +208,13 @@ function activityLabel(action) { return t(`servers.activity.${action}`) }
 .metric span { display: block; font-size: 1.6rem; font-weight: 700; color: var(--color-text); }
 .metric.online span { color: var(--color-success); }
 .metric.offline span { color: var(--color-error); }
-.tag-filter, .folder-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
+.tag-filter, .folder-tools, .status-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
 .folder-tools input, .folder-tools select, .folder-picker select { background:var(--color-background-secondary); color:var(--color-text); border:1px solid var(--color-background-secondary); border-radius:5px; padding:8px; }
 .server-wrapper { position: relative; }
 .favorite { position: absolute; top: 8px; right: 8px; z-index: 2; }
 .folder-picker { position:absolute; right:46px; top:9px; z-index:2; max-width:140px; }
 .folder-picker select { max-width:140px; padding:4px; font-size:.8rem; }
+.copy-address { position:absolute; right:8px; bottom:8px; z-index:2; }
 .recent-activity { margin-top: 28px; }
 .activity-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--color-background-secondary); }
 .activity-row small { margin-left: auto; color: var(--color-text-secondary); }

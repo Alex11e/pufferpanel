@@ -11,6 +11,7 @@ type Announcement struct {
 	Message   string     `json:"message" gorm:"not null;size:4000"`
 	Level     string     `json:"level" gorm:"not null;size:20;default:info"`
 	Active    bool       `json:"active" gorm:"not null;default:true"`
+	StartsAt  *time.Time `json:"startsAt,omitempty"`
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

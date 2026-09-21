@@ -26,7 +26,8 @@ func registerAnnouncements(g *gin.RouterGroup) {
 
 func getAnnouncements(c *gin.Context) {
 	var announcements []models.Announcement
-	if err := middleware.GetDatabase(c).Where("active = ? AND (expires_at IS NULL OR expires_at > ?)", true, time.Now()).Order("created_at DESC").Limit(10).Find(&announcements).Error; err != nil {
+	now := time.Now()
+	if err := middleware.GetDatabase(c).Where("active = ? AND (starts_at IS NULL OR starts_at <= ?) AND (expires_at IS NULL OR expires_at > ?)", true, now, now).Order("created_at DESC").Limit(10).Find(&announcements).Error; err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -58,6 +59,10 @@ func createAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid announcement"})
 		return
 	}
+	if announcement.StartsAt != nil && announcement.ExpiresAt != nil && !announcement.ExpiresAt.After(*announcement.StartsAt) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "expiration must be after start"})
+		return
+	}
 	if err := middleware.GetDatabase(c).Create(&announcement).Error; err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -76,7 +81,11 @@ func updateAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid announcement"})
 		return
 	}
-	announcement.Title, announcement.Message, announcement.Level, announcement.Active, announcement.ExpiresAt = input.Title, input.Message, input.Level, input.Active, input.ExpiresAt
+	announcement.Title, announcement.Message, announcement.Level, announcement.Active, announcement.StartsAt, announcement.ExpiresAt = input.Title, input.Message, input.Level, input.Active, input.StartsAt, input.ExpiresAt
+	if announcement.StartsAt != nil && announcement.ExpiresAt != nil && !announcement.ExpiresAt.After(*announcement.StartsAt) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "expiration must be after start"})
+		return
+	}
 	if !normalizeAnnouncement(&announcement) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid announcement"})
 		return

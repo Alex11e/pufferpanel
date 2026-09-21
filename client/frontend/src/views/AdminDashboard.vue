@@ -14,7 +14,7 @@ const backups = ref([])
 const loading = ref(true)
 const error = ref('')
 const announcements = ref([])
-const announcement = ref({ title: '', message: '', level: 'info', active: true })
+const announcement = ref({ title: '', message: '', level: 'info', active: true, startsAt: '', expiresAt: '' })
 const adminServers = ref([])
 const selectedServers = ref([])
 const actionRunning = ref(false)
@@ -50,8 +50,11 @@ async function saveAnnouncement() {
   if (!announcement.value.title.trim() || !announcement.value.message.trim()) return
   announcementSaving.value = true
   try {
-    await api.post('/api/announcements/admin', announcement.value)
-    announcement.value = { title: '', message: '', level: 'info', active: true }
+    const startsAt = announcement.value.startsAt ? new Date(announcement.value.startsAt).toISOString() : null
+    const expiresAt = announcement.value.expiresAt ? new Date(announcement.value.expiresAt).toISOString() : null
+    if (startsAt && expiresAt && new Date(expiresAt) <= new Date(startsAt)) { error.value = 'A lejáratnak a kezdés után kell lennie.'; return }
+    await api.post('/api/announcements/admin', { ...announcement.value, startsAt, expiresAt })
+    announcement.value = { title: '', message: '', level: 'info', active: true, startsAt: '', expiresAt: '' }
     await load()
   } finally { announcementSaving.value = false }
 }
@@ -124,11 +127,13 @@ onMounted(load)
           <input v-model="announcement.title" maxlength="140" placeholder="Cím" aria-label="Közlemény címe">
           <select v-model="announcement.level" aria-label="Közlemény típusa"><option value="info">Információ</option><option value="warning">Figyelmeztetés</option><option value="maintenance">Karbantartás</option></select>
           <textarea v-model="announcement.message" maxlength="4000" placeholder="Közlemény szövege" aria-label="Közlemény szövege" />
+          <label>Megjelenés <input v-model="announcement.startsAt" type="datetime-local"></label>
+          <label>Lejárat <input v-model="announcement.expiresAt" type="datetime-local"></label>
           <label><input v-model="announcement.active" type="checkbox"> Aktív</label>
           <btn color="primary" :disabled="announcementSaving || !announcement.title.trim() || !announcement.message.trim()" @click="saveAnnouncement">Közzététel</btn>
         </div>
         <div v-if="announcements.length === 0" class="empty">Nincs létrehozott közlemény.</div>
-        <div v-for="item in announcements" v-else :key="item.id" class="announcement-row"><span><strong>{{ item.title }}</strong><small>{{ item.level }} · {{ item.active ? 'aktív' : 'inaktív' }}</small></span><btn variant="icon" tooltip="Törlés" @click="deleteAnnouncement(item)"><icon name="remove" /></btn></div>
+        <div v-for="item in announcements" v-else :key="item.id" class="announcement-row"><span><strong>{{ item.title }}</strong><small>{{ item.level }} · {{ item.active ? 'aktív' : 'inaktív' }}<template v-if="item.startsAt"> · kezdés: {{ new Date(item.startsAt).toLocaleString() }}</template><template v-if="item.expiresAt"> · lejárat: {{ new Date(item.expiresAt).toLocaleString() }}</template></small></span><btn variant="icon" tooltip="Törlés" @click="deleteAnnouncement(item)"><icon name="remove" /></btn></div>
       </section>
       <section>
         <h2>Tömeges szerverműveletek</h2>
