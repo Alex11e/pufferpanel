@@ -24,6 +24,28 @@ const expiring = ref([])
 const expiryServer = ref('')
 const expiryDate = ref('')
 const backupLimit = ref(0)
+const update = ref(null)
+const updateChecking = ref(false)
+const updateFailed = ref(false)
+
+async function checkUpdate(refresh = false) {
+  updateChecking.value = true
+  updateFailed.value = false
+  try {
+    const res = await api.get('/api/admin/update', refresh ? { refresh: true } : {}, {}, { unhandledErrors: [502] })
+    if (res) update.value = res.data
+    else updateFailed.value = true
+  } finally { updateChecking.value = false }
+}
+
+function applyUpdate() {
+  events.emit('confirm', `Frissítés indítása: ${update.value.current} → ${update.value.latest}. A panel a művelet során újraindulhat. Folytatod?`, {
+    text: 'Frissítés', icon: 'apply', color: 'primary', action: async () => {
+      await api.post('/api/admin/update/apply')
+      await checkUpdate()
+    }
+  })
+}
 
 async function loadLimits() {
   backupLimit.value = 0
@@ -85,6 +107,7 @@ async function load() {
     announcements.value = announcementResponse.data || []
     adminServers.value = serversResponse.servers || []
     await loadExpiring()
+    checkUpdate()
   } catch {
     error.value = 'Az admin adatok betöltése nem sikerült. Próbáld meg újra.'
   } finally {
@@ -161,12 +184,33 @@ onMounted(load)
         <div class="metric"><strong>{{ overview.newUsers7Days }}</strong><span>Új felhasználó (7 nap)</span></div>
       </div>
       <section class="access"><icon name="success" /> Az admin szerepkör minden szerverhez és annak konzoljához, fájljaihoz, mentéseihez és beállításaihoz hozzáfér.</section>
+      <section class="update-card" :class="{ available: update && update.updateAvailable }">
+        <div class="update-head">
+          <h2>Panel frissítések</h2>
+          <btn :disabled="updateChecking" @click="checkUpdate(true)"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
+        </div>
+        <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
+        <div v-else-if="!update" class="empty">Ellenőrzés...</div>
+        <template v-else>
+          <p>Telepített verzió: <strong>{{ update.current }}</strong> · Legújabb: <strong>{{ update.latest }}</strong></p>
+          <p v-if="update.updateAvailable" class="update-new">Új verzió érhető el.</p>
+          <p v-else class="empty">A panel naprakész (vagy a verzió nem összehasonlítható).</p>
+          <pre v-if="update.updateAvailable && update.notes" class="update-notes">{{ update.notes }}</pre>
+          <div v-if="update.updateAvailable" class="quick-links">
+            <a v-if="update.url" :href="update.url" target="_blank" rel="noopener noreferrer"><btn>Változások</btn></a>
+            <btn v-if="update.canApply" color="primary" :disabled="update.running" @click="applyUpdate"><icon :name="update.running ? 'loading' : 'download'" :spin="update.running" /> {{ update.running ? 'Frissítés folyamatban' : 'Frissítés indítása' }}</btn>
+            <small v-else>Az egykattintásos frissítéshez állítsd be a <code>panel.update.command</code> értéket a config fájlban.</small>
+          </div>
+          <small v-if="update.lastResult">Utolsó frissítés: {{ update.lastResult }}</small>
+        </template>
+      </section>
       <div class="quick-links">
         <router-link to="/servers"><btn color="primary"><icon name="server" /> Összes szerver kezelése</btn></router-link>
         <router-link to="/users"><btn><icon name="users" /> Felhasználók kezelése</btn></router-link>
         <router-link to="/nodes"><btn><icon name="node" /> Node-ok és portok</btn></router-link>
         <router-link to="/templates"><btn><icon name="template" /> Sablonok és eggek</btn></router-link>
         <a href="/api/admin/activity/export"><btn><icon name="download" /> Műveleti napló CSV</btn></a>
+        <a href="/api/admin/servers/export"><btn><icon name="download" /> Szerverlista CSV</btn></a>
       </div>
       <section>
         <h2>Panel-közlemények</h2>
@@ -228,4 +272,18 @@ onMounted(load)
 
 <style scoped lang="scss">
 .heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; } .heading h1 { display:flex; align-items:center; gap:10px; margin-bottom:4px; } .heading p, small, .hint { color:var(--color-text-secondary); } .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .metric, .access, section, .error { background:var(--color-background-secondary); border-radius:8px; padding:16px; } .metric strong { display:block; font-size:1.8rem; } .metric span { color:var(--color-text-secondary); } .access { margin:16px 0; color:var(--color-success); display:flex; gap:10px; align-items:center; } .error { color:var(--color-error); } .quick-links, .bulk-actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; } section { margin-top:16px; } section h2 { margin-top:0; } .port-row, .activity, .backup, .announcement-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--color-background); } .port-row:last-child, .activity:last-child, .backup:last-child, .announcement-row:last-child { border-bottom:0; } .port-row small, .backup small, .announcement-row small { display:block; } .usage { flex:1; height:8px; overflow:hidden; background:var(--color-background); border-radius:99px; } .usage span { display:block; height:100%; background:var(--color-primary); } .activity small, .backup > small, .announcement-row > :last-child { margin-left:auto; } .backup { color:inherit; text-decoration:none; } .backup:hover { color:var(--color-primary); } .empty { color:var(--color-text-secondary); } .announcement-form { display:grid; grid-template-columns:1fr auto; gap:9px; margin:12px 0; } .announcement-form input, .announcement-form textarea, .announcement-form select { padding:9px; border:1px solid var(--color-background); border-radius:5px; background:var(--color-background); color:var(--color-text); } .announcement-form textarea { grid-column:1 / -1; min-height:70px; resize:vertical; } .announcement-form label { display:flex; align-items:center; gap:6px; } .server-select { max-height:250px; overflow:auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; } .server-select label { padding:7px; border-radius:5px; background:var(--color-background); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } @media (max-width:640px) { .metrics, .server-select { grid-template-columns:repeat(2,minmax(0,1fr)); } .heading { align-items:flex-start; flex-direction:column; } .activity small, .backup > small { display:none; } .announcement-form { grid-template-columns:1fr; } }
+</style>
+
+<style scoped lang="scss">
+.admin-dashboard { max-width: 1200px; margin: 0 auto; }
+.metrics { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.metric { border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(0, 0, 0, .18); transition: transform .15s ease, box-shadow .15s ease; }
+.metric:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, .22); }
+.metric strong { color: var(--color-primary); }
+section { border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.update-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.update-card.available { border-color: var(--color-primary); }
+.update-new { color: var(--color-primary); font-weight: 600; }
+.update-notes { max-height: 180px; overflow: auto; white-space: pre-wrap; padding: 10px; border-radius: 6px; background: var(--color-background); font-size: .85rem; }
+@media (max-width: 700px) { .heading { flex-direction: column; align-items: flex-start; } .announcement-form { grid-template-columns: 1fr; } }
 </style>

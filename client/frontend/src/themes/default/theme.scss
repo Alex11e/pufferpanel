@@ -80,6 +80,18 @@ body {
   overflow-y: scroll;
 }
 
+// Aliases used by newer views (admin, dashboard, tickets, announcements); they follow the active theme mode.
+#root {
+  --color-primary: var(--primary);
+  --color-background: var(--backdrop);
+  --color-background-secondary: var(--background);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-disabled);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+}
+
 #root {
   min-height: 100vh;
   background: var(--backdrop);

@@ -38,6 +38,10 @@ var MasterUrl = asString("panel.settings.masterUrl", "http://localhost:8080")
 var SessionKey = asString("panel.sessionKey", "")
 var RegistrationEnabled = asBool("panel.registrationEnabled", true)
 var PrivateKey = asString("panel.token", "")
+var UpdateRepo = asString("panel.update.repo", "pufferpanel/pufferpanel")
+
+// UpdateCommand is set only by the host owner in the config file; the web UI can run it but never change it.
+var UpdateCommand = asString("panel.update.command", "")
 
 var DaemonEnabled = asBool("daemon.enable", true)
 var ConsoleBuffer = asInt("daemon.console.buffer", 50)

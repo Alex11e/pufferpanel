@@ -159,14 +159,18 @@ export class ServerApi {
     return `/api/servers/${id}/file/${path}`
   }
 
-  async getFile(id, path = '', raw = false) {
+  async getFile(id, path = '', raw = false, allowMissing = false) {
     if (path.indexOf('/') === 0) path = path.substring(1)
+    const options = raw ? { responseType: 'arraybuffer' } : {}
+    // A 404 is returned instead of raising the global error dialog.
+    if (allowMissing) options.unhandledErrors = [404]
     const res = await this._api.get(
       this.getFileUrl(id, path),
       undefined,
       undefined,
-      raw ? { responseType: 'arraybuffer' } : undefined
+      options
     )
+    if (!res) return null
 
     if (raw) {
       return new TextDecoder('utf-8').decode(new Uint8Array(res.data))
@@ -557,8 +561,8 @@ class Server {
     return this._api.server.getFileUrl(this.id, path)
   }
 
-  async getFile(path = '', raw = false) {
-    return await this._api.server.getFile(this.id, path, raw)
+  async getFile(path = '', raw = false, allowMissing = false) {
+    return await this._api.server.getFile(this.id, path, raw, allowMissing)
   }
 
   async fileExists(path) {

@@ -53,6 +53,8 @@ func registerAdmin(g *gin.RouterGroup) {
 	g.GET("/backups", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminBackups)
 	g.POST("/servers/action", middleware.RequiresPermission(scopes.ScopeAdmin), runBulkServerAction)
 	g.GET("/activity/export", middleware.RequiresPermission(scopes.ScopeAdmin), exportAdminActivity)
+	g.GET("/servers/export", middleware.RequiresPermission(scopes.ScopeAdmin), exportAdminServers)
+	g.OPTIONS("/servers/export", response.CreateOptions("GET"))
 	g.GET("/expiring", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminExpiring)
 	g.PUT("/servers/:id/expiry", middleware.RequiresPermission(scopes.ScopeAdmin), setServerExpiry)
 	g.OPTIONS("/expiring", response.CreateOptions("GET"))
@@ -81,7 +83,39 @@ func exportAdminActivity(c *gin.Context) {
 	writer := csv.NewWriter(c.Writer)
 	_ = writer.Write([]string{"id", "time_utc", "username", "action", "server_id", "details", "ip_address"})
 	for _, record := range records {
-		_ = writer.Write([]string{fmt.Sprint(record.ID), record.CreatedAt.UTC().Format(time.RFC3339), record.Username, record.Action, record.ServerIdentifier, record.Details, record.IPAddress})
+		_ = writer.Write([]string{fmt.Sprint(record.ID), record.CreatedAt.UTC().Format(time.RFC3339), csvSafe(record.Username), csvSafe(record.Action), csvSafe(record.ServerIdentifier), csvSafe(record.Details), csvSafe(record.IPAddress)})
+	}
+	writer.Flush()
+}
+
+// csvSafe prefixes cells a spreadsheet would treat as formulas.
+func csvSafe(value string) string {
+	if value != "" && strings.ContainsRune("=+-@\t\r", rune(value[0])) {
+		return "'" + value
+	}
+	return value
+}
+
+func exportAdminServers(c *gin.Context) {
+	var servers []models.Server
+	if err := middleware.GetDatabase(c).Order("name ASC").Limit(10000).Find(&servers).Error; err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	c.Header("Content-Type", "text/csv; charset=utf-8")
+	c.Header("Content-Disposition", "attachment; filename=pufferpanel-servers.csv")
+	writer := csv.NewWriter(c.Writer)
+	_ = writer.Write([]string{"id", "name", "type", "node_id", "expires_at_utc", "backup_limit", "created_at_utc"})
+	for _, s := range servers {
+		expires := ""
+		if s.ExpiresAt != nil {
+			expires = s.ExpiresAt.UTC().Format(time.RFC3339)
+		}
+		nodeID := uint(0)
+		if s.RawNodeID != nil {
+			nodeID = *s.RawNodeID
+		}
+		_ = writer.Write([]string{s.Identifier, csvSafe(s.Name), s.Type, fmt.Sprint(nodeID), expires, fmt.Sprint(s.BackupLimit), s.CreatedAt.UTC().Format(time.RFC3339)})
 	}
 	writer.Flush()
 }

@@ -26,8 +26,8 @@ onMounted(refresh)
 
 async function refresh() {
   try {
-    const files = await props.server.getFile('plugins')
-    plugins.value = files.filter(file => file.isFile && file.name.toLowerCase().endsWith('.jar')).sort((a, b) => a.name.localeCompare(b.name))
+    const files = await props.server.getFile('plugins', false, true)
+    plugins.value = (files || []).filter(file => file.isFile && file.name.toLowerCase().endsWith('.jar')).sort((a, b) => a.name.localeCompare(b.name))
   } catch (error) {
     plugins.value = []
   }
