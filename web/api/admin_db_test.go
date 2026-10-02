@@ -61,10 +61,12 @@ func TestSetServerExpiryAndLimits(t *testing.T) {
 	if w := doJSON(r, http.MethodPut, "/servers/srv1/expiry", `{"expiresAt":null}`); w.Code != http.StatusNoContent {
 		t.Fatalf("clear expiry: status %d", w.Code)
 	}
-	if err := db.Where("identifier = ?", "srv1").First(&server).Error; err != nil {
+	// Re-reading into the same struct keeps stale pointer values, so ask the database directly.
+	var stillSet int64
+	if err := db.Model(&models.Server{}).Where("identifier = ? AND expires_at IS NOT NULL", "srv1").Count(&stillSet).Error; err != nil {
 		t.Fatal(err)
 	}
-	if server.ExpiresAt != nil {
+	if stillSet != 0 {
 		t.Fatal("expiry was not cleared")
 	}
 }
