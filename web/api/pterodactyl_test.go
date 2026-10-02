@@ -37,6 +37,35 @@ func TestPterodactylEggConversionPreservesVariableRequirements(t *testing.T) {
 	}
 }
 
+func TestPterodactylEggConversionOptionsAndPelican(t *testing.T) {
+	raw := json.RawMessage(`{
+		"meta":{"version":"PLCN_v1"},
+		"name":"Pelican",
+		"startup_commands":{"Zeta":"z","Default":"run {{PORT}} {{TYPE}}"},
+		"variables":[
+			{"name":"Type","env_variable":"TYPE","default_value":"paper","rules":"required|in:Vanilla,Paper,Spigot"},
+			{"name":"Port","env_variable":"PORT","default_value":"25565","rules":"required|integer"}
+		]
+	}`)
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if template.Execution.Command != "run ${port} ${type}" {
+		t.Fatalf("unexpected command: %q", template.Execution.Command)
+	}
+	v := template.Variables["type"]
+	if v.Type.Type != "option" || len(v.Options) != 3 || v.Value != "Paper" {
+		t.Fatalf("unexpected option variable: %+v", v)
+	}
+}
+
+func TestPterodactylEggRejectsOtherFormats(t *testing.T) {
+	if _, err := pterodactylEggToTemplate(json.RawMessage(`{"meta":{"version":"OTHER_v1"},"startup":"x"}`)); err == nil {
+		t.Fatal("expected an unsupported format error")
+	}
+}
+
 func TestPterodactylEggConversionInstallScript(t *testing.T) {
 	raw := json.RawMessage(`{"name":"S","startup":"run","scripts":{"installation":{"script":"cd /mnt/server\necho hi"}}}`)
 	template, err := pterodactylEggToTemplate(raw)

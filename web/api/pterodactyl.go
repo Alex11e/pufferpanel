@@ -19,7 +19,26 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 	if err := json.Unmarshal(raw, &egg); err != nil {
 		return nil, err
 	}
+	// Pterodactyl exports are PTDL_vN, Pelican exports PLCN_vN.
+	if meta, ok := egg["meta"].(map[string]interface{}); ok {
+		if version := cast.ToString(meta["version"]); version != "" && !strings.HasPrefix(version, "PTDL_") && !strings.HasPrefix(version, "PLCN_") {
+			return nil, fmt.Errorf("unsupported egg format %q", version)
+		}
+	}
 	startup := cast.ToString(egg["startup"])
+	if startup == "" {
+		// Pelican-style eggs list named startup commands instead.
+		if commands, ok := egg["startup_commands"].(map[string]interface{}); ok {
+			keys := make([]string, 0, len(commands))
+			for key := range commands {
+				keys = append(keys, key)
+			}
+			sort.Strings(keys)
+			if len(keys) > 0 {
+				startup = cast.ToString(commands[keys[0]])
+			}
+		}
+	}
 	if startup == "" {
 		return nil, fmt.Errorf("the egg does not contain a startup command")
 	}
@@ -93,10 +112,18 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 			// Pterodactyl rules are a pipe-delimited string, for example
 			// "required|string" or "nullable|string". Only an explicit required
 			// rule should make the corresponding panel field mandatory.
-			rules := strings.ToLower(cast.ToString(v["rules"]))
+			rules := cast.ToString(v["rules"])
 			required := false
+			var options []pufferpanel.VariableOption
 			for _, rule := range strings.Split(rules, "|") {
-				switch strings.TrimSpace(rule) {
+				rule = strings.TrimSpace(rule)
+				if strings.HasPrefix(strings.ToLower(rule), "in:") && len(rule) > 3 {
+					for _, choice := range strings.Split(rule[3:], ",") {
+						options = append(options, pufferpanel.VariableOption{Value: choice, Display: choice})
+					}
+					continue
+				}
+				switch strings.ToLower(rule) {
 				case "required":
 					required = true
 				case "boolean":
@@ -113,7 +140,18 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 			if val, present := v["user_editable"]; present {
 				userEditable = cast.ToBool(val)
 			}
-			result.Variables[key] = pufferpanel.Variable{Type: pufferpanel.Type{Type: variableType}, Value: defaultValue, Display: cast.ToString(v["name"]), Description: cast.ToString(v["description"]), Required: required, UserEditable: userEditable}
+			variable := pufferpanel.Variable{Type: pufferpanel.Type{Type: variableType}, Value: defaultValue, Display: cast.ToString(v["name"]), Description: cast.ToString(v["description"]), Required: required, UserEditable: userEditable}
+			if len(options) > 0 {
+				// Keep the default when it matches a choice case-insensitively.
+				variable.Type = pufferpanel.Type{Type: "option"}
+				variable.Options = options
+				for _, option := range options {
+					if strings.EqualFold(option.Value.(string), cast.ToString(defaultValue)) {
+						variable.Value = option.Value
+					}
+				}
+			}
+			result.Variables[key] = variable
 			result.Execution.EnvironmentVariables[env] = "${" + key + "}"
 		}
 	}
@@ -170,9 +208,9 @@ func pterodactylVariableKey(name string) string {
 		name = name[i+1:]
 	}
 	switch strings.ToUpper(name) {
-	case "SERVER_PORT", "PORT":
+	case "SERVER_PORT":
 		return "port"
-	case "SERVER_IP", "IP":
+	case "SERVER_IP":
 		return "ip"
 	default:
 		return strings.ToLower(name)

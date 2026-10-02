@@ -86,6 +86,10 @@ async function importEgg() {
     return
   }
   const template = await api.template.importPterodactyl(egg)
+  if (!template) {
+    toast.error(t('templates.EggInvalid'))
+    return
+  }
   sessionStorage.setItem('copiedTemplate', JSON.stringify(template, undefined, 4))
   router.push({ name: 'TemplateCreate', query: { copy: true } })
 }

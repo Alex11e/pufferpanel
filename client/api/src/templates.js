@@ -74,7 +74,8 @@ export class TemplateApi {
   }
 
   async importPterodactyl(egg) {
-    const res = await this._api.post('/api/templates/import/pterodactyl', egg)
-    return res.data
+    // A 400 means the egg itself is unusable; let the caller show a message instead of the global dialog.
+    const res = await this._api.post('/api/templates/import/pterodactyl', egg, {}, {}, { unhandledErrors: [400] })
+    return res ? res.data : null
   }
 }
