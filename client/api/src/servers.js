@@ -13,10 +13,11 @@ export class ServerApi {
     return id
   }
 
-  async list(page = 1, pageSize, name) {
+  async list(page = 1, pageSize, name, type) {
     const query = { page }
     if (pageSize) query.limit = pageSize
     if (name) query.name = `*${name}*`
+    if (type) query.type = type
     const res = await this._api.get('/api/servers', query)
     return res.data
   }

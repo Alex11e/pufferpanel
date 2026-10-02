@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/buildkite/shellwords"
 	"github.com/pufferpanel/pufferpanel/v3"
 	"github.com/spf13/cast"
 )
@@ -72,10 +73,23 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 	if stop == "" {
 		stop = pterodactylStop(egg["config"])
 	}
+	stopCode := 0
+	if strings.HasPrefix(stop, "^") {
+		// Pterodactyl uses ^C / ^SIGTERM to mean a signal rather than a console command.
+		stopCode = pterodactylSignal(stop)
+		if stopCode != 0 {
+			stop = ""
+		}
+	}
+	command := pterodactylTokens(startup)
+	if pterodactylNeedsShell(startup) {
+		// Panel commands are split into arguments without a shell, but eggs rely on one.
+		command = "bash -c " + shellwords.QuotePosix(pterodactylShellTokens(startup))
+	}
 	result := &pufferpanel.Server{
 		Type: pufferpanel.Type{Type: "generic"}, Identifier: name, Display: cast.ToString(egg["name"]),
 		Variables:             map[string]pufferpanel.Variable{},
-		Execution:             pufferpanel.Execution{Command: pterodactylTokens(startup), StopCommand: stop, WorkingDirectory: ".", EnvironmentVariables: map[string]string{}},
+		Execution:             pufferpanel.Execution{Command: command, StopCommand: stop, StopCode: stopCode, WorkingDirectory: ".", EnvironmentVariables: map[string]string{"SERVER_IP": "${ip}", "SERVER_PORT": "${port}"}},
 		Environment:           pufferpanel.MetadataType{Type: "docker"},
 		SupportedEnvironments: []pufferpanel.MetadataType{{Type: "docker"}},
 	}
@@ -89,6 +103,7 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 	// Preserve the selected Docker image in the Puffer docker environment.
 	if image != "" {
 		result.Environment = pufferpanel.MetadataType{Type: "docker", Metadata: map[string]interface{}{"image": image, "networkName": "host"}}
+		result.SupportedEnvironments = []pufferpanel.MetadataType{result.Environment}
 	}
 	if variables, ok := egg["variables"].([]interface{}); ok {
 		for _, rawVariable := range variables {
@@ -188,6 +203,35 @@ func pterodactylTokens(command string) string {
 		return "${" + pterodactylVariableKey(match[1]) + "}"
 	})
 }
+// pterodactylNeedsShell reports whether a startup line uses shell syntax that plain argument splitting would break.
+func pterodactylNeedsShell(startup string) bool {
+	return strings.ContainsAny(startup, "|;<>`") || strings.Contains(startup, "$(") || strings.Contains(startup, "&&")
+}
+
+// pterodactylShellTokens turns {{NAME}} into ${NAME:-}, read from the container environment at run time.
+func pterodactylShellTokens(command string) string {
+	return pterodactylToken.ReplaceAllStringFunc(command, func(token string) string {
+		name := pterodactylToken.FindStringSubmatch(token)[1]
+		if i := strings.LastIndex(name, "."); i >= 0 {
+			name = name[i+1:]
+			switch strings.ToLower(name) {
+			case "port":
+				name = "SERVER_PORT"
+			case "ip":
+				name = "SERVER_IP"
+			}
+		}
+		return "${" + name + ":-}"
+	})
+}
+
+var pterodactylSignals = map[string]int{"C": 2, "SIGINT": 2, "SIGTERM": 15, "SIGKILL": 9, "SIGHUP": 1, "SIGQUIT": 3}
+
+// pterodactylSignal maps values like ^C or ^^C or ^SIGTERM to a signal number, or 0 if unknown.
+func pterodactylSignal(stop string) int {
+	return pterodactylSignals[strings.ToUpper(strings.TrimLeft(stop, "^"))]
+}
+
 // pterodactylStop reads the legacy config.stop field, which is a JSON string.
 func pterodactylStop(config interface{}) string {
 	switch c := config.(type) {

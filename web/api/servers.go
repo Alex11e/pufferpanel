@@ -173,6 +173,7 @@ func searchServers(c *gin.Context) {
 	username := c.DefaultQuery("username", "")
 	nodeQuery := c.DefaultQuery("node", "0")
 	nameFilter := c.DefaultQuery("name", "*")
+	typeFilter := c.DefaultQuery("type", "")
 	pageSizeQuery := c.DefaultQuery("limit", strconv.Itoa(DefaultPageSize))
 	pageQuery := c.DefaultQuery("page", strconv.Itoa(1))
 
@@ -231,6 +232,7 @@ func searchServers(c *gin.Context) {
 		Username: username,
 		NodeId:   uint(node),
 		Name:     nameFilter,
+		Type:     typeFilter,
 		PageSize: uint(pageSize),
 		Page:     uint(page),
 	}

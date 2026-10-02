@@ -99,8 +99,8 @@ func TestPterodactylEggConversionLegacyFormat(t *testing.T) {
 	if template.Environment.Metadata["image"] != "ghcr.io/example/legacy:1" {
 		t.Fatalf("unexpected image: %v", template.Environment.Metadata["image"])
 	}
-	if template.Execution.StopCommand != "^C" {
-		t.Fatalf("unexpected stop: %q", template.Execution.StopCommand)
+	if template.Execution.StopCode != 2 || template.Execution.StopCommand != "" {
+		t.Fatalf("expected ^C to map to SIGINT, got %q / %d", template.Execution.StopCommand, template.Execution.StopCode)
 	}
 	if v := template.Variables["slots"]; v.Type.Type != "integer" || v.UserEditable {
 		t.Fatalf("unexpected slots variable: %+v", v)

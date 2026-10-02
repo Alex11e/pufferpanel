@@ -1,0 +1,65 @@
+package api
+
+import (
+	"encoding/json"
+	"strings"
+	"testing"
+
+	"github.com/buildkite/shellwords"
+)
+
+func TestPterodactylShellStartupIsWrapped(t *testing.T) {
+	raw := json.RawMessage(`{
+		"name":"VM",
+		"startup":"qemu -m {{RAM}} $( [ \"${USE_KVM}\" == \"1\" ] && echo --enable-kvm ) -net user,{{FORWARD_PORTS}} --port {{server.build.default.port}}",
+		"config":{"stop":"^^C"},
+		"docker_images":{"qemu":"ghcr.io/example/vm:main"},
+		"variables":[{"name":"RAM","env_variable":"RAM","default_value":"2048","rules":"required|integer"}]
+	}`)
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	command, _ := template.Execution.Command.(string)
+	parts, err := shellwords.Split(command)
+	if err != nil || len(parts) != 3 || parts[0] != "bash" || parts[1] != "-c" {
+		t.Fatalf("shell startup was not wrapped as bash -c <script>: %q (%v)", command, err)
+	}
+	script := parts[2]
+	if !strings.Contains(script, "${RAM:-}") || !strings.Contains(script, "${SERVER_PORT:-}") || !strings.Contains(script, "${USE_KVM}") {
+		t.Fatalf("tokens were not converted to environment lookups: %q", script)
+	}
+	if template.Execution.EnvironmentVariables["RAM"] != "${ram}" || template.Execution.EnvironmentVariables["SERVER_PORT"] != "${port}" {
+		t.Fatalf("environment not mapped: %v", template.Execution.EnvironmentVariables)
+	}
+	if template.Execution.StopCode != 2 {
+		t.Fatalf("expected SIGINT stop code, got %d", template.Execution.StopCode)
+	}
+	if template.SupportedEnvironments[0].Metadata["image"] != "ghcr.io/example/vm:main" {
+		t.Fatalf("image missing from supported environments: %+v", template.SupportedEnvironments)
+	}
+}
+
+func TestVpsTemplate(t *testing.T) {
+	template := vpsTemplate()
+	if template.Type.Type != vpsType {
+		t.Fatalf("unexpected type %q", template.Type.Type)
+	}
+	for _, v := range vpsVariables {
+		if _, ok := template.Variables[v.key]; !ok {
+			t.Errorf("variable %q missing", v.key)
+		}
+		if template.Execution.EnvironmentVariables[v.env] != "${"+v.key+"}" {
+			t.Errorf("environment %q not mapped", v.env)
+		}
+	}
+	if len(template.Installation) != 2 || len(template.Execution.PreExecution) != 1 {
+		t.Fatal("install and pre-start steps are required")
+	}
+	// A lowercase ${key} in a script would be replaced by the panel's own token substitution.
+	for key := range template.Variables {
+		if strings.Contains(vpsStartScript, "${"+key+"}") || strings.Contains(vpsInstallScript, "${"+key+"}") {
+			t.Errorf("script contains panel token ${%s}", key)
+		}
+	}
+}

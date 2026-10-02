@@ -17,6 +17,7 @@ type ServerSearch struct {
 	NodeId   uint
 	NodeName string
 	Name     string
+	Type     string
 	PageSize uint
 	Page     uint
 }
@@ -44,6 +45,10 @@ func (ss *Server) Search(searchCriteria ServerSearch) (records []*models.Server,
 
 	if nameFilter != "" && nameFilter != "%" {
 		query = query.Where("name LIKE ?", nameFilter)
+	}
+
+	if searchCriteria.Type != "" {
+		query = query.Where("servers.type = ?", searchCriteria.Type)
 	}
 
 	err = query.Model(&records).Count(&total).Error

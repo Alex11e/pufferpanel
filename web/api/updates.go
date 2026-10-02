@@ -46,10 +46,27 @@ var updateState struct {
 }
 
 func registerUpdates(g *gin.RouterGroup) {
+	g.GET("/system", middleware.RequiresPermission(scopes.ScopeAdmin), getSystemInfo)
+	g.OPTIONS("/system", response.CreateOptions("GET"))
 	g.GET("/update", middleware.RequiresPermission(scopes.ScopeAdmin), getUpdateInfo)
 	g.POST("/update/apply", middleware.RequiresPermission(scopes.ScopeAdmin), applyUpdate)
 	g.OPTIONS("/update", response.CreateOptions("GET"))
 	g.OPTIONS("/update/apply", response.CreateOptions("POST"))
+}
+
+var processStart = time.Now()
+
+// getSystemInfo exposes build and runtime facts only; no config values or secrets.
+func getSystemInfo(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"version":       pufferpanel.Version,
+		"hash":          pufferpanel.Hash,
+		"goVersion":     runtime.Version(),
+		"os":            runtime.GOOS,
+		"arch":          runtime.GOARCH,
+		"uptimeSeconds": int64(time.Since(processStart).Seconds()),
+		"database":      config.DatabaseDialect.Value(),
+	})
 }
 
 func getUpdateInfo(c *gin.Context) {

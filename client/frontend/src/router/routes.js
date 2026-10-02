@@ -46,6 +46,58 @@ export default (api) => [
     name: 'ServerCreate'
   },
   {
+    path: '/vps',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'VpsList',
+    meta: {
+      tkey: 'VPS',
+      permission: true,
+      icon: 'server',
+      hotkey: 'g v'
+    }
+  },
+  {
+    path: '/vps/new',
+    component: () => import('@/views/VpsCreate.vue'),
+    name: 'VpsCreate'
+  },
+  {
+    path: '/hosting/web',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'WebHostingList',
+    props: { type: 'webhosting', title: 'Webtárhely', hint: 'PHP + Apache tárhelyek saját fájlkezelővel és SFTP-vel.', createRoute: 'WebHostingCreate', empty: 'Még nincs webtárhely.' },
+    meta: {
+      tkey: 'Webtárhely',
+      permission: true,
+      icon: 'server',
+      hotkey: 'g w'
+    }
+  },
+  {
+    path: '/hosting/web/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'WebHostingCreate',
+    props: { kind: 'web' }
+  },
+  {
+    path: '/hosting/db',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'DbHostingList',
+    props: { type: 'dbhosting', title: 'Adatbázisok', hint: 'MariaDB és PostgreSQL adatbázis-szerverek.', createRoute: 'DbHostingCreate', empty: 'Még nincs adatbázis.' },
+    meta: {
+      tkey: 'Adatbázisok',
+      permission: true,
+      icon: 'server',
+      hotkey: 'g b'
+    }
+  },
+  {
+    path: '/hosting/db/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'DbHostingCreate',
+    props: { kind: 'db' }
+  },
+  {
     path: '/dashboard',
     component: () => import('@/views/Dashboard.vue'),
     name: 'Dashboard',

@@ -25,6 +25,18 @@ const expiryServer = ref('')
 const expiryDate = ref('')
 const backupLimit = ref(0)
 const update = ref(null)
+const system = ref(null)
+
+async function loadSystem() {
+  system.value = (await api.get('/api/admin/system')).data
+}
+
+function formatUptime(seconds) {
+  const d = Math.floor(seconds / 86400)
+  const h = Math.floor((seconds % 86400) / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  return d ? `${d} nap ${h} óra` : h ? `${h} óra ${m} perc` : `${m} perc`
+}
 const updateChecking = ref(false)
 const updateFailed = ref(false)
 
@@ -108,6 +120,7 @@ async function load() {
     adminServers.value = serversResponse.servers || []
     await loadExpiring()
     checkUpdate()
+    loadSystem()
   } catch {
     error.value = 'Az admin adatok betöltése nem sikerült. Próbáld meg újra.'
   } finally {
@@ -192,6 +205,7 @@ onMounted(load)
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
         <div v-else-if="!update" class="empty">Ellenőrzés...</div>
         <template v-else>
+          <p v-if="system" class="hint">{{ system.os }}/{{ system.arch }} · {{ system.goVersion }} · adatbázis: {{ system.database }} · fut: {{ formatUptime(system.uptimeSeconds) }}</p>
           <p>Telepített verzió: <strong>{{ update.current }}</strong> · Legújabb: <strong>{{ update.latest }}</strong></p>
           <p v-if="update.updateAvailable" class="update-new">Új verzió érhető el.</p>
           <p v-else class="empty">A panel naprakész (vagy a verzió nem összehasonlítható).</p>
