@@ -14,6 +14,7 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/scopes"
 	"github.com/pufferpanel/pufferpanel/v3/services"
+	"gorm.io/gorm"
 )
 
 // AdminOverview deliberately contains only operational totals. It is useful on
@@ -259,7 +260,12 @@ func setServerExpiry(c *gin.Context) {
 		return
 	}
 	// UpdateColumn skips model hooks, which would validate an empty struct.
-	res := middleware.GetDatabase(c).Model(&models.Server{}).Where("identifier = ?", c.Param("id")).UpdateColumn("expires_at", body.ExpiresAt)
+	// A nil *time.Time passed to UpdateColumn is skipped, so NULL has to be explicit.
+	var value interface{} = gorm.Expr("NULL")
+	if body.ExpiresAt != nil {
+		value = *body.ExpiresAt
+	}
+	res := middleware.GetDatabase(c).Model(&models.Server{}).Where("identifier = ?", c.Param("id")).UpdateColumn("expires_at", value)
 	if res.Error != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
