@@ -29,7 +29,7 @@ onMounted(async () => {
 async function loadTemplates() {
   templatesLoaded.value = false
   const templates = await api.template.listAllTemplates()
-  templatesByRepo.value = templates.sort((a, b) => a.id > b.id)
+  templatesByRepo.value = templates.sort((a, b) => a.id - b.id)
   templatesLoaded.value = true
 }
 

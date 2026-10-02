@@ -114,6 +114,13 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
 })
 
+function expiryStyle(date) {
+  const days = (new Date(date) - Date.now()) / 86400000
+  if (days < 0) return { color: 'var(--color-error)' }
+  if (days < 7) return { color: 'var(--color-warning, orange)' }
+  return {}
+}
+
 function getServerAddress(server) {
 	if (server.subdomain) return server.subdomain
   let ip = server.node.publicHost
@@ -179,6 +186,7 @@ async function copyAddress(server) {
             <span class="title" :title="server.name">{{server.name}}</span>
             <span class="type">{{server.type}}</span>
             <span class="subline">{{getServerAddress(server)}} @ {{server.node.name}}</span>
+            <span v-if="server.expiresAt" class="subline" :style="expiryStyle(server.expiresAt)">{{ new Date(server.expiresAt) < new Date() ? 'Lejárt' : 'Lejárat' }}: {{ new Date(server.expiresAt).toLocaleDateString() }}</span>
           </div>
         </router-link>
       </div>

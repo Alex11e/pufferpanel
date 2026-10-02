@@ -64,6 +64,8 @@
   "AdminOnlySetting": "Ez a beállítás csak az adminisztrátorok számára látható",
   "NoSettings": "Ezzen a szerveren nem beállításokat megváltoztatni",
   "Delete": "Szerver törlése",
+  "ForceDelete": "Szerver kényszerített törlése",
+  "ConfirmForceDelete": "Biztosan kényszerítetten törli a(z) {name} szervert? A szerver a node megkeresése nélkül törlődik a panelből, a fájljai a node-on maradnak. Csak akkor használja, ha a node végleg elérhetetlen.",
   "ConfirmDelete": "Biztosan törli ezt a szervert? (A művelet nem visszavonható)",
   "Deleting": "Szerver törlése, kérlek várj...",
   "Deleted": "Szerver törölve",

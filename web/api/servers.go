@@ -80,10 +80,10 @@ func registerServers(g *gin.RouterGroup) {
 	g.POST("/:serverId/reload", middleware.RequiresPermission(scopes.ScopeServerReload), middleware.ResolveServerPanel, proxyServerRequest)
 	g.OPTIONS("/:serverId/reload", response.CreateOptions("POST"))
 
-	g.POST("/:serverId/start", middleware.RequiresPermission(scopes.ScopeServerStart), middleware.ResolveServerPanel, proxyServerRequest)
+	g.POST("/:serverId/start", middleware.RequiresPermission(scopes.ScopeServerStart), middleware.ResolveServerPanel, blockExpiredServer, proxyServerRequest)
 	g.OPTIONS("/:serverId/start", response.CreateOptions("POST"))
 
-	g.POST("/:serverId/restart", middleware.RequiresPermission(scopes.ScopeServerStart), middleware.RequiresPermission(scopes.ScopeServerStop), middleware.ResolveServerPanel, proxyServerRequest)
+	g.POST("/:serverId/restart", middleware.RequiresPermission(scopes.ScopeServerStart), middleware.RequiresPermission(scopes.ScopeServerStop), middleware.ResolveServerPanel, blockExpiredServer, proxyServerRequest)
 	g.OPTIONS("/:serverId/restart", response.CreateOptions("POST"))
 
 	g.POST("/:serverId/stop", middleware.RequiresPermission(scopes.ScopeServerStop), middleware.ResolveServerPanel, proxyServerRequest)
@@ -1064,6 +1064,17 @@ func createBackup(c *gin.Context) {
 	if name == "" {
 		response.HandleError(c, pufferpanel.ErrFieldRequired("name"), http.StatusBadRequest)
 		return
+	}
+
+	if server.BackupLimit > 0 {
+		var count int64
+		if err := db.Model(&models.Backup{}).Where("server_id = ?", server.Identifier).Count(&count).Error; response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
+		if count >= int64(server.BackupLimit) {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "backup limit reached"})
+			return
+		}
 	}
 
 	resolvedPath := "/daemon/server/" + strings.TrimPrefix(c.Request.URL.Path, "/api/servers/")

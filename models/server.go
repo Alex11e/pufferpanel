@@ -23,6 +23,8 @@ type Server struct {
 	AutoBackupRetention uint `gorm:"column:auto_backup_retention;not null;default:24" json:"-" validate:"max=168"`
 	Notes string `gorm:"column:notes;size:2000" json:"-"`
 	Tags string `gorm:"column:tags;size:255" json:"-"`
+	ExpiresAt *time.Time `gorm:"column:expires_at;index" json:"-"`
+	BackupLimit uint `gorm:"column:backup_limit;not null;default:0" json:"-"` // 0 means unlimited
 
 	Type string `gorm:"NOT NULL;default='generic'" json:"-" validate:"required,printascii"`
 	Icon string `gorm:"" json:"-"`

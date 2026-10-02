@@ -46,6 +46,10 @@ function isLoading() {
   return !Array.isArray(backups.value) || loading.value
 }
 
+function limitReached() {
+  return !!props.server.backupLimit && Array.isArray(backups.value) && backups.value.length >= props.server.backupLimit
+}
+
 async function save() {
   try {
     backupRunning.value = true
@@ -147,10 +151,11 @@ const intl = new Intl.DateTimeFormat(
     <h2 v-text="t('backup.Backup')" />
     <div v-if="server.hasScope('server.backup.create')">
       <text-field v-model="backupName" :label="t('backup.Name')" />
-      <btn color="primary" :disabled="isBackingUp() || isLoading()" @click="save()">
+      <btn color="primary" :disabled="isBackingUp() || isLoading() || limitReached()" @click="save()">
         <icon v-if="!isBackingUp()" name="plus" />
         <icon v-else name="loading" spin /> {{ t('backup.Create') }}
       </btn>
+      <small v-if="server.backupLimit">{{ Array.isArray(backups) ? backups.length : 0 }} / {{ server.backupLimit }}</small>
     </div>
     <div v-if="server.hasScope('server.backup.create')" class="automatic-backup">
       <h3 v-text="t('backup.AutomaticHeader')" />

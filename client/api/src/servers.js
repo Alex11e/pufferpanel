@@ -334,6 +334,8 @@ class Server {
     this.autoBackupRetention = serverData.server.autoBackupRetention || 24
     this.notes = serverData.server.notes || ''
     this.tags = serverData.server.tags || ''
+    this.expiresAt = serverData.server.expiresAt || null
+    this.backupLimit = serverData.server.backupLimit || 0
     this.type = serverData.server.type
     this._scopes = serverData.permissions.scopes
     this._api = api

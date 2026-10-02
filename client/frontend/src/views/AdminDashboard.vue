@@ -20,6 +20,51 @@ const selectedServers = ref([])
 const actionRunning = ref(false)
 const announcementSaving = ref(false)
 const selectedCount = computed(() => selectedServers.value.length)
+const expiring = ref([])
+const expiryServer = ref('')
+const expiryDate = ref('')
+const backupLimit = ref(0)
+
+async function loadLimits() {
+  backupLimit.value = 0
+  expiryDate.value = ''
+  if (!expiryServer.value) return
+  const data = (await api.get(`/api/admin/servers/${encodeURIComponent(expiryServer.value)}/limits`)).data
+  backupLimit.value = data.backupLimit || 0
+  if (data.expiresAt) {
+    const d = new Date(data.expiresAt)
+    // datetime-local expects local time without timezone
+    expiryDate.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+  }
+}
+
+async function saveBackupLimit() {
+  if (!expiryServer.value) return
+  await api.put(`/api/admin/servers/${encodeURIComponent(expiryServer.value)}/backup-limit`, { limit: Math.max(0, Math.floor(Number(backupLimit.value) || 0)) })
+}
+
+async function loadExpiring() {
+  expiring.value = (await api.get('/api/admin/expiring')).data || []
+}
+
+async function saveExpiry(id, date) {
+  if (!id) return
+  await api.put(`/api/admin/servers/${encodeURIComponent(id)}/expiry`, { expiresAt: date ? new Date(date).toISOString() : null })
+  expiryServer.value = ''
+  expiryDate.value = ''
+  await loadExpiring()
+}
+
+function daysLeft(date) {
+  return Math.ceil((new Date(date) - Date.now()) / 86400000)
+}
+
+const expiredIds = computed(() => expiring.value.filter(s => new Date(s.expiresAt) < new Date()).map(s => s.id).slice(0, 25))
+
+function stopExpired() {
+  selectedServers.value = [...expiredIds.value]
+  bulkAction('stop')
+}
 
 async function load() {
   loading.value = true
@@ -39,6 +84,7 @@ async function load() {
     backups.value = backupsResponse.data || []
     announcements.value = announcementResponse.data || []
     adminServers.value = serversResponse.servers || []
+    await loadExpiring()
   } catch {
     error.value = 'Az admin adatok betöltése nem sikerült. Próbáld meg újra.'
   } finally {
@@ -111,6 +157,8 @@ onMounted(load)
         <div class="metric"><strong>{{ overview.allocatedPorts }}</strong><span>Lefoglalt port</span></div>
         <div class="metric"><strong>{{ overview.backups }}</strong><span>Biztonsági mentés</span></div>
         <div class="metric"><strong>{{ overview.automaticBackupServers }}</strong><span>Automata mentés</span></div>
+        <div class="metric"><strong>{{ overview.openTickets }}</strong><span>Nyitott jegy</span></div>
+        <div class="metric"><strong>{{ overview.newUsers7Days }}</strong><span>Új felhasználó (7 nap)</span></div>
       </div>
       <section class="access"><icon name="success" /> Az admin szerepkör minden szerverhez és annak konzoljához, fájljaihoz, mentéseihez és beállításaihoz hozzáfér.</section>
       <div class="quick-links">
@@ -134,6 +182,20 @@ onMounted(load)
         </div>
         <div v-if="announcements.length === 0" class="empty">Nincs létrehozott közlemény.</div>
         <div v-for="item in announcements" v-else :key="item.id" class="announcement-row"><span><strong>{{ item.title }}</strong><small>{{ item.level }} · {{ item.active ? 'aktív' : 'inaktív' }}<template v-if="item.startsAt"> · kezdés: {{ new Date(item.startsAt).toLocaleString() }}</template><template v-if="item.expiresAt"> · lejárat: {{ new Date(item.expiresAt).toLocaleString() }}</template></small></span><btn variant="icon" tooltip="Törlés" @click="deleteAnnouncement(item)"><icon name="remove" /></btn></div>
+      </section>
+      <section>
+        <h2>Szerver lejáratok</h2>
+        <p class="hint">Lejárat után a nem admin felhasználók nem tudják elindítani a szervert. A lejárt szervereket a panel 10 percenként automatikusan leállítja.</p>
+        <div class="announcement-form">
+          <select v-model="expiryServer" aria-label="Szerver" @change="loadLimits"><option value="">Válassz szervert</option><option v-for="server in adminServers" :key="server.id" :value="server.id">{{ server.name }}</option></select>
+          <input v-model="expiryDate" type="datetime-local" aria-label="Lejárat">
+          <btn color="primary" :disabled="!expiryServer || !expiryDate" @click="saveExpiry(expiryServer, expiryDate)">Beállítás</btn>
+          <input v-model="backupLimit" type="number" min="0" max="1000" aria-label="Mentési korlát (0 = nincs)" placeholder="Mentési korlát (0 = nincs)">
+          <btn :disabled="!expiryServer" @click="saveBackupLimit">Mentési korlát beállítása</btn>
+        </div>
+        <btn v-if="expiredIds.length" color="error" :disabled="actionRunning" @click="stopExpired">Lejárt szerverek leállítása ({{ expiredIds.length }})</btn>
+        <div v-if="expiring.length === 0" class="empty">Nincs beállított lejárat.</div>
+        <div v-for="item in expiring" v-else :key="item.id" class="announcement-row"><span><strong>{{ item.name }}</strong><small>{{ new Date(item.expiresAt).toLocaleString() }} · {{ daysLeft(item.expiresAt) < 0 ? 'lejárt' : daysLeft(item.expiresAt) + ' nap' }}</small></span><btn variant="icon" tooltip="Törlés" @click="saveExpiry(item.id, '')"><icon name="remove" /></btn></div>
       </section>
       <section>
         <h2>Tömeges szerverműveletek</h2>

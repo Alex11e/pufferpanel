@@ -36,3 +36,47 @@ func TestPterodactylEggConversionPreservesVariableRequirements(t *testing.T) {
 		t.Fatal("environment variable was not mapped")
 	}
 }
+
+func TestPterodactylEggConversionInstallScript(t *testing.T) {
+	raw := json.RawMessage(`{"name":"S","startup":"run","scripts":{"installation":{"script":"cd /mnt/server\necho hi"}}}`)
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(template.Installation) != 2 || template.Installation[0].Metadata["text"] != "cd /pufferpanel\necho hi" {
+		t.Fatalf("unexpected install: %+v", template.Installation)
+	}
+}
+
+func TestPterodactylEggConversionLegacyFormat(t *testing.T) {
+	raw := json.RawMessage(`{
+		"name":"Legacy",
+		"startup":"run {{server.build.default.port}} {{server.build.env.SLOTS}}",
+		"images":["ghcr.io/example/legacy:1"],
+		"config":{"stop":"^C"},
+		"variables":[
+			{"name":"Slots","env_variable":"SLOTS","default_value":"20","rules":"required|numeric","user_editable":false},
+			{"name":"Flag","env_variable":"FLAG","default_value":"1","rules":"boolean"}
+		]
+	}`)
+
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if template.Execution.Command != "run ${port} ${slots}" {
+		t.Fatalf("unexpected command: %q", template.Execution.Command)
+	}
+	if template.Environment.Metadata["image"] != "ghcr.io/example/legacy:1" {
+		t.Fatalf("unexpected image: %v", template.Environment.Metadata["image"])
+	}
+	if template.Execution.StopCommand != "^C" {
+		t.Fatalf("unexpected stop: %q", template.Execution.StopCommand)
+	}
+	if v := template.Variables["slots"]; v.Type.Type != "integer" || v.UserEditable {
+		t.Fatalf("unexpected slots variable: %+v", v)
+	}
+	if v := template.Variables["flag"]; v.Type.Type != "boolean" || v.Value != true {
+		t.Fatalf("unexpected flag variable: %+v", v)
+	}
+}

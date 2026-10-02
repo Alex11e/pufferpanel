@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/pufferpanel/pufferpanel/v3"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -20,6 +22,8 @@ type ServerView struct {
 	AutoBackupRetention uint       `json:"autoBackupRetention,omitempty"`
 	Notes        string           `json:"notes,omitempty"`
 	Tags         string           `json:"tags,omitempty"`
+	ExpiresAt    *time.Time       `json:"expiresAt,omitempty"`
+	BackupLimit  uint             `json:"backupLimit,omitempty"`
 	Type         string           `json:"type"`
 	Icon         string           `json:"icon,omitempty"`
 	CanGetStatus bool             `json:"canGetStatus,omitempty"`
@@ -40,6 +44,7 @@ func FromServer(server *Server) *ServerView {
 		Subdomain: server.Subdomain, Allocations: server.Allocations,
 		AutoBackupEnabled: server.AutoBackupEnabled, AutoBackupRetention: server.AutoBackupRetention,
 		Notes: server.Notes, Tags: server.Tags,
+		ExpiresAt: server.ExpiresAt, BackupLimit: server.BackupLimit,
 		Type:       server.Type,
 		Icon:       server.Icon,
 		Node:       FromNode(&server.Node),
