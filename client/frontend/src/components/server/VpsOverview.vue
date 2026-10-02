@@ -73,6 +73,7 @@ onUnmounted(() => clearInterval(timer))
 
     <section v-if="vars" class="connection">
       <h3>VNC kapcsolat</h3>
+      <p v-if="Number(value('port', 0)) > 0">Böngészős konzol: <a :href="`http://${server.node?.publicHost}:${value('port')}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">http://{{ server.node?.publicHost }}:{{ value('port') }}</a></p>
       <p>Cím: <code>{{ server.node?.publicHost }}:{{ 5900 + Number(value('vnc_display', 1)) }}</code></p>
       <p class="hint">Használj VNC klienst. A jelszó a Beállítások fülön módosítható, módosítás után indítsd újra a VPS-t.</p>
       <h3>Konfiguráció</h3>

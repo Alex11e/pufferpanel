@@ -32,10 +32,22 @@ on() { [ "$1" = "1" ] || [ "$1" = "true" ]; }
 esc() { printf '%s' "${1//,/,,}"; }
 fail() { echo "$1"; exit 1; }
 
+# QEMU needs a writable temp directory; the container filesystem is read-only for this user.
+mkdir -p tmp && export TMPDIR="$PWD/tmp"
+
 [[ "${RAM:-}" =~ ^[0-9]+$ ]] && [ "$RAM" -ge 256 ] || fail "RAM must be a number of at least 256 (MB)"
 [[ "${VNC_DISPLAY:-}" =~ ^[0-9]+$ ]] || fail "VNC display must be a number"
 [ -n "${VNC_PASSWORD:-}" ] || fail "A VNC password is required"
-[ -n "${DISK_FILE:-}" ] && [ -f "$DISK_FILE" ] || fail "Disk image not found - run the install step first"
+[ -n "${DISK_FILE:-}" ] || fail "Disk file is required"
+fetch() { curl -fsSL -o "$2" "$1"; }
+if [ ! -f "$DISK_FILE" ]; then
+  [[ "${DISK_SIZE:-}" =~ ^[0-9]+$ ]] && [ "$DISK_SIZE" -ge 1 ] || fail "Disk size must be a number of GB"
+  echo "Creating ${DISK_SIZE} GB disk image..."
+  qemu-img create -f qcow2 "$DISK_FILE" "${DISK_SIZE}G" || fail "Could not create the disk image"
+fi
+# The install step normally downloads these; fetch again if they are missing.
+[ -f OVMF.fd ] || fetch https://github.com/hypernestz/hypervm/releases/download/1.0/OVMF.fd OVMF.fd || fail "Could not download OVMF.fd"
+[ -f bios.bin ] || fetch https://github.com/hypernestz/hypervm/releases/download/1.0/bios.bin bios.bin || fail "Could not download bios.bin"
 fwd='hostfwd=(tcp|udp):[0-9.]*:[0-9]+-[0-9.]*:[0-9]+'
 if [ -n "${FORWARD_PORTS:-}" ] && ! [[ "$FORWARD_PORTS" =~ ^$fwd(,$fwd)*$ ]]; then
   fail "Invalid forwarded ports, use hostfwd=tcp::HOST-:GUEST (comma separated)"
@@ -45,7 +57,10 @@ args=(-device qemu-xhci -m "$RAM")
 if on "${USE_KVM:-0}"; then args+=(-enable-kvm -cpu host); else args+=(-accel "tcg,thread=multi,tb-size=128,split-wx=on"); fi
 args+=(-smp "sockets=1,cores=$(nproc),threads=1")
 [ -n "${ISO_FILE:-}" ] && args+=(-drive "file=$(esc "$ISO_FILE"),media=cdrom")
-drive="file=$(esc "$DISK_FILE")"
+# Our own images are qcow2; anything else is treated as raw so a guest cannot make QEMU re-probe its disk as another format.
+diskfmt=raw
+[ "$(head -c 3 "$DISK_FILE")" = "QFI" ] && diskfmt=qcow2
+drive="file=$(esc "$DISK_FILE"),format=$diskfmt"
 if on "${USE_VIRTIO:-0}"; then drive+=",aio=native,cache.direct=on,if=virtio"; fi
 args+=(-drive "$drive")
 [ -n "${SHARED_DIR:-}" ] && args+=(-drive "file=fat:rw:$(esc "$SHARED_DIR")")
@@ -57,39 +72,19 @@ else
 fi
 args+=(-device usb-tablet -boot "c,menu=on,splash-time=5000")
 if on "${USE_UEFI:-0}"; then
-  [ -f OVMF.fd ] || fail "OVMF.fd missing - run the install step again"
   args+=(-pflash OVMF.fd)
 else
-  [ -f bios.bin ] || fail "bios.bin missing - run the install step again"
   args+=(-bios bios.bin)
 fi
 args+=(-vnc "0.0.0.0:${VNC_DISPLAY},password" -monitor stdio)
 
-# The monitor reads the password first, then the panel console input.
-exec qemu-system-x86_64 "${args[@]}" < <({ printf 'change vnc password\n%s\n' "$VNC_PASSWORD"; cat; })
-`
-
-const vpsInstallScript = `#!/bin/bash
-set -e
-fetch() { if command -v curl >/dev/null 2>&1; then curl -fsSL -o "$2" "$1"; else wget -q -O "$2" "$1"; fi; }
-
-[[ "${DISK_SIZE:-}" =~ ^[0-9]+$ ]] || { echo "Disk size must be a number (GB)"; exit 1; }
-[ -n "${DISK_FILE:-}" ] || { echo "Disk file is required"; exit 1; }
-
-if [ ! -f "$DISK_FILE" ]; then
-  echo "Creating disk image..."
-  qemu-img create -f qcow2 "$DISK_FILE" "${DISK_SIZE}G"
-else
-  echo "Disk image already exists, skipping."
+# Browser console (noVNC) shipped with the image; it ends together with QEMU when the container stops.
+if [ -x /opt/novnc/utils/websockify/run ] && [[ "${SERVER_PORT:-}" =~ ^[0-9]+$ ]] && [ "$SERVER_PORT" -gt 0 ]; then
+  /opt/novnc/utils/websockify/run --web /opt/novnc "0.0.0.0:${SERVER_PORT}" "localhost:$((5900 + VNC_DISPLAY))" >/dev/null 2>&1 &
 fi
 
-echo "Downloading firmware..."
-[ -f OVMF.fd ] || fetch https://github.com/hypernestz/hypervm/releases/download/1.0/OVMF.fd OVMF.fd
-[ -f bios.bin ] || fetch https://github.com/hypernestz/hypervm/releases/download/1.0/bios.bin bios.bin
-
-echo "Downloading boot ISO..."
-[ -f netboot.xyz.iso ] || fetch https://boot.netboot.xyz/ipxe/netboot.xyz.iso netboot.xyz.iso
-echo "Installation complete."
+# The monitor reads the password first, then the panel console input.
+exec qemu-system-x86_64 "${args[@]}" < <({ printf 'change vnc password\n%s\n' "$VNC_PASSWORD"; cat; })
 `
 
 type vpsVariableDef struct {
@@ -100,6 +95,7 @@ type vpsVariableDef struct {
 }
 
 var vpsVariables = []vpsVariableDef{
+	{"port", "SERVER_PORT", "Web console port", "Port of the browser (noVNC) console; allocated automatically.", "integer", 0, true, false},
 	{"ram", "RAM", "Memory (MB)", "Total RAM for the VPS in MB (minimum 256).", "integer", 2048, true, true},
 	{"disk_size", "DISK_SIZE", "Disk size (GB)", "Size of the virtual disk. Only used when the disk is created during install.", "integer", 20, true, false},
 	{"disk_file", "DISK_FILE", "Disk file", "Name of the virtual disk image.", "string", "disk.qcow2", true, true},
@@ -137,9 +133,13 @@ func vpsTemplate() *pufferpanel.Server {
 		Variables:             variables,
 		Environment:           docker,
 		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		// Downloads run in the daemon, so installing needs no container or image pull.
 		Installation: []pufferpanel.ConditionalMetadataType{
-			step("writefile", map[string]interface{}{"target": "install.sh", "text": vpsInstallScript}),
-			step("command", map[string]interface{}{"commands": []string{"bash install.sh"}}),
+			step("download", map[string]interface{}{"files": []string{
+				"https://github.com/hypernestz/hypervm/releases/download/1.0/OVMF.fd",
+				"https://github.com/hypernestz/hypervm/releases/download/1.0/bios.bin",
+				"https://boot.netboot.xyz/ipxe/netboot.xyz.iso",
+			}}),
 		},
 		Execution: pufferpanel.Execution{
 			Command:              "bash start.sh",

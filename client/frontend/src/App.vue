@@ -79,7 +79,7 @@ function showErrorDetails(e) {
     body = JSON.stringify(JSON.parse(body), getCircularReplacer(), 2)
   }
 
-  error.value = `${statusMessage}
+  error.value = `${statusMessage}${e.msg ? '\n\nDetails: ' + e.msg : ''}${e.code && e.code !== 'ErrUnknownError' ? '\nCode: ' + e.code : ''}
 
 Endpoint: ${e.request.method} ${e.request.url}
 

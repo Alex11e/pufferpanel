@@ -53,12 +53,12 @@ func TestVpsTemplate(t *testing.T) {
 			t.Errorf("environment %q not mapped", v.env)
 		}
 	}
-	if len(template.Installation) != 2 || len(template.Execution.PreExecution) != 1 {
-		t.Fatal("install and pre-start steps are required")
+	if len(template.Installation) != 1 || template.Installation[0].Type != "download" || len(template.Execution.PreExecution) != 1 {
+		t.Fatal("a download install step and a pre-start step are required")
 	}
 	// A lowercase ${key} in a script would be replaced by the panel's own token substitution.
 	for key := range template.Variables {
-		if strings.Contains(vpsStartScript, "${"+key+"}") || strings.Contains(vpsInstallScript, "${"+key+"}") {
+		if strings.Contains(vpsStartScript, "${"+key+"}") {
 			t.Errorf("script contains panel token ${%s}", key)
 		}
 	}
