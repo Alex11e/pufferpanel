@@ -22,7 +22,7 @@ type Server struct {
 	Allocations         []Allocation `gorm:"foreignKey:ServerIdentifier;references:Identifier" json:"-"`
 	AutoBackupEnabled   bool         `gorm:"column:auto_backup_enabled;not null;default:false" json:"-"`
 	AutoBackupRetention uint         `gorm:"column:auto_backup_retention;not null;default:24" json:"-" validate:"max=168"`
-	AutoBackupInterval  uint         `gorm:"column:auto_backup_interval;not null;default:24" json:"-" validate:"gte=1,max=168"`
+	AutoBackupInterval  uint         `gorm:"column:auto_backup_interval;not null;default:24" json:"-" validate:"max=168"`
 	Notes               string       `gorm:"column:notes;size:2000" json:"-"`
 	Tags                string       `gorm:"column:tags;size:255" json:"-"`
 	ExpiresAt           *time.Time   `gorm:"column:expires_at;index" json:"-"`
