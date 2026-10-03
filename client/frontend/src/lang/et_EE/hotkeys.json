@@ -8,13 +8,13 @@
     "g s": "Mine Serveritele",
     "g t": "Mine Mallidele",
     "g u": "Mine Kasutajatele",
-    "/": "Global Search"
+    "/": "Globaalne otsing"
   },
   "Self": {
     "Title": "Konto",
     "t 2": "Mine Kaheastmelise Tuvastamise avalehele",
     "t a": "Mine Konto Üksikasjade avalehele",
-    "t o": "Mine OAuth- avalehele",
+    "t o": "Mine OAuth-avalehele",
     "t p": "Mine Salasõnade avalehele",
     "t s": "Mine Sätete avalehele"
   },
@@ -30,11 +30,11 @@
     "t f": "Mine Failide avalehele",
     "t s": "Mine Sätete avalehele",
     "t u": "Mine Kasutajate avalehele",
-    "t 6": "Mine SFTP- avalehele",
+    "t 6": "Mine SFTP-avalehele",
     "t 7": "Mine API avalehele",
-    "t a": "Mine Admin- avalehele",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
+    "t a": "Mine Admin-avalehele",
+    "c c": "Fokuseeri käsusisestus",
+    "c x": "Tühjenda konsool",
     "r r": "Käivita Server",
     "r s": "Peata Server",
     "r k": "Sundsulge Server",
@@ -42,8 +42,8 @@
     "f a": "Arhiveeri praeguse kausta sisu",
     "f c d": "Loo uus kaust",
     "f c f": "Loo uus fail",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
+    "f s a": "Arhiveeri valitud failid",
+    "f s d": "Kustuta valitud failid",
     "f d": "Kausta üleslaadimine",
     "f l": "Fokuseeri esimene fail/kaust nimekirjas",
     "f r": "Värskenda failide nimekiri",
@@ -69,10 +69,10 @@
   "Template": {
     "Title": "Malliredaktor",
     "t e": "Mine Keskkondade avalehele",
-    "t g": "Mine Üldine- avalehele",
+    "t g": "Mine Üldine-avalehele",
     "t h": "Mine Haakide avalehele",
-    "t i": "Mine Installimise- avalehele",
-    "t j": "Mine JSON- avalehele",
+    "t i": "Mine Installimise-avalehele",
+    "t j": "Mine JSON-avalehele",
     "t r": "Mine Käivitamise Konfiguratsiooni avalehele",
     "t v": "Mine Muutujate avalehele"
   }

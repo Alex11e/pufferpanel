@@ -1,16 +1,16 @@
 {
-  "ConditionHint": "Soorita see samm ainult, kui see tingimus on täitetud",
+  "ConditionHint": "Soorita see samm ainult, kui see tingimus on täidetud",
   "mojangdl": {
-    "generic": "Laadi minecraft Alla",
-    "formatted": "Laadi Minecraft Alla"
+    "generic": "Laadi Minecraft alla",
+    "formatted": "Laadi Minecraft alla"
   },
   "writefile": {
     "generic": "Kirjuta faili",
     "formatted": "Kirjuta faili {target}"
   },
   "resolveforgeversion": {
-    "generic": "Leia Minecraft Forge'i Versioon",
-    "formatted": "Leia Minecraft forge'i Versioon"
+    "generic": "Leia Minecraft Forge'i versioon",
+    "formatted": "Leia Minecraft Forge'i versioon"
   },
   "download": {
     "generic": "Laadi fail(e) alla",
@@ -30,42 +30,42 @@
     "replace": "Asenda tulemustega"
   },
   "move": {
-    "generic": "Liiguta või nime fail uuesti",
+    "generic": "Liiguta või nimeta fail ümber",
     "formatted": "Liiguta fail {source} asukohta {target}",
-    "source": "Algne Tee",
-    "target": "Tulev Asukoht"
+    "source": "Lähtetee",
+    "target": "Sihttee"
   },
   "mkdir": {
     "generic": "Loo kaust",
     "formatted": "Loo kaust {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arhiveeri failid",
+    "formatted": "Arhiveeri {file} asukohta {destination} | Arhiveeri {n} faili asukohta {destination}",
+    "source": "Arhiveeritavad failid"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Paki arhiiv lahti",
+    "formatted": "Paki {source} lahti asukohta {destination}",
+    "destination": "Sihtkoht"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Konsooli teade",
+    "formatted": "Prindi \"{message}\" konsooli",
+    "message": "Teade"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Oota",
+    "formatted": "Oota {duration}",
+    "duration": "Kestus",
+    "durationHint": "Kehtivad ajaühikud on ns, us, ms, s, m ja h. Mitut ühikut saab kombineerida. Näiteks `1m45s`"
   },
   "steamgamedl": {
     "generic": "Installi Steami kaudu",
     "formatted": "Installi Steami App ID {appId}",
     "appId": "Steami App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Haru (jätke tühjaks vaikimisi)",
+    "branchPassword": "Haru parool (kui vajalik)"
   },
   "javadl": {
     "generic": "Installi Java",
@@ -73,38 +73,38 @@
   },
   "forgedl": {
     "generic": "Lae Minecraft Forge alla",
-    "formatted": "Lae Minecraft Forge Alla",
-    "outputVariable": "Output variable"
+    "formatted": "Lae Minecraft Forge alla",
+    "outputVariable": "Väljundmuutuja"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Lae Minecraft Neoforge alla",
+    "formatted": "Lae Minecraft Neoforge alla",
+    "outputVariable": "Väljundmuutuja"
   },
   "spongeforgedl": {
     "generic": "Lae Minecraft SpongeForge alla",
-    "formatted": "Lae Minecraft SpongeForge Alla",
-    "releaseType": "Väljalaske Tüüp"
+    "formatted": "Lae Minecraft SpongeForge alla",
+    "releaseType": "Väljalaske tüüp"
   },
   "fabricdl": {
     "generic": "Laadi Minecraft Fabric alla",
     "formatted": "Laadi Minecraft Fabric alla"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Laadi PaperMC projekt alla",
+    "formatted": "Laadi {project} alla asukohta {target}",
+    "project": "PaperMC projekt",
+    "build": "Buildi number"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Laadi alla CurseForgest",
+    "formatted": "Laadi alla CurseForgest",
+    "projectId": "Projekti ID",
+    "fileId": "Faili ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Installi Node.js",
+    "formatted": "Installi Node.js {version}"
   }
 }

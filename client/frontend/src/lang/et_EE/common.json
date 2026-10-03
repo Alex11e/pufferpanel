@@ -3,7 +3,7 @@
   "Language": "Keel",
   "Online": "Võrgus",
   "Offline": "Võrgust väljas",
-  "Installing": "Installing",
+  "Installing": "Paigaldamine",
   "Unknown": "Teadmata",
   "Loading": "Laadimine...",
   "Description": "Kirjeldus",
@@ -14,9 +14,9 @@
   "Port": "Port",
   "Collapse": "Koonda",
   "Expand": "Laienda",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Copy": "Kopeeri lõikelauale",
+  "Copied": "Kopeeritud lõikelauale",
+  "Back": "Tagasi",
   "Next": "Järgmine",
   "Details": "Üksikasjad",
   "ErrorDetails": "Tõrke Üksikasjad",
@@ -26,40 +26,40 @@
   "Apply": "Rakenda",
   "Confirm": "Kinnita",
   "Condition": "Tingimus",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Discard": "Loobu",
+  "ConfirmLeave": "Sul on salvestamata muudatusi. Kas soovid need muudatused tühistada ja sellelt lehelt lahkuda?",
   "theme": {
     "Theme": "Teema",
     "Mode": "Režiim",
     "mode": {
       "Light": "Hele",
       "Dark": "Tume",
-      "DarkHighContrast": "Dark (High Contrast)",
+      "DarkHighContrast": "Tume (kõrge kontrastsus)",
       "Auto": "Automaatne"
     },
     "BaseColor": "Põhivärv",
-    "ServerTypeDisplay": "Serveri Tüüpi Näitaja",
+    "ServerTypeDisplay": "Serveri tüübi näitaja",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikoon + taust",
       "Icon": "Ikoon",
       "None": "Puudub"
     },
-    "ListType": "Nimekirja Tüüp",
+    "ListType": "Nimekirja tüüp",
     "listType": {
       "Grid": "Ruudustik",
       "List": "Nimekiri"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Fondi suurus",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Vaikimisi"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Fondi tüüp",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Vaikimisi",
+      "A11y": "Ligipääsetavusele optimeeritud"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Tulemusi ei leitud",
+  "Yes": "Jah",
+  "No": "Ei"
 }

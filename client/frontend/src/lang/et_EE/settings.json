@@ -3,13 +3,13 @@
   "PanelSettings": "Paneeli Seaded",
   "SavePanelSettings": "Salvesta Paneeli Seaded",
   "EmailSettings": "E-posti seaded",
-  "SaveEmailSettings": "Salvesta Emaili Seaded",
+  "SaveEmailSettings": "Salvesta E-posti Seaded",
   "MasterUrl": "Peamine URL",
-  "MasterUrlHint": "Põhi URL sellel paneelil on kättesaadav formaadis http://localhost:8080",
+  "MasterUrlHint": "Põhi-URL, mille alt paneel on kättesaadav, formaadis http://localhost:8080",
   "CompanyName": "Ettevõtte nimi",
-  "DefaultTheme": "Vaikmisi teema",
-  "RegistrationEnabled": "Luba kasutajatel end ise registeerida",
-  "RegistrationEnabledHint": "Ise registreerunud kasutajatel pole enne õiguste andmist lubatud midagi teha",
+  "DefaultTheme": "Vaikimisi teema",
+  "RegistrationEnabled": "Luba kasutajatel end ise registreerida",
+  "RegistrationEnabledHint": "Ise registreerunud kasutajad ei saa enne õiguste andmist midagi teha\n\nSelle keelamine takistab ainult otsest registreerimist, kutse serverisse ja kasutajate leht ei ole mõjutatud",
   "EmailProvider": "E-posti pakkuja",
   "emailProviders": {
     "none": "Puudub",
@@ -18,15 +18,15 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Saatja Aadress",
+    "from": "Saatja aadress",
     "domain": "Domeen",
     "key": "API võti",
     "host": "Host",
     "username": "Kasutajanimi",
     "password": "Parool"
   },
-  "Saved": "Saved",
-  "TestEmail": "Test Email",
-  "TestEmailSent": "Test email sent",
-  "TestEmailFailed": "Test email failed to send"
+  "Saved": "Salvestatud",
+  "TestEmail": "Test-e-post",
+  "TestEmailSent": "Test-e-post saadetud",
+  "TestEmailFailed": "Test-e-posti saatmine nurjus"
 }
