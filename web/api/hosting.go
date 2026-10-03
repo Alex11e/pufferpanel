@@ -140,6 +140,10 @@ func discordBotTemplate(language string) *pufferpanel.Server {
 func phpMyAdminTemplate() *pufferpanel.Server {
 	engine := hostingVar("string", "phpmyadmin", "Engine", "", true, false)
 	engine.Internal = true
+	databaseUser := hostingVar("string", "", "Database user", "Private database account used by phpMyAdmin.", true, false)
+	databaseUser.Internal = true
+	databasePassword := hostingVar("string", "", "Database password", "Private password used by phpMyAdmin.", true, false)
+	databasePassword.Internal = true
 	docker := pufferpanel.MetadataType{Type: "docker", Metadata: map[string]interface{}{
 		"image":       "phpmyadmin:5-apache",
 		"networkName": "host",
@@ -149,10 +153,13 @@ func phpMyAdminTemplate() *pufferpanel.Server {
 		Identifier: "phpmyadmin-hosting",
 		Display:    "phpMyAdmin",
 		Variables: map[string]pufferpanel.Variable{
-			"port":     hostingVar("integer", 0, "Port", "Port of the web interface (allocated automatically).", true, false),
-			"engine":   engine,
-			"pma_host": hostingVar("string", "127.0.0.1", "Database host", "Database server phpMyAdmin connects to.", true, true),
-			"pma_port": hostingVar("integer", 3306, "Database port", "Port of that database server.", true, true),
+			"port":         hostingVar("integer", 0, "Port", "Port of the web interface (allocated automatically).", true, false),
+			"engine":       engine,
+			"pma_host":     hostingVar("string", "127.0.0.1", "Database host", "Database server phpMyAdmin connects to.", true, true),
+			"pma_port":     hostingVar("integer", 3306, "Database port", "Port of that database server.", true, true),
+			"pma_database": hostingVar("string", "app", "Database name", "Database selected when phpMyAdmin connects.", true, true),
+			"pma_user":     databaseUser,
+			"pma_password": databasePassword,
 		},
 		Environment:           docker,
 		SupportedEnvironments: []pufferpanel.MetadataType{docker},
@@ -161,9 +168,12 @@ func phpMyAdminTemplate() *pufferpanel.Server {
 			StopCode:         15,
 			WorkingDirectory: ".",
 			EnvironmentVariables: map[string]string{
-				"APACHE_PORT": "${port}",
-				"PMA_HOST":    "${pma_host}",
-				"PMA_PORT":    "${pma_port}",
+				"APACHE_PORT":  "${port}",
+				"PMA_HOST":     "${pma_host}",
+				"PMA_PORT":     "${pma_port}",
+				"PMA_DATABASE": "${pma_database}",
+				"PMA_USER":     "${pma_user}",
+				"PMA_PASSWORD": "${pma_password}",
 			},
 		},
 	}

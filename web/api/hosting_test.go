@@ -41,6 +41,17 @@ func TestHostingTemplates(t *testing.T) {
 	if pma == nil || pma.Execution.EnvironmentVariables["APACHE_PORT"] != "${port}" {
 		t.Fatal("phpMyAdmin must listen on the allocated port")
 	}
+	if pma.Execution.EnvironmentVariables["PMA_DATABASE"] != "${pma_database}" ||
+		pma.Execution.EnvironmentVariables["PMA_USER"] != "${pma_user}" ||
+		pma.Execution.EnvironmentVariables["PMA_PASSWORD"] != "${pma_password}" {
+		t.Fatal("phpMyAdmin must receive the selected database and credentials")
+	}
+	if user := pma.Variables["pma_user"]; !user.Internal || user.UserEditable {
+		t.Fatalf("phpMyAdmin database user must remain private: %+v", user)
+	}
+	if password := pma.Variables["pma_password"]; !password.Internal || password.UserEditable {
+		t.Fatalf("phpMyAdmin database password must remain private: %+v", password)
+	}
 	// Versions are a fixed list so ${version} cannot select an arbitrary image.
 	if v := hostingTemplate("mariadb").Variables["version"]; v.Type.Type != "option" || len(v.Options) == 0 {
 		t.Fatalf("version must be an option variable: %+v", v)
