@@ -1,32 +1,32 @@
 {
   "Settings": "설정",
   "PanelSettings": "패널 설정",
-  "SavePanelSettings": "Save Panel Settings",
+  "SavePanelSettings": "패널 설정 저장",
   "EmailSettings": "이메일 설정",
-  "SaveEmailSettings": "Save Email Settings",
-  "MasterUrl": "Master URL",
-  "MasterUrlHint": "패널에 접속할수 있는 기본 URL",
+  "SaveEmailSettings": "이메일 설정 저장",
+  "MasterUrl": "마스터 URL",
+  "MasterUrlHint": "패널에 접속할 수 있는 기본 URL (형식: http://localhost:8080)",
   "CompanyName": "회사 이름",
   "DefaultTheme": "기본 테마",
   "RegistrationEnabled": "사용자가 직접 등록할 수 있도록 허용",
-  "RegistrationEnabledHint": "Self registered users can't do anything until given permissions\n\nDisabling this only prevents direct registration, invitation to a server and the Users page are not affected",
+  "RegistrationEnabledHint": "자체 등록한 사용자는 권한이 부여될 때까지 아무것도 할 수 없습니다\n\n이를 비활성화하면 직접 등록만 차단되며, 서버 초대 및 사용자 페이지는 영향을 받지 않습니다",
   "EmailProvider": "이메일 제공 업체",
   "emailProviders": {
-    "none": "None",
+    "none": "없음",
     "smtp": "SMTP",
     "mailgun": "Mailgun",
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Sender Address",
-    "domain": "Domain",
-    "key": "API Key",
-    "host": "Host",
-    "username": "Username",
-    "password": "Password"
+    "from": "발신자 주소",
+    "domain": "도메인",
+    "key": "API 키",
+    "host": "호스트",
+    "username": "사용자 이름",
+    "password": "비밀번호"
   },
-  "Saved": "Saved",
-  "TestEmail": "Test Email",
-  "TestEmailSent": "Test email sent",
-  "TestEmailFailed": "Test email failed to send"
+  "Saved": "저장됨",
+  "TestEmail": "테스트 이메일",
+  "TestEmailSent": "테스트 이메일이 전송되었습니다",
+  "TestEmailFailed": "테스트 이메일 전송에 실패했습니다"
 }

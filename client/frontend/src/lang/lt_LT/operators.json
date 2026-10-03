@@ -9,8 +9,8 @@
     "formatted": "Rašyti į failą {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Nustatyti „Minecraft Forge“ versiją",
+    "formatted": "Nustatyti „Minecraft Forge“ versiją"
   },
   "download": {
     "generic": "Parsiųsti failą(-us)",
@@ -25,7 +25,7 @@
   "alterfile": {
     "generic": "Redaguoti failą",
     "formatted": "Redaguoti failą {target}",
-    "regex": "Treat search string as regular expression",
+    "regex": "Traktuoti paieškos eilutę kaip reguliarųjį reiškinį",
     "search": "Ieškoti",
     "replace": "Sukeisti atitikmenis su"
   },
@@ -40,32 +40,32 @@
     "formatted": "Kurti direktoriją {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Archyvuoti failus",
+    "formatted": "Archyvuoti {file} į {destination} | Archyvuoti {n} failus į {destination}",
+    "source": "Failai, kuriuos reikia archyvuoti"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Išarchyvuoti archyvą",
+    "formatted": "Išarchyvuoti {source} į {destination}",
+    "destination": "Paskirties vieta"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Konsolės pranešimas",
+    "formatted": "Spausdinti \"{message}\" konsolėje",
+    "message": "Pranešimas"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Laukti",
+    "formatted": "Laukti {duration}",
+    "duration": "Trukmė",
+    "durationHint": "Galiojantys laiko vienetai yra ns, us, ms, s, m ir h. Galima derinti kelis vienetus. Pavyzdžiui, `1m45s`"
   },
   "steamgamedl": {
     "generic": "Instaliuoti iš „Steam“",
     "formatted": "Instaliuoti „Steam App“ ID {appId}",
     "appId": "„Steam App“ ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Šaka (palikite tuščią, kad būtų numatytoji)",
+    "branchPassword": "Šakos slaptažodis (jei reikia)"
   },
   "javadl": {
     "generic": "Instaliuoti „Java“",
@@ -74,37 +74,37 @@
   "forgedl": {
     "generic": "Parsiųsti „Minecraft Forge“",
     "formatted": "Parsiųsti „Minecraft Forge“",
-    "outputVariable": "Output variable"
+    "outputVariable": "Išvesties kintamasis"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Parsiųsti „Minecraft Neoforge“",
+    "formatted": "Parsiųsti „Minecraft Neoforge“",
+    "outputVariable": "Išvesties kintamasis"
   },
   "spongeforgedl": {
     "generic": "Parsiųsti „Minecraft SpongeForge“",
     "formatted": "Parsiųsti „Minecraft SpongeForge“",
-    "releaseType": "Release Type"
+    "releaseType": "Leidimo tipas"
   },
   "fabricdl": {
     "generic": "Parsiųsti „Minecraft Fabric“",
     "formatted": "Parsiųsti „Minecraft Fabric“"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Parsiųsti „PaperMC“ projektą",
+    "formatted": "Parsiųsti {project} į {target}",
+    "project": "„PaperMC“ projektas",
+    "build": "Kūrimo numeris"
   },
   "curseforge": {
     "generic": "Parsiųsti iš „CurseForge“",
     "formatted": "Parsiųsti iš „CurseForge“",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "projectId": "Projekto ID",
+    "fileId": "Failo ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Instaliuoti „Node.js“",
+    "formatted": "Instaliuoti „Node.js“ {version}"
   }
 }

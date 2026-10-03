@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "이 조건이 충족된 경우에만 이 단계를 실행하세요",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Minecraft 다운로드",
+    "formatted": "Minecraft 다운로드"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "파일에 쓰기",
+    "formatted": "{target} 파일에 쓰기"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Minecraft Forge 버전 확인",
+    "formatted": "Minecraft Forge 버전 확인"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "파일 다운로드",
+    "formatted": "{file} 다운로드 | {n}개 파일 다운로드",
+    "files": "파일"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "명령 실행",
+    "formatted": "{command} 실행 | {n}개 명령 실행",
+    "commands": "명령"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "파일 수정",
+    "formatted": "{target} 파일 수정",
+    "regex": "검색 문자열을 정규식으로 처리",
+    "search": "검색",
+    "replace": "일치 항목을 다음으로 바꾸기"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "파일 이동 또는 이름 변경",
+    "formatted": "{source} 파일을 {target}로 이동",
+    "source": "원본 경로",
+    "target": "대상 경로"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "디렉터리 생성",
+    "formatted": "{target} 디렉터리 생성"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "파일 압축",
+    "formatted": "{file}을(를) {destination}에 압축 | {n}개 파일을 {destination}에 압축",
+    "source": "압축할 파일"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "압축 해제",
+    "formatted": "{source}을(를) {destination}에 압축 해제",
+    "destination": "대상"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "콘솔 메시지",
+    "formatted": "\"{message}\"을(를) 콘솔에 출력",
+    "message": "메시지"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "대기",
+    "formatted": "{duration} 대기",
+    "duration": "기간",
+    "durationHint": "유효한 시간 단위는 ns, us, ms, s, m, h입니다. 여러 단위를 조합할 수 있습니다. 예: `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
-    "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "generic": "Steam에서 설치",
+    "formatted": "Steam 앱 ID {appId} 설치",
+    "appId": "Steam 앱 ID",
+    "branch": "브랜치 (기본값은 비워 두세요)",
+    "branchPassword": "브랜치 비밀번호 (필요한 경우)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Java 설치",
+    "formatted": "Java {version} 설치"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Forge 다운로드",
+    "formatted": "Minecraft Forge 다운로드",
+    "outputVariable": "출력 변수"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Neoforge 다운로드",
+    "formatted": "Minecraft Neoforge 다운로드",
+    "outputVariable": "출력 변수"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Minecraft SpongeForge 다운로드",
+    "formatted": "Minecraft SpongeForge 다운로드",
+    "releaseType": "릴리스 유형"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Minecraft Fabric 다운로드",
+    "formatted": "Minecraft Fabric 다운로드"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "PaperMC 프로젝트 다운로드",
+    "formatted": "{project}을(를) {target}에 다운로드",
+    "project": "PaperMC 프로젝트",
+    "build": "빌드 번호"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "CurseForge에서 다운로드",
+    "formatted": "CurseForge에서 다운로드",
+    "projectId": "프로젝트 ID",
+    "fileId": "파일 ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Node.js 설치",
+    "formatted": "Node.js {version} 설치"
   }
 }

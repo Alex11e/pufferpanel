@@ -4,7 +4,7 @@
   "Online": "オンライン",
   "Offline": "オフライン",
   "Installing": "インストール中",
-  "Unknown": "不明なエラー",
+  "Unknown": "不明",
   "Loading": "読み込み中...",
   "Description": "概要",
   "Save": "保存",
@@ -18,8 +18,8 @@
   "Copied": "クリップボードにコピーしました",
   "Back": "戻る",
   "Next": "次",
-  "Details": "結果",
-  "ErrorDetails": "エラー結果",
+  "Details": "詳細",
+  "ErrorDetails": "エラーの詳細",
   "HelpTranslate": "PufferPanelの翻訳にご協力ください",
   "Protocol": "プロトコル",
   "Add": "追加",
@@ -40,7 +40,7 @@
     "BaseColor": "ベースカラー",
     "ServerTypeDisplay": "サーバータイプの表示",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "アイコン + 背景",
       "Icon": "アイコン",
       "None": "未設定"
     },

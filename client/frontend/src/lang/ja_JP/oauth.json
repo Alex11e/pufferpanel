@@ -7,7 +7,7 @@
   "UnnamedClient": "名前のないOAuth2クライアント",
   "Docs": "APIドキュメントはこちら",
   "Clients": "OAuth2クライアント",
-  "Delete": "Delete {clientName}?",
-  "ConfirmDelete": "I am aware of the effects that deleting this OAuth2 client will have and wish to proceed.",
-  "AccountDescription": "このOAuth2クライアントは、あなたのアカウントのすべての権限を継承します"
+  "Delete": "{clientName} を削除しますか？",
+  "ConfirmDelete": "このOAuth2クライアントを削除することによる影響を理解した上で、続行します。",
+  "AccountDescription": "ここにリストされているOAuth2クライアントは、あなたのアカウントのすべての権限を継承します"
 }

@@ -10,21 +10,21 @@
   },
   "resolveforgeversion": {
     "generic": "Minecraft Forgeバージョンの解決",
-    "formatted": "Minecraft Forgeのバージョンを解決する"
+    "formatted": "Minecraft Forgeバージョンの解決"
   },
   "download": {
     "generic": "ファイルをダウンロード",
-    "formatted": "ダウンロード {file} | {n} ファイルをダウンロード中",
+    "formatted": "{file} をダウンロード | {n} 個のファイルをダウンロード",
     "files": "ファイル"
   },
   "command": {
     "generic": "コマンドを実行",
-    "formatted": "実行 {command} | {n} コマンド実行",
+    "formatted": "{command} を実行 | {n} 個のコマンドを実行",
     "commands": "コマンド"
   },
   "alterfile": {
     "generic": "ファイルの変更",
-    "formatted": "{target}を修正",
+    "formatted": "{target} を修正",
     "regex": "検索文字列を正規表現として扱います",
     "search": "検索",
     "replace": "一致する文字列を置換:"
@@ -37,35 +37,35 @@
   },
   "mkdir": {
     "generic": "ディレクトリを作成",
-    "formatted": "{target}を作成"
+    "formatted": "{target} を作成"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "ファイルをアーカイブ",
+    "formatted": "{file} を {destination} にアーカイブ | {n} 個のファイルを {destination} にアーカイブ",
+    "source": "アーカイブするファイル"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "アーカイブを展開",
+    "formatted": "{source} を {destination} に展開",
+    "destination": "展開先"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "コンソールメッセージ",
+    "formatted": "\"{message}\" をコンソールに出力",
+    "message": "メッセージ"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "待機",
+    "formatted": "{duration} 待機",
+    "duration": "期間",
+    "durationHint": "有効な時間単位は ns、us、ms、s、m、h です。複数の単位を組み合わせることができます。例: `1m45s`"
   },
   "steamgamedl": {
     "generic": "Steamからインストール",
     "formatted": "SteamからアプリID {appId}をインストール",
     "appId": "Steam アプリID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "ブランチ（デフォルトの場合は空欄）",
+    "branchPassword": "ブランチのパスワード（必要な場合）"
   },
   "javadl": {
     "generic": "Java のインストール",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Minecraft Forgeをダウンロード",
     "formatted": "Minecraft Forgeをダウンロード",
-    "outputVariable": "Output variable"
+    "outputVariable": "出力変数"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Neoforgeをダウンロード",
+    "formatted": "Minecraft Neoforgeをダウンロード",
+    "outputVariable": "出力変数"
   },
   "spongeforgedl": {
     "generic": "Minecraft SpongeForgeをダウンロード",
@@ -91,16 +91,16 @@
     "formatted": "Minecraft Fabricをダウンロード"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "PaperMCプロジェクトをダウンロード",
+    "formatted": "{project} を {target} にダウンロード",
+    "project": "PaperMCプロジェクト",
+    "build": "ビルド番号"
   },
   "curseforge": {
     "generic": "CurseForge からダウンロード",
     "formatted": "CurseForge からダウンロード",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "projectId": "プロジェクトID",
+    "fileId": "ファイルID",
     "java": "Java"
   },
   "nodejsdl": {

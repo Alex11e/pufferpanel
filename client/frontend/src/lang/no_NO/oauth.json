@@ -1,13 +1,13 @@
 {
-  "Credentials": "OAuth2 klientens opplysninger",
-  "ClientId": "Klient ID",
-  "ClientSecret": "Klient hemmelighet",
+  "Credentials": "OAuth2-klientens opplysninger",
+  "ClientId": "Klient-ID",
+  "ClientSecret": "Klienthemmelighet",
   "NewClientWarning": "Noter klienthemmeligheten, etter at du har lukket denne dialogboksen vil den aldri bli vist igjen. Å miste eller glemme den vil gjøre denne klienten helt ubrukelig.",
   "Create": "Lag ny OAuth2-klient",
-  "UnnamedClient": "OAuth2-klienten uten navn",
+  "UnnamedClient": "OAuth2-klient uten navn",
   "Docs": "Finn API-dokumentasjon her",
-  "Clients": "OAuth2 klienter",
+  "Clients": "OAuth2-klienter",
   "Delete": "Slett {clientName}?",
-  "ConfirmDelete": "Jeg er klar over effektene ved å slette denne OAuth2-klienten vil ha, og jeg ønsker å fortsette.",
-  "AccountDescription": "The OAuth2 Clients listed here inherit all of your accounts permissions"
+  "ConfirmDelete": "Jeg er klar over konsekvensene av å slette denne OAuth2-klienten, og ønsker å fortsette.",
+  "AccountDescription": "OAuth2-klientene som er oppført her, arver alle tillatelsene til kontoen din"
 }

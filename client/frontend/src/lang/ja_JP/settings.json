@@ -5,12 +5,12 @@
   "EmailSettings": "メール設定",
   "SaveEmailSettings": "メールの設定を保存",
   "MasterUrl": "マスター URL",
-  "MasterUrlHint": "パネルのベースURLは、http://localhost:8080 の形式でアクセスすることができます",
+  "MasterUrlHint": "パネルにアクセスできるベースURL（形式: http://localhost:8080）",
   "CompanyName": "会社名",
   "DefaultTheme": "デフォルトのテーマ",
   "RegistrationEnabled": "ユーザーが自分自身を登録できるようにする",
-  "RegistrationEnabledHint": "自己登録ユーザーは、パーミッションが与えられるまで何もできません。\n\nこれを無効にすると、直接登録ができなくなるだけで、サーバーへの招待やユーザーページには影響しません。",
-  "EmailProvider": "メールのプロバイダ",
+  "RegistrationEnabledHint": "自己登録したユーザーは、権限が与えられるまで何もできません\n\nこれを無効にすると、直接登録ができなくなるだけで、サーバーへの招待やユーザーページには影響しません",
+  "EmailProvider": "メールプロバイダ",
   "emailProviders": {
     "none": "なし",
     "smtp": "SMTP",
@@ -18,7 +18,7 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "送信元",
+    "from": "送信元アドレス",
     "domain": "ドメイン",
     "key": "API キー",
     "host": "ホスト",
@@ -26,7 +26,7 @@
     "password": "パスワード"
   },
   "Saved": "保存しました",
-  "TestEmail": "テストメールを送信",
+  "TestEmail": "テストメール",
   "TestEmailSent": "テストメールが送信されました",
   "TestEmailFailed": "テストメールの送信に失敗しました"
 }

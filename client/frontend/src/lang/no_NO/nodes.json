@@ -2,49 +2,49 @@
   "Node": "Node",
   "Nodes": "Noder",
   "Edit": "Rediger node",
-  "Add": "Legg til Node",
-  "Create": "Create Node",
-  "Update": "Oppdater Node",
-  "Delete": "Slett Node",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "Add": "Legg til node",
+  "Create": "Opprett node",
+  "Update": "Oppdater node",
+  "Delete": "Slett node",
+  "ConfirmDelete": "Vil du virkelig slette noden {name}?",
+  "Created": "Node opprettet",
+  "Updated": "Node oppdatert",
+  "Deleted": "Node slettet",
+  "Reachable": "Denne noden er riktig satt opp og kjører",
+  "Unreachable": "Denne noden er enten ikke riktig satt opp eller utilgjengelig for øyeblikket",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Operativsystem",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU-arkitektur",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker tilgjengelig",
+      "false": "Docker ikke tilgjengelig"
     },
-    "envs": "Available Environments"
+    "envs": "Tilgjengelige miljøer"
   },
   "PublicHost": "Offentlig vert",
   "PublicPort": "Offentlig port",
   "PrivateHost": "Privat vert",
   "PrivatePort": "Privat port",
-  "SftpPort": "SFTP port",
-  "WithPrivateAddress": "Use a different host/port for server to server communication",
-  "WithPrivateAddressHint": "This separate address is used when the main node needs to talk to the new node. Useful for example when the nodes are in the same network behind NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "SftpPort": "SFTP-port",
+  "WithPrivateAddress": "Bruk en annen vert/port for server-til-server-kommunikasjon",
+  "WithPrivateAddressHint": "Denne separate adressen brukes når hovednoden trenger å kommunisere med den nye noden. Nyttig for eksempel når nodene er i samme nettverk bak NAT.",
+  "LocalNodeEdit": "Den lokale noden har ingen redigerbare innstillinger\n\nFor å endre verten som vises med servere som driftes på denne noden, juster panelets master-URL i panelinnstillingene",
+  "Deploy": "Distribuer node",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Trinn 1\n\nInstaller PufferPanel på den nye serveren, [se dokumentasjonen for detaljer](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Trinn 2\n\nStopp PufferPanel-tjenesten på den nye serveren hvis den ble startet under installasjonen ved å kjøre `sudo systemctl stop pufferpanel`",
+    "Step3": "## Trinn 3\n\nErstatt innholdet i PufferPanel-konfigurasjonsfilen på den nye serveren med koden nedenfor\n\nKonfigurasjonsfilen finnes vanligvis på `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Trinn 4\n\nAktiver og (re)start PufferPanel-tjenesten på den nye serveren ved å kjøre `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Din nye node er nå satt opp og klar til bruk"
   },
   "DeploymentInstruction": "For å starte noden, installer PufferPanel på den nye serveren og plasser konfigurasjonsfilen i `/etc/pufferpanel/`<br/>Start PufferPanel på nytt på den nye serveren etterpå."
 }

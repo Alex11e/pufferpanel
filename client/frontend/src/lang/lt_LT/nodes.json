@@ -38,7 +38,7 @@
   "WithPrivateAddress": "Naudoti skirtingą hostą/portą serverio į serverį komunikacijai",
   "WithPrivateAddressHint": "Šis atskiras adresas yra naudojamas kai pagrindiniui taškui reikia susikalbėti su nauju tašku. Naudinga, pavyzdžiui, kai taškai yra tam pačiam tinkle už NAT.",
   "LocalNodeEdit": "Vietinis taškas neturi jokių redaguojamų nustatymų\n\nKad pakeisti rodomą hostą su serveriais hostintais šiuose taškuose, pakeiskite panelės pagrindinį url panelės nustatymuose",
-  "Deploy": "Deploy Node",
+  "Deploy": "Diegti tašką",
   "deploy": {
     "Step1": "## 1 žingsnis\n\nInstaliuokite „PufferPanel“ naujame serveryje, [pasiskaitykite dokumentaciją](https://docs.pufferpanel.com/en/latest/installing.html)",
     "Step2": "## 2 žingsnis\n\nSustabdykite „PufferPanel“ paslaugą naujame serveryje, jeigu buvo pradėta instaliacijos metu, įvedant `sudo systemctl stop pufferpanel`",
@@ -46,5 +46,5 @@
     "Step4": "## 4 žingsnis\n\nĮgalinkit ir perkraukit/startuokite „PufferPanel“ paslaugą naujame serveryje, įvedant `sudo systemctl enable --now pufferpanel`",
     "Step5": "### Jūsų naujas taškas dabar jau sureguliuotas ir paruoštas naudojimui"
   },
-  "DeploymentInstruction": "To deploy the node, install PufferPanel on the new server and place the code below in `/etc/pufferpanel/config.json`  \nRestart PufferPanel on the new server afterwards."
+  "DeploymentInstruction": "Norėdami įdiegti tašką, įdiekite „PufferPanel“ naujame serveryje ir įdėkite toliau pateiktą kodą į `/etc/pufferpanel/config.json`\nPo to iš naujo paleiskite „PufferPanel“ naujame serveryje."
 }
