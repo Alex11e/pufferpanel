@@ -12,5 +12,5 @@
     "Delete": "Slet",
     "Deleted": "Sikkerhedskopi slettet succesfuldt",
     "DeletePrompt": "Slet sikkerhedskopi permanent",
-    "DeletePromptBody": "Sikker på, at du vil slette denne server? (Dette kan ikke fortrydes)?"
+    "DeletePromptBody": "Er du sikker på, at du vil slette denne sikkerhedskopi permanent? Dette kan ikke fortrydes."
 }

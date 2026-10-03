@@ -1,13 +1,13 @@
 {
-  "Credentials": "OAuth2 Client Credentials",
-  "ClientId": "Client ID",
-  "ClientSecret": "Client Secret",
-  "NewClientWarning": "Note down the client secret, after closing this dialog it will never be shown again. Losing or forgetting it will render this client completely unusable.",
-  "Create": "Create new OAuth2 Client",
-  "UnnamedClient": "Unnamed OAuth2 Client",
-  "Docs": "Find API documentation here",
-  "Clients": "OAuth2 Clients",
-  "Delete": "Delete {clientName}?",
-  "ConfirmDelete": "I am aware of the effects that deleting this OAuth2 client will have and wish to proceed.",
-  "AccountDescription": "The OAuth2 Clients listed here inherit all of your accounts permissions"
+  "Credentials": "OAuth2-klientlegitimationsoplysninger",
+  "ClientId": "Klient-ID",
+  "ClientSecret": "Klienthemmelighed",
+  "NewClientWarning": "Notér klienthemmeligheden. Når denne dialog lukkes, vises den aldrig igen. Hvis du mister eller glemmer den, vil denne klient være fuldstændig ubrugelig.",
+  "Create": "Opret ny OAuth2-klient",
+  "UnnamedClient": "Unavngivet OAuth2-klient",
+  "Docs": "Find API-dokumentation her",
+  "Clients": "OAuth2-klienter",
+  "Delete": "Slet {clientName}?",
+  "ConfirmDelete": "Jeg er klar over de konsekvenser, sletning af denne OAuth2-klient vil have, og ønsker at fortsætte.",
+  "AccountDescription": "OAuth2-klienterne, der er anført her, arver alle dine kontos tilladelser"
 }

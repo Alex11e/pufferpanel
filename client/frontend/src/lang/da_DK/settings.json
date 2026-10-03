@@ -1,16 +1,16 @@
 {
   "Settings": "Indstillinger",
-  "PanelSettings": "Panel indstillinger",
-  "SavePanelSettings": "Save Panel Settings",
-  "EmailSettings": "Email Indstillinger",
-  "SaveEmailSettings": "Save Email Settings",
-  "MasterUrl": "Master URL",
-  "MasterUrlHint": "The base URL the panel can be reached under in the format http://localhost:8080",
-  "CompanyName": "Virksomheds navn",
+  "PanelSettings": "Panelindstillinger",
+  "SavePanelSettings": "Gem panelindstillinger",
+  "EmailSettings": "E-mail-indstillinger",
+  "SaveEmailSettings": "Gem e-mail-indstillinger",
+  "MasterUrl": "Master-URL",
+  "MasterUrlHint": "Den grundlæggende URL, som panelet kan nås under, i formatet http://localhost:8080",
+  "CompanyName": "Virksomhedsnavn",
   "DefaultTheme": "Standardtema",
-  "RegistrationEnabled": "Allow users to register themselves",
-  "RegistrationEnabledHint": "Self registered users can't do anything until given permissions\n\nDisabling this only prevents direct registration, invitation to a server and the Users page are not affected",
-  "EmailProvider": "Email Udbyder",
+  "RegistrationEnabled": "Tillad brugere at registrere sig selv",
+  "RegistrationEnabledHint": "Selvregistrerede brugere kan ikke gøre noget, før de får tildelt tilladelser\n\nDeaktivering af dette forhindrer kun direkte registrering. Invitation til en server og brugersiden påvirkes ikke",
+  "EmailProvider": "E-mail-udbyder",
   "emailProviders": {
     "none": "Intet",
     "smtp": "SMTP",
@@ -18,15 +18,15 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Sender Address",
-    "domain": "Domain",
-    "key": "API Key",
-    "host": "Host",
-    "username": "Username",
-    "password": "Password"
+    "from": "Afsenderadresse",
+    "domain": "Domæne",
+    "key": "API-nøgle",
+    "host": "Vært",
+    "username": "Brugernavn",
+    "password": "Adgangskode"
   },
-  "Saved": "Saved",
-  "TestEmail": "Test Email",
-  "TestEmailSent": "Test email sent",
-  "TestEmailFailed": "Test email failed to send"
+  "Saved": "Gemt",
+  "TestEmail": "Test e-mail",
+  "TestEmailSent": "Test e-mail sendt",
+  "TestEmailFailed": "Test e-mail kunne ikke sendes"
 }
