@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Collapse from '@/components/ui/Collapse.vue'
@@ -17,6 +17,10 @@ const props = defineProps({
 
 const settings = ref({})
 const environment = ref(null)
+const installsPlayitPlugin = computed(() => {
+  if (settings.value.modlauncher === undefined) return false
+  return ['paper', 'purpur', 'pufferfish', 'spigot'].includes(String(settings.value.modlauncher.value).toLowerCase())
+})
 
 onMounted(async () => {
   // prevent prop mutation by cloning to local state
@@ -58,6 +62,7 @@ function confirm() {
 <template>
   <div class="settings">
     <variables :model-value="{ data: settings, groups }" @update:modelValue="updateSettings" />
+    <p v-if="installsPlayitPlugin" class="hint" v-text="t('servers.PlayitAutoInstallHint')" />
     <div v-if="Object.keys(settings).length === 0" v-text="t('servers.NoSettings')" />
     <collapse :title="t('servers.AdvancedSettings')">
       <environment-config v-if="environment" v-model="environment" />

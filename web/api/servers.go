@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -554,6 +556,14 @@ func createServer(c *gin.Context) {
 	ip, err := getFromDataOrDefault(postBody.Variables, "ip", "0.0.0.0")
 	if response.HandleError(c, err, http.StatusBadRequest) {
 		return
+	}
+	launcher := cast.ToString(postBody.Variables["modlauncher"].Value)
+	if shouldInstallPlayitPlugin(postBody.Type.Type, launcher) {
+		pluginURL, filename, pluginErr := getPlayitPluginAsset(cast.ToString(postBody.Variables["version"].Value))
+		if response.HandleError(c, pluginErr, http.StatusBadGateway) {
+			return
+		}
+		postBody.Installation = append(postBody.Installation, playitPluginInstallOperations(pluginURL, filename)...)
 	}
 
 	if postBody.Name == "" {
@@ -1655,6 +1665,81 @@ const maxPluginDownloadSize = 64 * 1024 * 1024
 const modrinthAPIBase = "https://api.modrinth.com/v2"
 const modrinthPlayitProjectID = "og7kbNBC"
 const modrinthPlayitProjectSlug = "playit-companion"
+
+var playitPluginFilenamePattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,196}\.jar$`)
+
+func shouldInstallPlayitPlugin(serverType, launcher string) bool {
+	if serverType != "minecraft-java" {
+		return false
+	}
+	switch strings.ToLower(strings.TrimSpace(launcher)) {
+	case "paper", "purpur", "pufferfish", "spigot":
+		return true
+	default:
+		return false
+	}
+}
+
+func playitPluginInstallOperations(pluginURL, filename string) []pufferpanel.ConditionalMetadataType {
+	return []pufferpanel.ConditionalMetadataType{
+		{MetadataType: pufferpanel.MetadataType{Type: "mkdir", Metadata: map[string]interface{}{"target": "plugins"}}},
+		{MetadataType: pufferpanel.MetadataType{Type: "download", Metadata: map[string]interface{}{"files": []string{pluginURL}}}},
+		{MetadataType: pufferpanel.MetadataType{Type: "move", Metadata: map[string]interface{}{"source": filename, "target": "plugins/" + filename}}},
+	}
+}
+
+func getPlayitPluginAsset(gameVersion string) (string, string, error) {
+	versionFilter := gameVersion
+	if strings.EqualFold(versionFilter, "latest") {
+		versionFilter = ""
+	}
+	endpoint, _ := url.Parse(modrinthAPIBase + "/project/" + modrinthPlayitProjectID + "/version")
+	params := endpoint.Query()
+	params.Set("loaders", `["paper","purpur","spigot","bukkit"]`)
+	if versionFilter != "" {
+		encodedVersion, _ := json.Marshal([]string{versionFilter})
+		params.Set("game_versions", string(encodedVersion))
+	}
+	params.Set("featured", "true")
+	params.Set("include_changelog", "false")
+	endpoint.RawQuery = params.Encode()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return "", "", err
+	}
+	request.Header.Set("User-Agent", "PufferPanel/3 plugin manager")
+	remoteResponse, err := pufferpanel.Http().Do(request)
+	if err != nil {
+		return "", "", err
+	}
+	defer utils.CloseResponse(remoteResponse)
+	if remoteResponse.StatusCode != http.StatusOK {
+		return "", "", errors.New("Playit plugin catalogue is unavailable")
+	}
+	var versions []struct {
+		VersionNumber string   `json:"version_number"`
+		GameVersions  []string `json:"game_versions"`
+		Loaders       []string `json:"loaders"`
+		Files         []struct {
+			URL      string `json:"url"`
+			Filename string `json:"filename"`
+			Primary  bool   `json:"primary"`
+		} `json:"files"`
+	}
+	if err = json.NewDecoder(remoteResponse.Body).Decode(&versions); err != nil {
+		return "", "", err
+	}
+	pluginURL, filename, _ := selectBestModrinthPluginVersion(versions, versionFilter)
+	parsedURL, err := url.Parse(pluginURL)
+	if err != nil || parsedURL.Scheme != "https" || !strings.EqualFold(parsedURL.Hostname(), "cdn.modrinth.com") ||
+		!playitPluginFilenamePattern.MatchString(filename) || filepath.Base(parsedURL.Path) != filename {
+		return "", "", errors.New("no compatible Playit plugin version was found")
+	}
+	return pluginURL, filename, nil
+}
 
 type pluginDownloadRequest struct {
 	URL string `json:"url"`

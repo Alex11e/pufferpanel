@@ -67,3 +67,40 @@ func TestSelectBestModrinthPluginVersionPrefersPaperBuild(t *testing.T) {
 		t.Fatalf("selected wrong version: %q", versionNumber)
 	}
 }
+
+func TestShouldInstallPlayitPlugin(t *testing.T) {
+	tests := []struct {
+		serverType string
+		launcher   string
+		want       bool
+	}{
+		{serverType: "minecraft-java", launcher: "paper", want: true},
+		{serverType: "minecraft-java", launcher: "PURPUR", want: true},
+		{serverType: "minecraft-java", launcher: "pufferfish", want: true},
+		{serverType: "minecraft-java", launcher: "spigot", want: true},
+		{serverType: "minecraft-java", launcher: "fabric", want: false},
+		{serverType: "minecraft-bedrock", launcher: "paper", want: false},
+	}
+	for _, test := range tests {
+		if got := shouldInstallPlayitPlugin(test.serverType, test.launcher); got != test.want {
+			t.Errorf("shouldInstallPlayitPlugin(%q, %q) = %t, want %t", test.serverType, test.launcher, got, test.want)
+		}
+	}
+}
+
+func TestPlayitPluginInstallOperationsCreateFolderBeforeDownload(t *testing.T) {
+	filename := "playit_companion-paper.jar"
+	operations := playitPluginInstallOperations("https://cdn.modrinth.com/data/project/version/"+filename, filename)
+	if len(operations) != 3 {
+		t.Fatalf("got %d operations, want 3", len(operations))
+	}
+	if operations[0].Type != "mkdir" || operations[0].Metadata["target"] != "plugins" {
+		t.Fatalf("first operation must create plugins directory: %+v", operations[0])
+	}
+	if operations[1].Type != "download" {
+		t.Fatalf("second operation must download Playit: %+v", operations[1])
+	}
+	if operations[2].Type != "move" || operations[2].Metadata["target"] != "plugins/"+filename {
+		t.Fatalf("last operation must move Playit into plugins: %+v", operations[2])
+	}
+}

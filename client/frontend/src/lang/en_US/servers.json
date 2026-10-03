@@ -3,6 +3,7 @@
   "Activity": "Activity",
   "NoActivity": "No recorded activity yet.",
   "NoDetails": "No additional details",
+  "PlayitAutoInstallHint": "The Playit plugin will be installed into the plugins folder during setup.",
   "Tags": "Tags",
   "TagsHint": "Separate tags with commas, for example: production, minecraft",
   "Notes": "Admin notes",
