@@ -65,7 +65,7 @@ func TestCommitSourceAsset(t *testing.T) {
 	if asset.URL != "https://github.com/pufferpanel/pufferpanel/archive/"+sha+".zip" {
 		t.Fatalf("unexpected source archive URL %q", asset.URL)
 	}
-	if invalid := commitSourceAsset("example.com/repo", sha); invalid.URL != "" {
+	if invalid := commitSourceAsset("example.com/repo/path", sha); invalid.URL != "" {
 		t.Fatalf("invalid repository produced a download URL: %q", invalid.URL)
 	}
 	if invalid := commitSourceAsset("pufferpanel/pufferpanel", "not-a-commit"); invalid.URL != "" {
