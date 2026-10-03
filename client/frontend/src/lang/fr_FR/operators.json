@@ -1,5 +1,5 @@
 {
-  "ConditionHint": "Exécuter cette étape seulement si cette condition est vrai",
+  "ConditionHint": "Exécuter cette étape seulement si cette condition est vraie",
   "mojangdl": {
     "generic": "Télécharger Minecraft",
     "formatted": "Télécharger Minecraft"
@@ -9,17 +9,17 @@
     "formatted": "Écrire dans le fichier {target}"
   },
   "resolveforgeversion": {
-    "generic": "Résoudre la Version de Minecraft Forge",
-    "formatted": "Résoudre la Version de Minecraft Forge"
+    "generic": "Résoudre la version de Minecraft Forge",
+    "formatted": "Résoudre la version de Minecraft Forge"
   },
   "download": {
     "generic": "Télécharger le(s) fichier(s)",
-    "formatted": "Télécharger {file} | Télécharger les fichiers {n}",
+    "formatted": "Télécharger {file} | Télécharger {n} fichiers",
     "files": "Fichiers"
   },
   "command": {
     "generic": "Exécuter le(s) commande(s)",
-    "formatted": "Exécuter {command} | Exécuter les commandes {n}",
+    "formatted": "Exécuter {command} | Exécuter {n} commandes",
     "commands": "Commandes"
   },
   "alterfile": {
@@ -33,39 +33,39 @@
     "generic": "Déplacer ou renommer un fichier",
     "formatted": "Déplacer le fichier {source} vers {target}",
     "source": "Chemin source",
-    "target": "Chemin Cible"
+    "target": "Chemin cible"
   },
   "mkdir": {
     "generic": "Créer un répertoire",
     "formatted": "Créer le répertoire {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Archiver des fichiers",
+    "formatted": "Archiver {file} vers {destination} | Archiver {n} fichiers vers {destination}",
+    "source": "Fichiers à archiver"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
+    "generic": "Extraire l'archive",
+    "formatted": "Extraire {source} vers {destination}",
     "destination": "Destination"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
+    "generic": "Message de la console",
+    "formatted": "Afficher \"{message}\" dans la console",
     "message": "Message"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Attendre",
+    "formatted": "Attendre {duration}",
+    "duration": "Durée",
+    "durationHint": "Les unités de temps valides sont ns, us, ms, s, m et h. Plusieurs unités peuvent être combinées. Par exemple `1m45s`"
   },
   "steamgamedl": {
     "generic": "Installer depuis Steam",
     "formatted": "Installer Steam App ID {appId}",
     "appId": "ID de l'app Steam",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Branche (laisser vide pour la valeur par défaut)",
+    "branchPassword": "Mot de passe de la branche (si nécessaire)"
   },
   "javadl": {
     "generic": "Installer Java",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Télécharger Minecraft Forge",
     "formatted": "Télécharger Minecraft Forge",
-    "outputVariable": "Output variable"
+    "outputVariable": "Variable de sortie"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Télécharger Minecraft Neoforge",
+    "formatted": "Télécharger Minecraft Neoforge",
+    "outputVariable": "Variable de sortie"
   },
   "spongeforgedl": {
     "generic": "Télécharger Minecraft SpongeForge",
@@ -88,19 +88,19 @@
   },
   "fabricdl": {
     "generic": "Télécharger Minecraft Fabric",
-    "formatted": "Télécharger Minecraft Fabrique"
+    "formatted": "Télécharger Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Télécharger le projet PaperMC",
+    "formatted": "Télécharger {project} vers {target}",
+    "project": "Projet PaperMC",
+    "build": "Numéro de build"
   },
   "curseforge": {
     "generic": "Télécharger depuis CurseForge",
     "formatted": "Télécharger depuis CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "projectId": "ID du projet",
+    "fileId": "ID du fichier",
     "java": "Java"
   },
   "nodejsdl": {

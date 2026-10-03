@@ -7,7 +7,7 @@
     "Restore": "Restaurer",
     "RestoreStarted": "Restauration démarrée",
     "RestorePrompt": "Restaurer à partir d'une sauvegarde",
-    "RestorePromptBody": "Voulez-vous restaurer cette sauvegarde ? \n Cela supprimera toutes les données existantes, il est donc recommandé de créer une sauvegarde avant.",
+    "RestorePromptBody": "Voulez-vous vraiment restaurer à partir de cette sauvegarde ? \n Cela supprimera toutes les données existantes, il est donc fortement recommandé de créer une sauvegarde avant.",
     "Download": "Télécharger",
     "Delete": "Supprimer",
     "Deleted": "Sauvegarde supprimée avec succès",

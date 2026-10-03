@@ -3,40 +3,40 @@
   "Global": {
     "Title": "Globale",
     "g a": "Voir le compte",
-    "g c": "Aller au panel de configuration",
+    "g c": "Aller au panneau de configuration",
     "g n": "Aller aux nœuds",
     "g s": "Aller aux serveurs",
-    "g t": "Aller aux thèmes",
+    "g t": "Aller aux modèles",
     "g u": "Aller aux utilisateurs",
     "/": "Recherche globale"
   },
   "Self": {
     "Title": "Compte",
-    "t 2": "Accédez à l'onglet 2-Factor-Auth",
-    "t a": "Accédez à l'onglet Détails du compte",
-    "t o": "Accédez à l'onglet OAuth",
-    "t p": "Allez dans l'onglet Mot de passe",
-    "t s": "Allez dans l'onglet Préférences"
+    "t 2": "Accéder à l'onglet Authentification à deux facteurs",
+    "t a": "Accéder à l'onglet Détails du compte",
+    "t o": "Accéder à l'onglet OAuth",
+    "t p": "Aller dans l'onglet Mot de passe",
+    "t s": "Aller dans l'onglet Préférences"
   },
   "ServerList": {
     "Title": "Serveurs",
     "c": "Créer un nouveau serveur",
-    "l": "Sélectionner sur le premier serveur de la liste"
+    "l": "Sélectionner le premier serveur de la liste"
   },
   "ServerView": {
     "Title": "Serveur",
     "t c": "Aller dans l'onglet Console",
     "t i": "Aller à l'onglet Statistiques",
     "t f": "Aller à l'onglet Fichiers",
-    "t s": "Aller à l'onglet Statistiques",
+    "t s": "Aller à l'onglet Paramètres",
     "t u": "Aller à l'onglet Utilisateurs",
     "t 6": "Aller à l'onglet SFTP",
-    "t 7": "Aller à l'onglet Api",
+    "t 7": "Aller à l'onglet API",
     "t a": "Aller à l'onglet Admin",
-    "c c": "Saisie de commande de mise au point",
+    "c c": "Mettre le focus sur la saisie de commande",
     "c x": "Effacer la console",
     "r r": "Démarrer le serveur",
-    "r s": "Stopper le serveur",
+    "r s": "Arrêter le serveur",
     "r k": "Tuer le serveur",
     "r i": "Installer le serveur",
     "f a": "Archiver le contenu du répertoire actuel",
@@ -44,8 +44,8 @@
     "f c f": "Créer un nouveau fichier",
     "f s a": "Archiver les fichiers sélectionnés",
     "f s d": "Supprimer les fichiers sélectionnés",
-    "f d": "Téléverser un dossier",
-    "f l": "Focus premier fichier/dossier dans la liste",
+    "f d": "Envoyer un dossier",
+    "f l": "Mettre le focus sur le premier fichier/dossier de la liste",
     "f r": "Recharger la liste des fichiers",
     "f u": "Envoyer des fichiers",
     "a e": "Modifier la définition du serveur",
@@ -54,26 +54,26 @@
   "NodeList": {
     "Title": "Nœuds",
     "c": "Créer un nouveau nœud",
-    "l": "Focus sur le premier nœud de la liste"
+    "l": "Sélectionner le premier nœud de la liste"
   },
   "UserList": {
     "Title": "Utilisateurs",
     "c": "Ajouter un utilisateur",
-    "l": "Focus sur le premier utilisateur de la liste"
+    "l": "Sélectionner le premier utilisateur de la liste"
   },
   "TemplateList": {
     "Title": "Modèles",
     "c": "Créer un nouveau modèle",
-    "l": "Focus sur le premier modèle dans la liste"
+    "l": "Sélectionner le premier modèle de la liste"
   },
   "Template": {
     "Title": "Éditeur de modèles",
     "t e": "Aller à l'onglet Environnement",
     "t g": "Aller à l'onglet Général",
     "t h": "Aller dans l'onglet Hooks",
-    "t i": "Aller à l'onglet d'Installation",
+    "t i": "Aller à l'onglet Installation",
     "t j": "Aller à l'onglet JSON",
-    "t r": "Aller à l'onglet des configurations d'exécution",
+    "t r": "Aller à l'onglet Configuration d'exécution",
     "t v": "Aller à l'onglet Variables"
   }
 }

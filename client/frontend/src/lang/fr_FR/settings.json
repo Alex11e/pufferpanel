@@ -1,12 +1,12 @@
 {
   "Settings": "Paramètres",
-  "PanelSettings": "Paramètres panel",
+  "PanelSettings": "Paramètres du panel",
   "SavePanelSettings": "Enregistrer les paramètres du panel",
   "EmailSettings": "Paramètres e-mail",
-  "SaveEmailSettings": "Enregistrer les paramètres d'E-mail",
+  "SaveEmailSettings": "Enregistrer les paramètres d'e-mail",
   "MasterUrl": "URL principale",
-  "MasterUrlHint": "L'URL de base du panel est accessible sous le format http://localhost:8080",
-  "CompanyName": "Nom de la compagnie",
+  "MasterUrlHint": "L'URL de base à laquelle le panel est accessible, au format http://localhost:8080",
+  "CompanyName": "Nom de l'entreprise",
   "DefaultTheme": "Thème par défaut",
   "RegistrationEnabled": "Autoriser les utilisateurs à s'inscrire en autonomie",
   "RegistrationEnabledHint": "Les utilisateurs enregistrés ne peuvent rien faire tant qu'ils n'ont pas les permissions\n\nLa désactivation de cette option empêche l'enregistrement direct, l'invitation à un serveur et la page Utilisateurs ne sont pas affectées",
@@ -25,8 +25,8 @@
     "username": "Nom d'utilisateur",
     "password": "Mot de passe"
   },
-  "Saved": "Sauvegardé",
-  "TestEmail": "Email de test",
-  "TestEmailSent": "Email de test envoyé",
-  "TestEmailFailed": "Échec de l'envoi de l'email de test"
+  "Saved": "Enregistré",
+  "TestEmail": "E-mail de test",
+  "TestEmailSent": "E-mail de test envoyé",
+  "TestEmailFailed": "Échec de l'envoi de l'e-mail de test"
 }
