@@ -1,12 +1,12 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "نفّذ هذه الخطوة فقط إذا تم استيفاء هذا الشرط",
   "mojangdl": {
     "generic": "تحميل Minecraft",
     "formatted": "تحميل Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "الكتابة إلى ملف",
+    "formatted": "الكتابة إلى ملف {target}"
   },
   "resolveforgeversion": {
     "generic": "حل إصدار Minecraft Forge",
@@ -14,97 +14,97 @@
   },
   "download": {
     "generic": "تحميل الملف(الملفات)",
-    "formatted": "Download {file} | Download {n} files",
+    "formatted": "تحميل {file} | تحميل {n} ملفات",
     "files": "الملفات"
   },
   "command": {
     "generic": "تشغيل الأوامر",
-    "formatted": "Run {command} | Run {n} commands",
+    "formatted": "تشغيل {command} | تشغيل {n} أوامر",
     "commands": "اﻷوامر"
   },
   "alterfile": {
     "generic": "تعديل الملف",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "formatted": "تعديل الملف {target}",
+    "regex": "التعامل مع نص البحث كتعبير نمطي",
+    "search": "بحث",
+    "replace": "استبدال التطابقات بـ"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "نقل أو إعادة تسمية ملف",
+    "formatted": "نقل الملف {source} إلى {target}",
+    "source": "مسار المصدر",
+    "target": "مسار الهدف"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "إنشاء دليل",
+    "formatted": "إنشاء دليل {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "أرشفة الملفات",
+    "formatted": "أرشفة {file} إلى {destination} | أرشفة {n} ملفات إلى {destination}",
+    "source": "الملفات المراد أرشفتها"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "استخراج الأرشيف",
+    "formatted": "استخراج {source} إلى {destination}",
+    "destination": "الوجهة"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "رسالة وحدة التحكم",
+    "formatted": "طباعة \"{message}\" إلى وحدة التحكم",
+    "message": "الرسالة"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "انتظار",
+    "formatted": "انتظار لمدة {duration}",
+    "duration": "المدة",
+    "durationHint": "وحدات الوقت الصالحة هي ns، us، ms، s، m و h. يمكن دمج وحدات متعددة. على سبيل المثال `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "التثبيت من Steam",
+    "formatted": "تثبيت Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "الفرع (اتركه فارغًا للافتراضي)",
+    "branchPassword": "كلمة مرور الفرع (إذا لزم الأمر)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "تثبيت Java",
+    "formatted": "تثبيت Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "تحميل Minecraft Forge",
+    "formatted": "تحميل Minecraft Forge",
+    "outputVariable": "متغير الإخراج"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "تحميل Minecraft Neoforge",
+    "formatted": "تحميل Minecraft Neoforge",
+    "outputVariable": "متغير الإخراج"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "تحميل Minecraft SpongeForge",
+    "formatted": "تحميل Minecraft SpongeForge",
+    "releaseType": "نوع الإصدار"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "تحميل Minecraft Fabric",
+    "formatted": "تحميل Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "تحميل مشروع PaperMC",
+    "formatted": "تحميل {project} إلى {target}",
+    "project": "مشروع PaperMC",
+    "build": "رقم البناء"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "تحميل من CurseForge",
+    "formatted": "تحميل من CurseForge",
+    "projectId": "معرف المشروع",
+    "fileId": "معرف الملف",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "تثبيت Node.js",
+    "formatted": "تثبيت Node.js {version}"
   }
 }
