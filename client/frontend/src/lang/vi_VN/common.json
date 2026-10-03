@@ -3,63 +3,63 @@
   "Language": "Ngôn ngữ",
   "Online": "Trực tuyến",
   "Offline": "Ngoại tuyến",
-  "Installing": "Installing",
+  "Installing": "Đang cài đặt",
   "Unknown": "Không xác định",
   "Loading": "Đang tải...",
-  "Description": "Description",
+  "Description": "Mô tả",
   "Save": "Lưu",
   "Cancel": "Hủy",
-  "Close": "Close",
+  "Close": "Đóng",
   "Host": "Máy chủ",
   "Port": "Cổng",
   "Collapse": "Thu gọn",
-  "Expand": "Expand",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Expand": "Mở rộng",
+  "Copy": "Sao chép vào clipboard",
+  "Copied": "Đã sao chép vào clipboard",
+  "Back": "Quay lại",
   "Next": "Tiếp",
   "Details": "Chi tiết",
   "ErrorDetails": "Chi tiết lỗi",
-  "HelpTranslate": "Giúp Chúng Tôi Dịch PufferPanel",
+  "HelpTranslate": "Giúp chúng tôi dịch PufferPanel",
   "Protocol": "Giao thức",
   "Add": "Thêm",
-  "Apply": "Apply",
-  "Confirm": "Confirm",
-  "Condition": "Condition",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Apply": "Áp dụng",
+  "Confirm": "Xác nhận",
+  "Condition": "Điều kiện",
+  "Discard": "Hủy bỏ",
+  "ConfirmLeave": "Bạn có thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này và rời khỏi trang này không?",
   "theme": {
-    "Theme": "Theme",
-    "Mode": "Mode",
+    "Theme": "Giao diện",
+    "Mode": "Chế độ",
     "mode": {
-      "Light": "Light",
-      "Dark": "Dark",
-      "DarkHighContrast": "Dark (High Contrast)",
-      "Auto": "Auto"
+      "Light": "Sáng",
+      "Dark": "Tối",
+      "DarkHighContrast": "Tối (Độ tương phản cao)",
+      "Auto": "Tự động"
     },
-    "BaseColor": "Base Color",
-    "ServerTypeDisplay": "Server Type Display",
+    "BaseColor": "Màu cơ bản",
+    "ServerTypeDisplay": "Hiển thị loại máy chủ",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
-      "Icon": "Icon",
-      "None": "None"
+      "IconBackground": "Biểu tượng + Nền",
+      "Icon": "Biểu tượng",
+      "None": "Không có"
     },
-    "ListType": "List Type",
+    "ListType": "Loại danh sách",
     "listType": {
-      "Grid": "Grid",
-      "List": "List"
+      "Grid": "Lưới",
+      "List": "Danh sách"
     },
-    "FontSize": "Kích Cỡ phông chữ",
+    "FontSize": "Kích cỡ phông chữ",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Mặc định"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Kiểu phông chữ",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Mặc định",
+      "A11y": "Tối ưu hóa khả năng truy cập"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Không có kết quả",
+  "Yes": "Có",
+  "No": "Không"
 }

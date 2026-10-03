@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Chỉ thực hiện bước này nếu điều kiện này được đáp ứng",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Tải Minecraft",
+    "formatted": "Tải Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Ghi vào tệp",
+    "formatted": "Ghi vào tệp {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Xác định phiên bản Minecraft Forge",
+    "formatted": "Xác định phiên bản Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Tải tệp",
+    "formatted": "Tải {file} | Tải {n} tệp",
+    "files": "Tệp"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Chạy lệnh",
+    "formatted": "Chạy {command} | Chạy {n} lệnh",
+    "commands": "Lệnh"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Sửa đổi tệp",
+    "formatted": "Sửa đổi tệp {target}",
+    "regex": "Xử lý chuỗi tìm kiếm như biểu thức chính quy",
+    "search": "Tìm kiếm",
+    "replace": "Thay thế các kết quả khớp bằng"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Di chuyển hoặc đổi tên tệp",
+    "formatted": "Di chuyển tệp {source} đến {target}",
+    "source": "Đường dẫn nguồn",
+    "target": "Đường dẫn đích"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Tạo thư mục",
+    "formatted": "Tạo thư mục {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Lưu trữ tệp",
+    "formatted": "Lưu trữ {file} vào {destination} | Lưu trữ {n} tệp vào {destination}",
+    "source": "Các tệp cần lưu trữ"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Giải nén tệp lưu trữ",
+    "formatted": "Giải nén {source} vào {destination}",
+    "destination": "Đích"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Thông báo bảng điều khiển",
+    "formatted": "In \"{message}\" ra bảng điều khiển",
+    "message": "Thông báo"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Chờ",
+    "formatted": "Chờ {duration}",
+    "duration": "Thời lượng",
+    "durationHint": "Các đơn vị thời gian hợp lệ là ns, us, ms, s, m và h. Có thể kết hợp nhiều đơn vị. Ví dụ `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Cài đặt từ Steam",
+    "formatted": "Cài đặt Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Nhánh (để trống cho mặc định)",
+    "branchPassword": "Mật khẩu nhánh (nếu cần)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Cài đặt Java",
+    "formatted": "Cài đặt Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Tải Minecraft Forge",
+    "formatted": "Tải Minecraft Forge",
+    "outputVariable": "Biến đầu ra"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Tải Minecraft Neoforge",
+    "formatted": "Tải Minecraft Neoforge",
+    "outputVariable": "Biến đầu ra"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Tải Minecraft SpongeForge",
+    "formatted": "Tải Minecraft SpongeForge",
+    "releaseType": "Loại phát hành"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Tải Minecraft Fabric",
+    "formatted": "Tải Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Tải dự án PaperMC",
+    "formatted": "Tải {project} vào {target}",
+    "project": "Dự án PaperMC",
+    "build": "Số bản dựng"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Tải từ CurseForge",
+    "formatted": "Tải từ CurseForge",
+    "projectId": "ID dự án",
+    "fileId": "ID tệp",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Cài đặt Node.js",
+    "formatted": "Cài đặt Node.js {version}"
   }
 }

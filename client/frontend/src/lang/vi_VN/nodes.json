@@ -3,48 +3,48 @@
   "Nodes": "Các Node",
   "Edit": "Sửa Node",
   "Add": "Thêm Node",
-  "Create": "Create Node",
+  "Create": "Tạo Node",
   "Update": "Cập nhật Node",
   "Delete": "Xóa Node",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Bạn có thực sự muốn xóa node {name} không?",
+  "Created": "Đã tạo Node",
+  "Updated": "Đã cập nhật Node",
+  "Deleted": "Đã xóa Node",
+  "Reachable": "Node này đã được thiết lập đúng và đang chạy",
+  "Unreachable": "Node này chưa được thiết lập đúng hoặc hiện không khả dụng",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Hệ điều hành",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "Kiến trúc CPU",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker khả dụng",
+      "false": "Docker không khả dụng"
     },
-    "envs": "Available Environments"
+    "envs": "Môi trường khả dụng"
   },
-  "PublicHost": "Địa chỉ công cộng",
+  "PublicHost": "Host công cộng",
   "PublicPort": "Cổng công cộng",
-  "PrivateHost": "Địa chỉ cục bộ",
-  "PrivatePort": "Cổng cục bộ",
+  "PrivateHost": "Host riêng tư",
+  "PrivatePort": "Cổng riêng tư",
   "SftpPort": "Cổng SFTP",
-  "WithPrivateAddress": "Sử dụng địa chỉ/cổng khác để kết nối giữa các máy chủ",
-  "WithPrivateAddressHint": "Địa chỉ riệng này được sử dụng khi Node chính cần giao tiếp với Node mới. Hữu dụng khi các Node chung kết nối mạng sau NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "WithPrivateAddress": "Sử dụng host/cổng khác để kết nối giữa các máy chủ",
+  "WithPrivateAddressHint": "Địa chỉ riêng này được sử dụng khi Node chính cần giao tiếp với Node mới. Hữu dụng khi các Node cùng mạng sau NAT.",
+  "LocalNodeEdit": "Node cục bộ không có cài đặt nào có thể chỉnh sửa\n\nĐể thay đổi host hiển thị với các máy chủ được lưu trữ trên node này, hãy điều chỉnh URL chính của bảng điều khiển trong cài đặt bảng điều khiển",
+  "Deploy": "Triển khai Node",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Bước 1\n\nCài đặt PufferPanel trên máy chủ mới, [xem tài liệu để biết chi tiết](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Bước 2\n\nDừng dịch vụ PufferPanel trên máy chủ mới nếu nó đã được khởi động trong quá trình cài đặt bằng cách chạy `sudo systemctl stop pufferpanel`",
+    "Step3": "## Bước 3\n\nThay thế nội dung của tệp cấu hình PufferPanel trên máy chủ mới bằng mã bên dưới\n\nTệp cấu hình thường được tìm thấy tại `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Bước 4\n\nKích hoạt và (khởi động lại) dịch vụ PufferPanel trên máy chủ mới bằng cách chạy `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Node mới của bạn đã được thiết lập và sẵn sàng hoạt động"
   },
   "DeploymentInstruction": "Để triển khai Node, hãy cài đặt PufferPanel ở máy chủ mới và đặt file cấu hình tại `/etc/pufferpanel/`<br/>Sau đó khởi động lại PufferPanel ở máy chủ mới."
 }
