@@ -14,6 +14,7 @@ import (
 const (
 	webHostingType = "webhosting"
 	dbHostingType  = "dbhosting"
+	discordBotType = "discordbot"
 )
 
 func registerHosting(g *gin.RouterGroup) {
@@ -47,6 +48,8 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 	switch kind {
 	case "web":
 		return webHostingTemplate()
+	case "discordbot":
+		return discordBotTemplate()
 	case "mariadb":
 		return databaseTemplate("mariadb", "MariaDB", "mariadb", 3306, "/var/lib/mysql", "mariadbd", 15,
 			[]string{"11.8", "11.4", "10.11"}, map[string]string{
@@ -68,6 +71,44 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 		return phpMyAdminTemplate()
 	}
 	return nil
+}
+
+func discordBotTemplate() *pufferpanel.Server {
+	token := hostingVar("string", "", "Discord bot token", "Kept private and provided to the bot as DISCORD_TOKEN.", true, false)
+	token.Internal = true
+	docker := pufferpanel.MetadataType{Type: "docker", Metadata: map[string]interface{}{
+		"image":         "node:22-alpine",
+		"containerRoot": "/home/node/app",
+		"networkName":   "bridge",
+	}}
+	return &pufferpanel.Server{
+		Type:       pufferpanel.Type{Type: discordBotType},
+		Identifier: "discord-bot",
+		Display:    "Discord bot (Node.js)",
+		Variables: map[string]pufferpanel.Variable{
+			"token": token,
+		},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Installation: []pufferpanel.ConditionalMetadataType{
+			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+				"target": "package.json",
+				"text":   "{\n  \"name\": \"pufferpanel-discord-bot\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"main\": \"index.js\",\n  \"scripts\": { \"start\": \"node index.js\" },\n  \"dependencies\": { \"discord.js\": \"^14\" }\n}\n",
+			}}},
+			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+				"target": "index.js",
+				"text":   "const { Client, Events, GatewayIntentBits } = require('discord.js');\n\nconst token = process.env.DISCORD_TOKEN;\nif (!token) throw new Error('DISCORD_TOKEN is not configured');\n\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once(Events.ClientReady, readyClient => {\n  console.log(`Logged in as ${readyClient.user.tag}`);\n});\nclient.login(token);\n\nprocess.on('SIGTERM', () => { client.destroy(); process.exit(0); });\n",
+			}}},
+		},
+		Execution: pufferpanel.Execution{
+			Command:          `sh -c "npm install --omit=dev && node index.js"`,
+			StopCode:         15,
+			WorkingDirectory: "/home/node/app",
+			EnvironmentVariables: map[string]string{
+				"DISCORD_TOKEN": "${token}",
+			},
+		},
+	}
 }
 
 // phpMyAdminTemplate uses host networking so it can reach databases bound to the node's loopback address.

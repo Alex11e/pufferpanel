@@ -1,0 +1,58 @@
+{
+  "accountCreation": {
+    "subject": "Létrehoztuk a fiókodat",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – fiók létrehozva</h1><p>Fiókot hoztunk létre neked a(z) {{ .COMPANY_NAME }} rendszerében.</p><p><a href=\"{{ .MASTER_URL }}\">Bejelentkezés a panelre</a></p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "passwordReset": {
+    "subject": "Jelszó-visszaállítás",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – jelszó-visszaállítás</h1><p>A fiókodhoz jelszó-visszaállítást kértünk.</p><p><a href=\"{{ .RESET_LINK }}\">Új jelszó beállítása</a></p><p>Ha nem te kérted ezt, hagyd figyelmen kívül ezt az üzenetet.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "login": {
+    "subject": "Bejelentkezés a fiókodba",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – sikeres bejelentkezés</h1><p>Bejelentkezés történt a fiókodba.</p><p>Ha nem te voltál, változtasd meg a jelszavadat, és ellenőrizd a fiókod biztonsági beállításait.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "passwordChanged": {
+    "subject": "Megváltozott a jelszavad",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – jelszó megváltoztatva</h1><p>A fiókod jelszava megváltozott.</p><p>Ha nem te végezted el ezt a módosítást, azonnal állítsd vissza a jelszavadat.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "emailChanged": {
+    "subject": "Megváltozott az e-mail-címed",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – e-mail-cím megváltoztatva</h1><p>A fiókodhoz tartozó új e-mail-cím: {{ .NEW_EMAIL }}.</p><p>Ha nem te végezted el ezt a módosítást, vedd fel a kapcsolatot az adminisztrátorral.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "otpEnabled": {
+    "subject": "Bekapcsoltad a kétlépcsős hitelesítést",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – kétlépcsős hitelesítés bekapcsolva</h1><p>Bekapcsoltad a kétlépcsős hitelesítést a fiókodon.</p><p>Őrizd meg biztonságos helyen a helyreállító kódokat.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "recoveryCodesRegenerated": {
+    "subject": "Újrageneráltad a helyreállító kódokat",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – helyreállító kódok frissítve</h1><p>A kétlépcsős hitelesítéshez tartozó helyreállító kódokat újrageneráltad.</p><p>A korábbi kódok többé nem használhatók. Mentsd el biztonságosan az újakat.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "otpDisabled": {
+    "subject": "Kikapcsoltad a kétlépcsős hitelesítést",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – kétlépcsős hitelesítés kikapcsolva</h1><p>Kikapcsoltad a kétlépcsős hitelesítést a fiókodon.</p><p>Ha nem te végezted el ezt a módosítást, ellenőrizd a fiókod biztonságát.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "oauthCreated": {
+    "subject": "Létrehoztál egy OAuth-klienst",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – OAuth-kliens létrehozva</h1><p>Új OAuth-kliens jött létre a fiókodhoz.</p><p>Ha nem te hoztad létre, ellenőrizd a fiókod biztonsági beállításait.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "oauthDeleted": {
+    "subject": "Töröltél egy OAuth-klienst",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – OAuth-kliens törölve</h1><p>Egy OAuth-kliens törölve lett a fiókodból.</p><p>Ha nem te végezted el ezt a műveletet, ellenőrizd a fiókod biztonságát.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "addedToServer": {
+    "subject": "Hozzáadtak egy szerverhez",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – szerverhozzáférés</h1><p>Hozzáadtak a következő szerverhez: <strong>{{ .Server.Name }}</strong> ({{ .Server.Identifier }}).</p>{{if .RegisterToken}}<p>A hozzáféréshez először hozz létre fiókot:</p><p><a href=\"{{ .MASTER_URL }}/auth/invite?token={{ .RegisterToken }}&amp;email={{ .Email }}\">Meghívás elfogadása</a></p>{{else}}<p><a href=\"{{ .MASTER_URL }}\">Bejelentkezés a panelre</a></p>{{end}}<p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "deletedServer": {
+    "subject": "Töröltek egy szervert",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – szerver törölve</h1><p>A következő szervert törölték: <strong>{{ .Server.Name }}</strong>.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "removedFromServer": {
+    "subject": "Eltávolítottak egy szerverről",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – szerverhozzáférés megszűnt</h1><p>Eltávolítottak erről a szerverről: <strong>{{ .Server.Name }}</strong>.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  },
+  "test": {
+    "subject": "Teszt e-mail",
+    "bodyTemplate": "<!doctype html>\n<html lang=\"hu\"><body><h1>{{ .COMPANY_NAME }} – teszt e-mail</h1><p>Ez egy teszt e-mail a panel e-mail-beállításainak ellenőrzésére.</p><p>Üdvözlettel:<br>{{ .COMPANY_NAME }}</p></body></html>"
+  }
+}

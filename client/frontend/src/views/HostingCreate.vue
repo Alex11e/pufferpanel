@@ -36,9 +36,11 @@ const pmaPort = ref(3306)
 const isPma = computed(() => props.kind === 'db' && engine.value === 'phpmyadmin')
 
 const isDb = computed(() => props.kind === 'db')
-const templateKind = computed(() => (isDb.value ? engine.value : 'web'))
+const isBot = computed(() => props.kind === 'discordbot')
+const templateKind = computed(() => (isBot.value ? 'discordbot' : isDb.value ? engine.value : 'web'))
 const versions = computed(() => (template.value?.data?.[isDb.value ? 'version' : 'php_version']?.options || []).map(o => o.value))
 const identifier = /^[A-Za-z0-9_]{1,32}$/
+const botToken = ref('')
 
 function errorMessage(failure) {
   return failure?.msg || failure?.message || 'Ismeretlen hiba történt.'
@@ -49,7 +51,7 @@ const canSubmit = computed(() =>
   nodeId.value !== null &&
   Number.isInteger(Number(memory.value)) && Number(memory.value) >= 128 &&
   Number.isFinite(Number(cpu.value)) && Number(cpu.value) > 0 &&
-  (!isDb.value || (isPma.value
+  (isBot.value ? botToken.value.trim().length > 0 : !isDb.value || (isPma.value
     ? pmaHost.value.trim() !== '' && Number.isInteger(Number(pmaPort.value)) && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536
     : identifier.test(dbName.value) && identifier.test(dbUser.value) &&
       dbPassword.value.length >= 8 && (engine.value !== 'mariadb' || rootPassword.value.length >= 8)
@@ -67,7 +69,7 @@ async function loadTemplate() {
   loadError.value = ''
   try {
     template.value = (await api.get(`/api/hosting/templates/${templateKind.value}`)).data
-    if (!isPma.value) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
+    if (!isPma.value && !isBot.value) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
   } catch (failure) {
     loadError.value = errorMessage(failure)
   }
@@ -107,7 +109,9 @@ async function create() {
     const data = JSON.parse(JSON.stringify(template.value.data))
     // Private databases only listen on the node's loopback address.
     if (data.ip) data.ip.value = publicAccess.value ? '0.0.0.0' : '127.0.0.1'
-    if (isPma.value) {
+    if (isBot.value) {
+      data.token.value = botToken.value.trim()
+    } else if (isPma.value) {
       data.pma_host.value = pmaHost.value.trim()
       data.pma_port.value = Number(pmaPort.value)
     } else if (isDb.value) {
@@ -139,7 +143,7 @@ async function create() {
 
 <template>
   <div class="hosting-create">
-    <h1><icon name="server" /> {{ isDb ? 'Új adatbázis' : 'Új webtárhely' }}</h1>
+    <h1><icon name="server" /> {{ isBot ? 'Új Discord bot' : isDb ? 'Új adatbázis' : 'Új webtárhely' }}</h1>
     <loader v-if="loading || (!template && !loadError)" />
     <div v-else-if="loadError" class="error-state" role="alert">
       <p>{{ loadError }}</p>
@@ -156,7 +160,11 @@ async function create() {
       <label v-if="isDb">Adatbázis-motor
         <select v-model="engine"><option value="mariadb">MariaDB (MySQL-kompatibilis)</option><option value="postgres">PostgreSQL</option><option value="phpmyadmin">phpMyAdmin (webes MariaDB/MySQL kezelő)</option></select>
       </label>
-      <label v-if="!isPma">{{ isDb ? 'Verzió' : 'PHP verzió' }}
+      <template v-if="isBot">
+        <label>Discord bot token<input v-model="botToken" type="password" autocomplete="new-password" required></label>
+        <p class="hint">A token privát szerveradatként tárolódik, és DISCORD_TOKEN környezeti változóként jut el a bothoz. Fájlokat a Fájlok vagy SFTP felületen tölthetsz fel.</p>
+      </template>
+      <label v-if="!isPma && !isBot">{{ isDb ? 'Verzió' : 'PHP verzió' }}
         <select v-model="version"><option v-for="v in versions" :key="v" :value="v">{{ v }}</option></select>
       </label>
       <label>Memóriakorlát (MB)<input v-model.number="memory" type="number" min="128" step="128"></label>
@@ -177,7 +185,7 @@ async function create() {
         </label>
         <p class="hint">A név, felhasználó és jelszavak csak az első indításkor érvényesülnek; utólag SQL-ből módosíthatók.</p>
       </template>
-      <label v-if="!isPma" class="check"><input v-model="publicAccess" type="checkbox"> Nyilvános elérés (kikapcsolva csak a node saját gépéről, 127.0.0.1-en érhető el)</label>
+      <label v-if="isDb && !isPma" class="check"><input v-model="publicAccess" type="checkbox"> Nyilvános elérés (kikapcsolva csak a node saját gépéről, 127.0.0.1-en érhető el)</label>
       <div v-if="error" class="error">{{ error }}</div>
       <btn color="primary" type="submit" :disabled="!canSubmit || creating"><icon :name="creating ? 'loading' : 'plus'" :spin="creating" /> Létrehozás</btn>
     </form>

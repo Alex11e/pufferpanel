@@ -20,6 +20,16 @@ func TestHostingTemplates(t *testing.T) {
 	if hostingTemplate("nope") != nil {
 		t.Fatal("unknown kind should not resolve")
 	}
+	bot := hostingTemplate("discordbot")
+	if bot == nil || bot.Type.Type != discordBotType {
+		t.Fatal("Discord bot template should be available")
+	}
+	if token := bot.Variables["token"]; !token.Internal || token.UserEditable {
+		t.Fatalf("Discord token must remain private: %+v", token)
+	}
+	if bot.Environment.Metadata["image"] != "node:22-alpine" || bot.Execution.EnvironmentVariables["DISCORD_TOKEN"] != "${token}" {
+		t.Fatalf("unexpected Discord bot runtime: %+v", bot)
+	}
 	pma := hostingTemplate("phpmyadmin")
 	if pma == nil || pma.Execution.EnvironmentVariables["APACHE_PORT"] != "${port}" {
 		t.Fatal("phpMyAdmin must listen on the allocated port")

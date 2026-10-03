@@ -108,6 +108,24 @@ export default (api) => [
     props: { kind: 'db' }
   },
   {
+    path: '/hosting/discord-bot',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'DiscordBotList',
+    props: { type: 'discordbot', title: 'Discord bot', hint: 'Discord botok Node.js futtatókörnyezettel.', createRoute: 'DiscordBotCreate', empty: 'Még nincs Discord bot.' },
+    meta: {
+      tkey: 'Discord bot',
+      permission: true,
+      icon: 'server',
+      hotkey: 'g d b'
+    }
+  },
+  {
+    path: '/hosting/discord-bot/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'DiscordBotCreate',
+    props: { kind: 'discordbot' }
+  },
+  {
     path: '/dashboard',
     component: () => import('@/views/Dashboard.vue'),
     name: 'Dashboard',

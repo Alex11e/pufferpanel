@@ -275,6 +275,12 @@ func (d *Docker) GetStatsImpl(environment *pufferpanel.Environment) (*pufferpane
 	return stats, nil
 }
 
+func applyExecutionCommand(config *container.Config, command strslice.StrSlice) {
+	if len(command) > 0 {
+		config.Cmd = command
+	}
+}
+
 func (d *Docker) createContainer(environment *pufferpanel.Environment, data pufferpanel.ExecutionData, dockerClient *client.Client, ctx context.Context) error {
 	environment.Log(logging.Debug, "Creating container")
 	containerRoot := d.ContainerRoot
@@ -360,9 +366,7 @@ func (d *Docker) createContainer(environment *pufferpanel.Environment, data puff
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%s=%s", k, utils.ReplaceTokens(v, data.Variables, utils.PlainReplace)))
 	}
 
-	if len(containerConfig.Entrypoint) == 0 && len(cmdSlice) > 0 {
-		containerConfig.Entrypoint = cmdSlice
-	}
+	applyExecutionCommand(containerConfig, cmdSlice)
 
 	if containerConfig.User == "" && runtime.GOOS != "windows" {
 		containerConfig.User = fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid())

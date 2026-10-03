@@ -3,17 +3,19 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io/fs"
+	"os"
+	"strings"
+
 	"github.com/pufferpanel/pufferpanel/v3"
 	emailAssets "github.com/pufferpanel/pufferpanel/v3/assets/email"
+	huEmailAssets "github.com/pufferpanel/pufferpanel/v3/client/frontend/src/lang/hu_HU"
 	"github.com/pufferpanel/pufferpanel/v3/config"
 	"github.com/pufferpanel/pufferpanel/v3/email"
 	"github.com/pufferpanel/pufferpanel/v3/files"
 	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
-	"html/template"
-	"io/fs"
-	"os"
-	"strings"
 )
 
 type EmailService interface {
@@ -26,8 +28,9 @@ type emailTemplate struct {
 }
 
 type emailDeclaration struct {
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+	Subject      string `json:"subject"`
+	Body         string `json:"body"`
+	BodyTemplate string `json:"bodyTemplate,omitempty"`
 }
 
 var globalEmailService *emailService
@@ -39,11 +42,9 @@ type emailService struct {
 func LoadEmailService() {
 	globalEmailService = &emailService{templates: make(map[string]*emailTemplate)}
 
-	var merged fs.ReadFileFS
+	var merged fs.ReadFileFS = files.NewMergedFS(huEmailAssets.Emails, emailAssets.FS)
 	if config.EmailTemplateFolder.Value() != "" {
-		merged = files.NewMergedFS(os.DirFS(config.EmailTemplateFolder.Value()), emailAssets.FS)
-	} else {
-		merged = emailAssets.FS
+		merged = files.NewMergedFS(os.DirFS(config.EmailTemplateFolder.Value()), huEmailAssets.Emails, emailAssets.FS)
 	}
 
 	emailDefinition, err := merged.Open("emails.json")
@@ -64,12 +65,16 @@ func LoadEmailService() {
 			panic(fmt.Errorf("error processing email template subject %s: %s", templateName, err.Error()))
 		}
 
-		body, err := merged.ReadFile(data.Body)
-		if err != nil {
-			panic(fmt.Errorf("error processing email template subject %s: %s", templateName, err.Error()))
+		bodyTemplate := data.BodyTemplate
+		if bodyTemplate == "" {
+			body, readErr := merged.ReadFile(data.Body)
+			if readErr != nil {
+				panic(fmt.Errorf("error processing email template subject %s: %s", templateName, readErr.Error()))
+			}
+			bodyTemplate = string(body)
 		}
 
-		renderedTemplate, err := template.New(templateName + "-body").Parse(string(body))
+		renderedTemplate, err := template.New(templateName + "-body").Parse(bodyTemplate)
 		if err != nil {
 			panic(fmt.Errorf("error processing email template body %s: %s", templateName, err.Error()))
 		}
