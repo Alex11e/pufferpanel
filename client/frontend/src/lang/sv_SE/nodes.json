@@ -3,32 +3,32 @@
   "Nodes": "Noder",
   "Edit": "Redigera nod",
   "Add": "Lägg till nod",
-  "Create": "Create Node",
+  "Create": "Skapa nod",
   "Update": "Uppdatera nod",
   "Delete": "Ta bort nod",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Vill du verkligen ta bort noden {name}?",
+  "Created": "Nod skapad",
+  "Updated": "Nod uppdaterad",
+  "Deleted": "Nod borttagen",
+  "Reachable": "Denna nod är korrekt konfigurerad och körs",
+  "Unreachable": "Denna nod är antingen felaktigt konfigurerad eller för närvarande otillgänglig",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Operativsystem",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU-arkitektur",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker tillgängligt",
+      "false": "Docker inte tillgängligt"
     },
-    "envs": "Available Environments"
+    "envs": "Tillgängliga miljöer"
   },
   "PublicHost": "Offentlig värd",
   "PublicPort": "Offentlig port",
@@ -37,14 +37,14 @@
   "SftpPort": "SFTP-port",
   "WithPrivateAddress": "Använd en annan värd/port för server-till-server-kommunikation",
   "WithPrivateAddressHint": "Denna separata adress används när huvudnoden behöver prata med den nya noden. Användbart till exempel när noderna är i samma nätverk bakom NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "LocalNodeEdit": "Den lokala noden har inga redigerbara inställningar\n\nFör att ändra värden som visas för servrar på denna nod, justera panelens huvud-URL i panelinställningarna",
+  "Deploy": "Distribuera nod",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Steg 1\n\nInstallera PufferPanel på den nya servern, [se dokumentationen för detaljer](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Steg 2\n\nStoppa PufferPanel-tjänsten på den nya servern om den startades under installationen genom att köra `sudo systemctl stop pufferpanel`",
+    "Step3": "## Steg 3\n\nErsätt innehållet i PufferPanels konfigurationsfil på den nya servern med koden nedan\n\nKonfigurationsfilen finns vanligtvis på `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Steg 4\n\nAktivera och (starta om) PufferPanel-tjänsten på den nya servern genom att köra `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Din nya nod är nu konfigurerad och redo att användas"
   },
   "DeploymentInstruction": "För att distribuera noden, installera PufferPanel på den nya servern och placera konfigurationsfilen i `/etc/pufferpanel/`<br/>Starta om PufferPanel på den nya servern efteråt."
 }

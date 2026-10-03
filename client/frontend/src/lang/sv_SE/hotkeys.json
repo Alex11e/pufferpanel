@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Tangentbordsgenvägar",
   "Global": {
-    "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "Title": "Globalt",
+    "g a": "Gå till konto",
+    "g c": "Gå till panelkonfiguration",
+    "g n": "Gå till noder",
+    "g s": "Gå till servrar",
+    "g t": "Gå till mallar",
+    "g u": "Gå till användare",
+    "/": "Global sökning"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Konto",
+    "t 2": "Gå till fliken för tvåfaktorsautentisering",
+    "t a": "Gå till fliken för kontouppgifter",
+    "t o": "Gå till OAuth-fliken",
+    "t p": "Gå till fliken för lösenord",
+    "t s": "Gå till fliken för inställningar"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Servrar",
+    "c": "Skapa en ny server",
+    "l": "Fokusera den första servern i listan"
   },
   "ServerView": {
     "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "t c": "Gå till konsolfliken",
+    "t i": "Gå till statistikfliken",
+    "t f": "Gå till filfliken",
+    "t s": "Gå till inställningsfliken",
+    "t u": "Gå till användarfliken",
+    "t 6": "Gå till SFTP-fliken",
+    "t 7": "Gå till API-fliken",
+    "t a": "Gå till adminfliken",
+    "c c": "Fokusera kommandointmatning",
+    "c x": "Rensa konsolen",
+    "r r": "Starta servern",
+    "r s": "Stoppa servern",
+    "r k": "Döda servern",
+    "r i": "Installera servern",
+    "f a": "Arkivera innehållet i aktuell katalog",
+    "f c d": "Skapa ny katalog",
+    "f c f": "Skapa ny fil",
+    "f s a": "Arkivera valda filer",
+    "f s d": "Radera valda filer",
+    "f d": "Ladda upp katalog",
+    "f l": "Fokusera första filen/mappen i listan",
+    "f r": "Ladda om fillistan",
+    "f u": "Ladda upp filer",
+    "a e": "Redigera serverdefinition",
+    "a r": "Ladda om serverdefinitionen från disk"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Noder",
+    "c": "Skapa en ny nod",
+    "l": "Fokusera den första noden i listan"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Användare",
+    "c": "Skapa en ny användare",
+    "l": "Fokusera den första användaren i listan"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Mallar",
+    "c": "Skapa en ny mall",
+    "l": "Fokusera den första mallen i listan"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Mallredigerare",
+    "t e": "Gå till fliken för miljö",
+    "t g": "Gå till fliken för allmänt",
+    "t h": "Gå till fliken för hooks",
+    "t i": "Gå till fliken för installation",
+    "t j": "Gå till JSON-fliken",
+    "t r": "Gå till fliken för körningskonfiguration",
+    "t v": "Gå till fliken för variabler"
   }
 }
