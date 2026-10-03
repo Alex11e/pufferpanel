@@ -1,16 +1,16 @@
 {
   "Settings": "Impostazioni",
-  "PanelSettings": "Impostazioni Pannello",
-  "SavePanelSettings": "Salva Impostazioni Pannello",
-  "EmailSettings": "Impostazioni Email",
-  "SaveEmailSettings": "Salva Impostazioni Email",
-  "MasterUrl": "URL Principale",
-  "MasterUrlHint": "L'URL di base che il pannello può essere raggiunto nel formato http://localhost:8080",
-  "CompanyName": "Nome Azienda",
-  "DefaultTheme": "Tema Predefinito",
+  "PanelSettings": "Impostazioni pannello",
+  "SavePanelSettings": "Salva impostazioni pannello",
+  "EmailSettings": "Impostazioni email",
+  "SaveEmailSettings": "Salva impostazioni email",
+  "MasterUrl": "URL principale",
+  "MasterUrlHint": "L'URL di base sotto cui è raggiungibile il pannello, nel formato http://localhost:8080",
+  "CompanyName": "Nome azienda",
+  "DefaultTheme": "Tema predefinito",
   "RegistrationEnabled": "Consenti agli utenti di registrarsi",
-  "RegistrationEnabledHint": "Gli utenti registrati non possono fare nulla fino a quando non sono stati concessi i permessi\n\nDisabilitare questo impedisce solo la registrazione diretta, invito a un server e la pagina Utenti non sono interessati",
-  "EmailProvider": "Provider Email",
+  "RegistrationEnabledHint": "Gli utenti auto-registrati non possono fare nulla fino a quando non sono stati concessi i permessi\n\nDisabilitare questo impedisce solo la registrazione diretta, l'invito a un server e la pagina Utenti non sono interessati",
+  "EmailProvider": "Provider email",
   "emailProviders": {
     "none": "Nessuno",
     "smtp": "SMTP",
@@ -18,7 +18,7 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Indirizzo Mittente",
+    "from": "Indirizzo mittente",
     "domain": "Dominio",
     "key": "Chiave API",
     "host": "Host",
@@ -28,5 +28,5 @@
   "Saved": "Salvato",
   "TestEmail": "Email di prova",
   "TestEmailSent": "Email di prova inviata",
-  "TestEmailFailed": "L'Email di prova non è riuscita a essere inviata"
+  "TestEmailFailed": "Invio dell'email di prova non riuscito"
 }

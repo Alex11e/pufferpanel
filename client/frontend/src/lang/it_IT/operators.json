@@ -1,71 +1,71 @@
 {
-  "ConditionHint": "Eseguire questo passaggio solo se la condizione è soddisfatta",
+  "ConditionHint": "Esegui questo passaggio solo se la condizione è soddisfatta",
   "mojangdl": {
     "generic": "Scarica Minecraft",
     "formatted": "Scarica Minecraft"
   },
   "writefile": {
     "generic": "Scrivi su file",
-    "formatted": "scrivere su file"
+    "formatted": "Scrivi nel file {target}"
   },
   "resolveforgeversion": {
-    "generic": "Risolvi La Versione Di Minecraft Forge",
-    "formatted": "Risolvi La Versione Di Minecraft Forge"
+    "generic": "Risolvi la versione di Minecraft Forge",
+    "formatted": "Risolvi la versione di Minecraft Forge"
   },
   "download": {
     "generic": "Scarica file",
-    "formatted": "Scarica {file} <unk> Scarica i file {n}",
+    "formatted": "Scarica {file} | Scarica {n} file",
     "files": "File"
   },
   "command": {
     "generic": "Esegui comando(i)",
-    "formatted": "Esegui i comandi {command} <unk> Esegui {n}",
+    "formatted": "Esegui {command} | Esegui {n} comandi",
     "commands": "Comandi"
   },
   "alterfile": {
     "generic": "Modifica un file",
-    "formatted": "Modifica file",
+    "formatted": "Modifica il file {target}",
     "regex": "Tratta la stringa di ricerca come espressione regolare",
     "search": "Cerca",
-    "replace": "Sostituisci le partite con"
+    "replace": "Sostituisci le corrispondenze con"
   },
   "move": {
     "generic": "Sposta o rinomina un file",
     "formatted": "Sposta il file {source} in {target}",
-    "source": "Percorso Sorgente",
-    "target": "Percorso Destinazione"
+    "source": "Percorso sorgente",
+    "target": "Percorso destinazione"
   },
   "mkdir": {
     "generic": "Crea una directory",
     "formatted": "Crea directory {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Archivia file",
+    "formatted": "Archivia {file} in {destination} | Archivia {n} file in {destination}",
+    "source": "File da archiviare"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Estrai archivio",
+    "formatted": "Estrai {source} in {destination}",
+    "destination": "Destinazione"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Messaggio console",
+    "formatted": "Stampa \"{message}\" nella console",
+    "message": "Messaggio"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Attendi",
+    "formatted": "Attendi {duration}",
+    "duration": "Durata",
+    "durationHint": "Le unità di tempo valide sono ns, us, ms, s, m e h. Più unità possono essere combinate. Ad esempio `1m45s`"
   },
   "steamgamedl": {
     "generic": "Installa da Steam",
     "formatted": "Installa ID App Steam {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Ramo (lascia vuoto per il predefinito)",
+    "branchPassword": "Password del ramo (se necessaria)"
   },
   "javadl": {
     "generic": "Installa Java",
@@ -74,37 +74,37 @@
   "forgedl": {
     "generic": "Scarica Minecraft Forge",
     "formatted": "Scarica Minecraft Forge",
-    "outputVariable": "Output variable"
+    "outputVariable": "Variabile di output"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Scarica Minecraft Neoforge",
+    "formatted": "Scarica Minecraft Neoforge",
+    "outputVariable": "Variabile di output"
   },
   "spongeforgedl": {
     "generic": "Scarica Minecraft SpongeForge",
     "formatted": "Scarica Minecraft SpongeForge",
-    "releaseType": "Tipo Di Rilascio"
+    "releaseType": "Tipo di rilascio"
   },
   "fabricdl": {
-    "generic": "Scarica Tessuto Minecraft",
-    "formatted": "Scarica Tessuto Minecraft"
+    "generic": "Scarica Minecraft Fabric",
+    "formatted": "Scarica Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Scarica progetto PaperMC",
+    "formatted": "Scarica {project} in {target}",
+    "project": "Progetto PaperMC",
+    "build": "Numero di build"
   },
   "curseforge": {
-    "generic": "Scarica Da CurseForge",
-    "formatted": "Scarica Da CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Scarica da CurseForge",
+    "formatted": "Scarica da CurseForge",
+    "projectId": "ID progetto",
+    "fileId": "ID file",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Installa Node.js",
+    "formatted": "Installa Node.js {version}"
   }
 }
