@@ -55,3 +55,41 @@ func TestSameCommit(t *testing.T) {
 		t.Fatal("unknown build hash must not match a commit")
 	}
 }
+
+func TestCommitSourceAsset(t *testing.T) {
+	sha := "0123456789abcdef0123456789abcdef01234567"
+	asset := commitSourceAsset("pufferpanel/pufferpanel", sha)
+	if asset.Name != "pufferpanel-0123456-source.zip" {
+		t.Fatalf("unexpected source archive name %q", asset.Name)
+	}
+	if asset.URL != "https://github.com/pufferpanel/pufferpanel/archive/"+sha+".zip" {
+		t.Fatalf("unexpected source archive URL %q", asset.URL)
+	}
+	if invalid := commitSourceAsset("example.com/repo", sha); invalid.URL != "" {
+		t.Fatalf("invalid repository produced a download URL: %q", invalid.URL)
+	}
+	if invalid := commitSourceAsset("pufferpanel/pufferpanel", "not-a-commit"); invalid.URL != "" {
+		t.Fatalf("invalid commit produced a download URL: %q", invalid.URL)
+	}
+}
+
+func TestTrustedUpdateDownloadURL(t *testing.T) {
+	tests := []struct {
+		url  string
+		want bool
+	}{
+		{url: "https://github.com/pufferpanel/pufferpanel/archive/abc.zip", want: true},
+		{url: "https://codeload.github.com/pufferpanel/pufferpanel/legacy.zip/abc", want: true},
+		{url: "https://release-assets.githubusercontent.com/release.zip", want: true},
+		{url: "https://objects.githubusercontent.com/release.zip", want: true},
+		{url: "http://github.com/pufferpanel/pufferpanel/archive/abc.zip", want: false},
+		{url: "https://github.com.evil.example/file.zip", want: false},
+		{url: "https://user:pass@github.com/file.zip", want: false},
+		{url: "https://example.com/file.zip", want: false},
+	}
+	for _, test := range tests {
+		if got := trustedUpdateDownloadURL(test.url); got != test.want {
+			t.Errorf("trustedUpdateDownloadURL(%q) = %t, want %t", test.url, got, test.want)
+		}
+	}
+}

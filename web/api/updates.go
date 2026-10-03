@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -31,6 +32,9 @@ var updateTagPattern = regexp.MustCompile(`^v?\d+\.\d+(\.\d+)?(-[0-9A-Za-z.-]+)?
 var updateCommitPattern = regexp.MustCompile(`^commit:([0-9a-fA-F]{7,40})$`)
 var updateFullCommitPattern = regexp.MustCompile(`^[0-9a-fA-F]{40}$`)
 var updateHexPattern = regexp.MustCompile(`^[0-9a-f]+$`)
+var updateAssetNamePattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,200}$`)
+
+const maxUpdateDownloadSize int64 = 1 << 30
 
 type updateAsset struct {
 	Name string `json:"name"`
@@ -105,9 +109,11 @@ func registerUpdates(g *gin.RouterGroup) {
 	g.GET("/update", middleware.RequiresPermission(scopes.ScopeAdmin), getUpdateInfo)
 	g.GET("/update/releases", middleware.RequiresPermission(scopes.ScopeAdmin), getUpdateReleases)
 	g.POST("/update/apply", middleware.RequiresPermission(scopes.ScopeAdmin), applyUpdate)
+	g.POST("/update/download", middleware.RequiresPermission(scopes.ScopeAdmin), downloadUpdateAsset)
 	g.OPTIONS("/update", response.CreateOptions("GET"))
 	g.OPTIONS("/update/releases", response.CreateOptions("GET"))
 	g.OPTIONS("/update/apply", response.CreateOptions("POST"))
+	g.OPTIONS("/update/download", response.CreateOptions("POST"))
 }
 
 var processStart = time.Now()
@@ -138,6 +144,123 @@ func getUpdateInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+func downloadUpdateAsset(c *gin.Context) {
+	var request struct {
+		Version   string `json:"version"`
+		AssetName string `json:"assetName"`
+	}
+	if err := c.ShouldBindJSON(&request); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if !updateAssetNamePattern.MatchString(request.AssetName) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "invalid update asset name"}})
+		return
+	}
+	tag, err := normalizeUpdateTag(request.Version)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": err.Error()}})
+		return
+	}
+	info, err := fetchUpdateInfo(c.Request.Context(), false, tag)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "could not validate selected update"}})
+		return
+	}
+	var asset *updateAsset
+	for index := range info.Assets {
+		if info.Assets[index].Name == request.AssetName {
+			asset = &info.Assets[index]
+			break
+		}
+	}
+	if asset == nil || !trustedUpdateDownloadURL(asset.URL) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "update asset is not available"}})
+		return
+	}
+	if asset.Size > maxUpdateDownloadSize {
+		c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": gin.H{"msg": "update asset exceeds the 1 GiB download limit"}})
+		return
+	}
+
+	folder := config.UpdateDownloadsFolder.Value()
+	if err = os.MkdirAll(folder, 0700); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"msg": "could not create update download folder"}})
+		return
+	}
+	filename := strings.ReplaceAll(tag, ":", "-") + "-" + request.AssetName
+	destination := filepath.Join(folder, filename)
+	if existing, statErr := os.Stat(destination); statErr == nil && existing.Mode().IsRegular() {
+		c.JSON(http.StatusOK, gin.H{"name": filename, "path": destination, "size": existing.Size()})
+		return
+	} else if statErr != nil && !errors.Is(statErr, os.ErrNotExist) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"msg": "could not inspect update download path"}})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 15*time.Minute)
+	defer cancel()
+	requestURL, err := http.NewRequestWithContext(ctx, http.MethodGet, asset.URL, nil)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "invalid update asset URL"}})
+		return
+	}
+	requestURL.Header.Set("User-Agent", "PufferPanel/"+pufferpanel.Version)
+	client := http.Client{
+		Timeout: 15 * time.Minute,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if len(via) >= 5 || !trustedUpdateDownloadURL(req.URL.String()) {
+				return fmt.Errorf("untrusted update download redirect")
+			}
+			return nil
+		},
+	}
+	result, err := client.Do(requestURL)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "could not download update asset"}})
+		return
+	}
+	defer func() { _ = result.Body.Close() }()
+	if result.StatusCode != http.StatusOK {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": fmt.Sprintf("update download returned HTTP %d", result.StatusCode)}})
+		return
+	}
+	if result.ContentLength > maxUpdateDownloadSize {
+		c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": gin.H{"msg": "update asset exceeds the 1 GiB download limit"}})
+		return
+	}
+	temporary, err := os.CreateTemp(folder, ".update-download-*")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"msg": "could not create update download file"}})
+		return
+	}
+	temporaryPath := temporary.Name()
+	defer func() { _ = os.Remove(temporaryPath) }()
+	size, copyErr := io.Copy(temporary, io.LimitReader(result.Body, maxUpdateDownloadSize+1))
+	closeErr := temporary.Close()
+	if copyErr != nil || closeErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"msg": "could not save update asset"}})
+		return
+	}
+	if size > maxUpdateDownloadSize {
+		c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": gin.H{"msg": "update asset exceeds the 1 GiB download limit"}})
+		return
+	}
+	if err = os.Rename(temporaryPath, destination); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"msg": "could not finalize update download"}})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"name": filename, "path": destination, "size": size})
+}
+
+func trustedUpdateDownloadURL(rawURL string) bool {
+	parsed, err := url.Parse(rawURL)
+	if err != nil || parsed.Scheme != "https" || parsed.User != nil {
+		return false
+	}
+	host := strings.ToLower(parsed.Hostname())
+	return host == "github.com" || host == "codeload.github.com" || host == "release-assets.githubusercontent.com" || host == "objects.githubusercontent.com" || strings.HasSuffix(host, ".githubusercontent.com")
 }
 
 func normalizeUpdateTag(tag string) (string, error) {
@@ -253,6 +376,7 @@ func fetchUpdateInfo(ctx context.Context, force bool, requestedTag string) (*upd
 				URL:         commit.URL,
 				Notes:       commit.Commit.Message,
 				PublishedAt: commit.Commit.Committer.Date,
+				Assets:      []updateAsset{commitSourceAsset(repo, commit.SHA)},
 			}
 			if len(updateState.cached.Notes) > 4000 {
 				updateState.cached.Notes = updateState.cached.Notes[:4000]
@@ -394,6 +518,17 @@ func toCommitUpdateRelease(commit githubCommit) updateRelease {
 		Name:        name,
 		URL:         link,
 		PublishedAt: commit.Commit.Committer.Date,
+	}
+}
+
+func commitSourceAsset(repo, sha string) updateAsset {
+	if !updateRepoPattern.MatchString(repo) || !updateFullCommitPattern.MatchString(sha) {
+		return updateAsset{}
+	}
+	shortSHA := strings.ToLower(sha[:7])
+	return updateAsset{
+		Name: "pufferpanel-" + shortSHA + "-source.zip",
+		URL:  "https://github.com/" + repo + "/archive/" + strings.ToLower(sha) + ".zip",
 	}
 }
 

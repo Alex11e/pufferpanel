@@ -33,6 +33,9 @@ const releaseListError = ref('')
 const system = ref(null)
 const updateApplying = ref(false)
 const updateActionError = ref('')
+const updateDownloadError = ref('')
+const updateDownloadResult = ref('')
+const downloadingAsset = ref('')
 const autoDownloadUpdates = ref(readStoredBoolean('pufferpanel.autoDownloadUpdates', true))
 const autoDownloadStorageUnavailable = ref(false)
 const downloadedUpdateVersions = readStoredArray('pufferpanel.autoDownloadedUpdateVersions')
@@ -141,15 +144,23 @@ function matchingUpdateAsset() {
   )?.asset || null
 }
 
-function downloadAsset(asset) {
-  const link = document.createElement('a')
-  link.href = asset.url
-  link.download = asset.name
-  link.rel = 'noopener noreferrer'
-  link.target = '_blank'
-  document.body.append(link)
-  link.click()
-  link.remove()
+async function downloadAsset(asset) {
+  if (!update.value?.latest || downloadingAsset.value) return false
+  downloadingAsset.value = asset.name
+  updateDownloadError.value = ''
+  try {
+    const response = await api.post('/api/admin/update/download', {
+      version: update.value.latest,
+      assetName: asset.name
+    })
+    updateDownloadResult.value = `Letöltve a panel gépére: ${response.data.path}`
+    return true
+  } catch (failure) {
+    updateDownloadError.value = updateErrorMessage(failure)
+    return false
+  } finally {
+    downloadingAsset.value = ''
+  }
 }
 
 function maybeAutoDownloadUpdate() {
@@ -160,13 +171,18 @@ function maybeAutoDownloadUpdate() {
   if (downloadedUpdateVersions.has(tag)) return
 
   downloadedUpdateVersions.add(tag)
-  downloadAsset(asset)
-  try {
-    localStorage.setItem('pufferpanel.autoDownloadedUpdateVersions', JSON.stringify([...downloadedUpdateVersions].slice(-20)))
-    autoDownloadStorageUnavailable.value = false
-  } catch {
-    autoDownloadStorageUnavailable.value = true
-  }
+  downloadAsset(asset).then(success => {
+    if (!success) {
+      downloadedUpdateVersions.delete(tag)
+      return
+    }
+    try {
+      localStorage.setItem('pufferpanel.autoDownloadedUpdateVersions', JSON.stringify([...downloadedUpdateVersions].slice(-20)))
+      autoDownloadStorageUnavailable.value = false
+    } catch {
+      autoDownloadStorageUnavailable.value = true
+    }
+  })
 }
 
 watch(autoDownloadUpdates, enabled => {
@@ -366,6 +382,8 @@ onMounted(load)
         <p v-if="autoDownloadStorageUnavailable" class="hint" role="status">A böngésző nem tudja tartósan elmenteni ezt a beállítást.</p>
         <p v-if="releaseListError" class="error" role="alert">Verziólista: {{ releaseListError }}</p>
         <p v-if="updateActionError" class="error" role="alert">{{ updateActionError }}</p>
+        <p v-if="updateDownloadError" class="error" role="alert">{{ updateDownloadError }}</p>
+        <p v-if="updateDownloadResult" class="hint" role="status">{{ updateDownloadResult }}</p>
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
         <div v-else-if="!update" class="empty">Ellenőrzés...</div>
         <template v-else>
@@ -379,11 +397,16 @@ onMounted(load)
             <btn v-if="update.canApply" color="primary" :disabled="update.running || updateApplying" @click="applyUpdate"><icon :name="update.running || updateApplying ? 'loading' : 'download'" :spin="update.running || updateApplying" /> {{ update.running || updateApplying ? 'Frissítés folyamatban' : 'Frissítés indítása' }}</btn>
             <small v-else>Az egykattintásos frissítéshez állítsd be a <code>panel.update.command</code> értéket a config fájlban.</small>
           </div>
+          <p v-if="update.latest.startsWith('commit:') && update.assets?.length" class="hint">A commit letöltése forráskód ZIP, nem lefordított telepítő.</p>
           <div v-if="update.assets?.length" class="release-assets">
             <h3>Letölthető fájlok</h3>
-            <a v-for="asset in update.assets" :key="asset.url" :href="asset.url" :download="asset.name" target="_blank" rel="noopener noreferrer" class="release-asset">
-              <span>{{ asset.name }} <small>{{ formatAssetSize(asset.size) }}</small></span><strong><icon name="download" /> Letöltés</strong>
-            </a>
+            <div v-for="asset in update.assets" :key="asset.url" class="release-asset">
+              <span>{{ asset.name }} <small>{{ formatAssetSize(asset.size) }}</small></span>
+              <btn :disabled="Boolean(downloadingAsset)" @click="downloadAsset(asset)">
+                <icon :name="downloadingAsset === asset.name ? 'loading' : 'download'" :spin="downloadingAsset === asset.name" />
+                {{ downloadingAsset === asset.name ? 'Mentés folyamatban' : 'Mentés a panel gépére' }}
+              </btn>
+            </div>
           </div>
           <small v-if="update.lastResult">Utolsó frissítés: {{ update.lastResult }}</small>
         </template>
@@ -473,9 +496,8 @@ section { border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(
 .update-notes { max-height: 180px; overflow: auto; white-space: pre-wrap; padding: 10px; border-radius: 6px; background: var(--color-background); font-size: .85rem; }
 .release-assets { display: grid; gap: 8px; margin-top: 14px; }
 .release-assets h3 { margin: 0; }
-.release-asset { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 6px; text-decoration: none; }
+.release-asset { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 6px; }
 .release-asset > span { flex: 1; overflow-wrap: anywhere; }
-.release-asset > strong { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .release-asset small { margin-left: 8px; white-space: nowrap; }
 @media (max-width: 700px) { .heading { flex-direction: column; align-items: flex-start; } .announcement-form { grid-template-columns: 1fr; } }
 </style>

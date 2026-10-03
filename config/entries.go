@@ -44,6 +44,7 @@ var SessionKey = asString("panel.sessionKey", "")
 var RegistrationEnabled = asBool("panel.registrationEnabled", true)
 var PrivateKey = asString("panel.token", "")
 var UpdateRepo = asString("panel.update.repo", "Alex11e/pufferpanel")
+var UpdateDownloadsFolder = asDataFolder("panel.update.downloads", "updates")
 
 // UpdateCommand is set only by the host owner in the config file; the web UI can run it but never change it.
 var UpdateCommand = asString("panel.update.command", "")
