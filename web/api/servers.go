@@ -1438,9 +1438,88 @@ func proxyServerRequest(c *gin.Context) {
 
 const maxPluginDownloadSize = 64 * 1024 * 1024
 const modrinthAPIBase = "https://api.modrinth.com/v2"
+const modrinthPlayitProjectID = "og7kbNBC"
+const modrinthPlayitProjectSlug = "playit-companion"
 
 type pluginDownloadRequest struct {
 	URL string `json:"url"`
+}
+
+func normalizeModrinthQuery(query string) string {
+	trimmed := strings.TrimSpace(query)
+	if trimmed == "" {
+		return ""
+	}
+	if strings.Contains(strings.ToLower(trimmed), "playit") {
+		return "playit companion"
+	}
+	return trimmed
+}
+
+func selectBestModrinthPluginVersion(versions []struct {
+	VersionNumber string   `json:"version_number"`
+	GameVersions  []string `json:"game_versions"`
+	Loaders       []string `json:"loaders"`
+	Files         []struct {
+		URL      string `json:"url"`
+		Filename string `json:"filename"`
+		Primary  bool   `json:"primary"`
+	} `json:"files"`
+}, requestedGameVersion string) (string, string, string) {
+	preferredLoaders := []string{"paper", "purpur", "spigot", "bukkit"}
+	preferredProject := strings.EqualFold(requestedGameVersion, "")
+
+	for _, version := range versions {
+		if requestedGameVersion != "" && !containsString(version.GameVersions, requestedGameVersion) {
+			continue
+		}
+		if !containsAnyLoader(version.Loaders, preferredLoaders) {
+			continue
+		}
+		if !preferredProject && !containsString(version.GameVersions, requestedGameVersion) {
+			continue
+		}
+		for _, file := range version.Files {
+			if file.Primary || len(version.Files) == 1 {
+				return file.URL, file.Filename, version.VersionNumber
+			}
+		}
+	}
+
+	for _, version := range versions {
+		if requestedGameVersion != "" && !containsString(version.GameVersions, requestedGameVersion) {
+			continue
+		}
+		for _, file := range version.Files {
+			if file.Primary || len(version.Files) == 1 {
+				return file.URL, file.Filename, version.VersionNumber
+			}
+		}
+	}
+
+	return "", "", ""
+}
+
+func containsString(values []string, needle string) bool {
+	for _, value := range values {
+		if strings.EqualFold(value, needle) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsAnyLoader(loaders []string, preferred []string) bool {
+	loaderSet := make(map[string]struct{}, len(loaders))
+	for _, loader := range loaders {
+		loaderSet[strings.ToLower(strings.TrimSpace(loader))] = struct{}{}
+	}
+	for _, preferredLoader := range preferred {
+		if _, ok := loaderSet[strings.ToLower(strings.TrimSpace(preferredLoader))]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 func searchModrinthPlugins(c *gin.Context) {
@@ -1449,6 +1528,7 @@ func searchModrinthPlugins(c *gin.Context) {
 		response.HandleError(c, errors.New("a plugin search query of up to 100 characters is required"), http.StatusBadRequest)
 		return
 	}
+	query = normalizeModrinthQuery(query)
 	endpoint, _ := url.Parse(modrinthAPIBase + "/search")
 	params := endpoint.Query()
 	params.Set("query", query)
@@ -1472,11 +1552,15 @@ func searchModrinthPlugins(c *gin.Context) {
 
 func getModrinthPluginVersion(c *gin.Context) {
 	projectID := c.Param("projectId")
+	requestedGameVersion := strings.TrimSpace(c.Query("gameVersion"))
+	if strings.EqualFold(projectID, modrinthPlayitProjectID) || strings.EqualFold(projectID, modrinthPlayitProjectSlug) || strings.Contains(strings.ToLower(projectID), "playit") {
+		projectID = modrinthPlayitProjectID
+	}
 	endpoint, _ := url.Parse(modrinthAPIBase + "/project/" + url.PathEscape(projectID) + "/version")
 	params := endpoint.Query()
 	params.Set("loaders", `["paper","purpur","spigot","bukkit"]`)
-	if gameVersion := strings.TrimSpace(c.Query("gameVersion")); gameVersion != "" {
-		params.Set("game_versions", "[\""+gameVersion+"\"]")
+	if requestedGameVersion != "" {
+		params.Set("game_versions", "[\""+requestedGameVersion+"\"]")
 	}
 	params.Set("featured", "true")
 	params.Set("include_changelog", "false")
@@ -1493,7 +1577,9 @@ func getModrinthPluginVersion(c *gin.Context) {
 		return
 	}
 	var versions []struct {
-		VersionNumber string `json:"version_number"`
+		VersionNumber string   `json:"version_number"`
+		GameVersions  []string `json:"game_versions"`
+		Loaders       []string `json:"loaders"`
 		Files         []struct {
 			URL      string `json:"url"`
 			Filename string `json:"filename"`
@@ -1503,13 +1589,9 @@ func getModrinthPluginVersion(c *gin.Context) {
 	if err = json.NewDecoder(remoteResponse.Body).Decode(&versions); response.HandleError(c, err, http.StatusBadGateway) {
 		return
 	}
-	for _, version := range versions {
-		for _, file := range version.Files {
-			if file.Primary || len(version.Files) == 1 {
-				c.JSON(http.StatusOK, gin.H{"url": file.URL, "filename": file.Filename, "version": version.VersionNumber})
-				return
-			}
-		}
+	if fileURL, fileName, versionNumber := selectBestModrinthPluginVersion(versions, requestedGameVersion); fileURL != "" {
+		c.JSON(http.StatusOK, gin.H{"url": fileURL, "filename": fileName, "version": versionNumber})
+		return
 	}
 	response.HandleError(c, errors.New("no compatible plugin version was found"), http.StatusNotFound)
 }

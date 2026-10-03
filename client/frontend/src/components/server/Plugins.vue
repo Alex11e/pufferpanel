@@ -79,7 +79,8 @@ async function searchCatalogue() {
 async function installCataloguePlugin(plugin) {
   installing.value = true
   try {
-    const version = await api.get(`/api/servers/${props.server.id}/plugins/modrinth/${plugin.project_id}/version`)
+    const gameVersion = props.server?.version || props.server?.minecraftVersion
+    const version = await api.get(`/api/servers/${props.server.id}/plugins/modrinth/${plugin.project_id}/version${gameVersion ? `?gameVersion=${encodeURIComponent(gameVersion)}` : ''}`)
     await api.post(`/api/servers/${props.server.id}/plugins/download`, { url: version.data.url })
     toast.success(t('servers.PluginInstalled'))
     await refresh()
