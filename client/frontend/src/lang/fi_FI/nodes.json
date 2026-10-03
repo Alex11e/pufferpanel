@@ -3,32 +3,32 @@
   "Nodes": "Solmut",
   "Edit": "Muokkaa solmua",
   "Add": "Lisää solmu",
-  "Create": "Create Node",
+  "Create": "Luo solmu",
   "Update": "Päivitä solmu",
   "Delete": "Poista solmu",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Haluatko varmasti poistaa solmun {name}?",
+  "Created": "Solmu luotu",
+  "Updated": "Solmu päivitetty",
+  "Deleted": "Solmu poistettu",
+  "Reachable": "Tämä solmu on määritetty oikein ja käynnissä",
+  "Unreachable": "Tätä solmua ei ole joko määritetty oikein tai se ei ole tällä hetkellä saatavilla",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Käyttöjärjestelmä",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU-arkkitehtuuri",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker saatavilla",
+      "false": "Docker ei ole saatavilla"
     },
-    "envs": "Available Environments"
+    "envs": "Saatavilla olevat ympäristöt"
   },
   "PublicHost": "Julkinen Isäntä",
   "PublicPort": "Julkinen Portti",
@@ -36,15 +36,15 @@
   "PrivatePort": "Yksityinen Portti",
   "SftpPort": "SFTP Portti",
   "WithPrivateAddress": "Käytä toista isäntää/porttia palvelimelle tiedonsiirtoa varten",
-  "WithPrivateAddressHint": "Tätä erillistä osoitetta käytetään, kun pääsolmu tarvitsee keskustella uuden solmun kanssa. Hyödyllinen esimerkki on kun palvelimet ovat samassa verkostossa NAT: n takana.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "WithPrivateAddressHint": "Tätä erillistä osoitetta käytetään, kun pääsolmu tarvitsee keskustella uuden solmun kanssa. Hyödyllinen esimerkiksi kun solmut ovat samassa verkossa NAT:n takana.",
+  "LocalNodeEdit": "Paikallisella solmulla ei ole muokattavia asetuksia\n\nMuuttaaksesi tällä solmulla isännöityjen palvelimien näyttämää isäntää, säädä paneelin pää-URL paneelin asetuksissa",
+  "Deploy": "Ota solmu käyttöön",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Vaihe 1\n\nAsenna PufferPanel uudelle palvelimelle, [katso lisätiedot dokumentaatiosta](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Vaihe 2\n\nPysäytä PufferPanel-palvelu uudella palvelimella, jos se käynnistettiin asennuksen aikana, suorittamalla `sudo systemctl stop pufferpanel`",
+    "Step3": "## Vaihe 3\n\nKorvaa PufferPanelin asetustiedoston sisältö uudella palvelimella alla olevalla koodilla\n\nAsetustiedosto löytyy yleensä polusta `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Vaihe 4\n\nOta käyttöön ja (uudelleen)käynnistä PufferPanel-palvelu uudella palvelimella suorittamalla `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Uusi solmusi on nyt määritetty ja valmis käytettäväksi"
   },
   "DeploymentInstruction": "Jos haluat ottaa solmun käyttöön, asenna PufferPanel uudelle palvelimelle ja lisää asetustiedosto `/etc/pufferpanel/`<br/>Käynnistä PufferPanel uudelleen uudella palvelimella tämän jälkeen."
 }

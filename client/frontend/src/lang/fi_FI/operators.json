@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Suorita tämä vaihe vain, jos tämä ehto täyttyy",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Lataa Minecraft",
+    "formatted": "Lataa Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Kirjoita tiedostoon",
+    "formatted": "Kirjoita tiedostoon {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Selvitä Minecraft Forge -versio",
+    "formatted": "Selvitä Minecraft Forge -versio"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Lataa tiedosto(t)",
+    "formatted": "Lataa {file} | Lataa {n} tiedostoa",
+    "files": "Tiedostot"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Suorita komento(ja)",
+    "formatted": "Suorita {command} | Suorita {n} komentoa",
+    "commands": "Komennot"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Muokkaa tiedostoa",
+    "formatted": "Muokkaa tiedostoa {target}",
+    "regex": "Käsittele hakumerkkijonoa säännöllisenä lausekkeena",
+    "search": "Etsi",
+    "replace": "Korvaa osumat"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Siirrä tai nimeä tiedosto uudelleen",
+    "formatted": "Siirrä tiedosto {source} kohteeseen {target}",
+    "source": "Lähdepolku",
+    "target": "Kohdepolku"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Luo hakemisto",
+    "formatted": "Luo hakemisto {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arkistoi tiedostot",
+    "formatted": "Arkistoi {file} kohteeseen {destination} | Arkistoi {n} tiedostoa kohteeseen {destination}",
+    "source": "Arkistoitavat tiedostot"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Pura arkisto",
+    "formatted": "Pura {source} kohteeseen {destination}",
+    "destination": "Kohde"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Konsoliviesti",
+    "formatted": "Tulosta \"{message}\" konsoliin",
+    "message": "Viesti"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Odota",
+    "formatted": "Odota {duration}",
+    "duration": "Kesto",
+    "durationHint": "Kelvolliset aikayksiköt ovat ns, us, ms, s, m ja h. Useita yksiköitä voi yhdistää. Esimerkiksi `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Asenna Steamista",
+    "formatted": "Asenna Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Haara (jätä tyhjäksi oletusarvoa varten)",
+    "branchPassword": "Haaran salasana (tarvittaessa)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Asenna Java",
+    "formatted": "Asenna Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Lataa Minecraft Forge",
+    "formatted": "Lataa Minecraft Forge",
+    "outputVariable": "Tulostemuuttuja"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Lataa Minecraft Neoforge",
+    "formatted": "Lataa Minecraft Neoforge",
+    "outputVariable": "Tulostemuuttuja"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Lataa Minecraft SpongeForge",
+    "formatted": "Lataa Minecraft SpongeForge",
+    "releaseType": "Julkaisutyyppi"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Lataa Minecraft Fabric",
+    "formatted": "Lataa Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Lataa PaperMC-projekti",
+    "formatted": "Lataa {project} kohteeseen {target}",
+    "project": "PaperMC-projekti",
+    "build": "Build-numero"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Lataa CurseForgesta",
+    "formatted": "Lataa CurseForgesta",
+    "projectId": "Projektin ID",
+    "fileId": "Tiedoston ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Asenna Node.js",
+    "formatted": "Asenna Node.js {version}"
   }
 }

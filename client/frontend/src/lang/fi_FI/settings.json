@@ -1,15 +1,15 @@
 {
   "Settings": "Asetukset",
-  "PanelSettings": "Paneelin Asetukset",
-  "SavePanelSettings": "Save Panel Settings",
-  "EmailSettings": "Sähköpostin Asetukset",
-  "SaveEmailSettings": "Save Email Settings",
-  "MasterUrl": "Pääkäyttäjän URL",
-  "MasterUrlHint": "The base URL the panel can be reached under in the format http://localhost:8080",
-  "CompanyName": "Yrityksen Nimi",
+  "PanelSettings": "Paneelin asetukset",
+  "SavePanelSettings": "Tallenna paneelin asetukset",
+  "EmailSettings": "Sähköpostin asetukset",
+  "SaveEmailSettings": "Tallenna sähköpostin asetukset",
+  "MasterUrl": "Pää-URL",
+  "MasterUrlHint": "Perus-URL, jonka kautta paneeliin pääsee, muodossa http://localhost:8080",
+  "CompanyName": "Yrityksen nimi",
   "DefaultTheme": "Oletusteema",
   "RegistrationEnabled": "Salli käyttäjien rekisteröityä itse",
-  "RegistrationEnabledHint": "Self registered users can't do anything until given permissions\n\nDisabling this only prevents direct registration, invitation to a server and the Users page are not affected",
+  "RegistrationEnabledHint": "Itse rekisteröityneet käyttäjät eivät voi tehdä mitään ennen kuin heille on myönnetty käyttöoikeudet\n\nTämän poistaminen käytöstä estää vain suoran rekisteröitymisen; kutsu palvelimelle ja Käyttäjät-sivu eivät ole vaikutuksen alaisia",
   "EmailProvider": "Sähköpostin tarjoaja",
   "emailProviders": {
     "none": "Ei mitään",
@@ -18,15 +18,15 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Sender Address",
-    "domain": "Domain",
-    "key": "API Key",
-    "host": "Host",
-    "username": "Username",
-    "password": "Password"
+    "from": "Lähettäjän osoite",
+    "domain": "Verkkotunnus",
+    "key": "API-avain",
+    "host": "Isäntä",
+    "username": "Käyttäjänimi",
+    "password": "Salasana"
   },
-  "Saved": "Saved",
-  "TestEmail": "Test Email",
-  "TestEmailSent": "Test email sent",
-  "TestEmailFailed": "Test email failed to send"
+  "Saved": "Tallennettu",
+  "TestEmail": "Testisähköposti",
+  "TestEmailSent": "Testisähköposti lähetetty",
+  "TestEmailFailed": "Testisähköpostin lähetys epäonnistui"
 }

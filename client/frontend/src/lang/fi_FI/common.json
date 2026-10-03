@@ -1,9 +1,9 @@
 {
-  "Name": "nimi",
+  "Name": "Nimi",
   "Language": "Kieli",
-  "Online": "päällä",
+  "Online": "Päällä",
   "Offline": "Poissa päältä",
-  "Installing": "Installing",
+  "Installing": "Asennetaan",
   "Unknown": "Tuntematon",
   "Loading": "Ladataan...",
   "Description": "Kuvaus",
@@ -12,54 +12,54 @@
   "Close": "Sulje",
   "Host": "Isäntä",
   "Port": "Portti",
-  "Collapse": "Romahdus",
+  "Collapse": "Supista",
   "Expand": "Laajenna",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Copy": "Kopioi leikepöydälle",
+  "Copied": "Kopioitu leikepöydälle",
+  "Back": "Takaisin",
   "Next": "Seuraava",
   "Details": "Lisätiedot",
   "ErrorDetails": "Virheen Tiedot",
   "HelpTranslate": "Auta meitä kääntämään PufferPanelia",
   "Protocol": "Protokolla",
   "Add": "Lisää",
-  "Apply": "Toteuta",
+  "Apply": "Käytä",
   "Confirm": "Vahvista",
-  "Condition": "Tila",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Condition": "Ehto",
+  "Discard": "Hylkää",
+  "ConfirmLeave": "Sinulla on tallentamattomia muutoksia. Haluatko hylätä nämä muutokset ja poistua tältä sivulta?",
   "theme": {
     "Theme": "Teema",
     "Mode": "Tila",
     "mode": {
       "Light": "Vaalea",
       "Dark": "Tumma",
-      "DarkHighContrast": "Dark (High Contrast)",
+      "DarkHighContrast": "Tumma (korkea kontrasti)",
       "Auto": "Automaattinen"
     },
     "BaseColor": "Pohjaväri",
-    "ServerTypeDisplay": "Palvelimen Tyypin Näyttö",
+    "ServerTypeDisplay": "Palvelimen tyypin näyttö",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Kuvake + tausta",
       "Icon": "Kuvake",
-      "None": "Tyhjä"
+      "None": "Ei mitään"
     },
-    "ListType": "Luettelon Tyyli",
+    "ListType": "Luettelon tyyli",
     "listType": {
       "Grid": "Ruudukko",
       "List": "Luettelo"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Fontin koko",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Oletus"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Fontin tyyppi",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Oletus",
+      "A11y": "Saavutettavuus optimoitu"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Ei tuloksia",
+  "Yes": "Kyllä",
+  "No": "Ei"
 }

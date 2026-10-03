@@ -2,12 +2,12 @@
   "Credentials": "OAuth 2 -asiakasohjelman käyttäjätiedot",
   "ClientId": "Käyttäjän ID",
   "ClientSecret": "Asiakasohjelman salainen tunnus",
-  "NewClientWarning": "Note down the client secret, after closing this dialog it will never be shown again. Losing or forgetting it will render this client completely unusable.",
+  "NewClientWarning": "Kirjoita asiakasohjelman salainen tunnus muistiin, sillä tämän valintaikkunan sulkemisen jälkeen sitä ei näytetä enää koskaan. Sen menettäminen tai unohtaminen tekee tästä asiakasohjelmasta täysin käyttökelvottoman.",
   "Create": "Luo uusi OAuth2-asiakasohjelma",
   "UnnamedClient": "Nimetön OAuth2-asiakasohjelma",
   "Docs": "Löydä API-dokumentaatio täältä",
-  "Clients": "OAuth2 Asiakasohjelmat",
+  "Clients": "OAuth2-asiakasohjelmat",
   "Delete": "Poista {clientName}?",
-  "ConfirmDelete": "I am aware of the effects that deleting this OAuth2 client will have and wish to proceed.",
-  "AccountDescription": "The OAuth2 Clients listed here inherit all of your accounts permissions"
+  "ConfirmDelete": "Olen tietoinen siitä, mitä seurauksia tämän OAuth2-asiakasohjelman poistamisella on, ja haluan jatkaa.",
+  "AccountDescription": "Tässä luetellut OAuth2-asiakasohjelmat perivät kaikki tilisi käyttöoikeudet"
 }
