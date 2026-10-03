@@ -30,6 +30,13 @@ func TestHostingTemplates(t *testing.T) {
 	if bot.Environment.Metadata["image"] != "node:22-alpine" || bot.Execution.EnvironmentVariables["DISCORD_TOKEN"] != "${token}" {
 		t.Fatalf("unexpected Discord bot runtime: %+v", bot)
 	}
+	pythonBot := hostingTemplate("discordbot-python")
+	if pythonBot == nil || pythonBot.Type.Type != discordBotType {
+		t.Fatal("Python Discord bot template should be available")
+	}
+	if pythonBot.Environment.Metadata["image"] != "python:3.12-alpine" || pythonBot.Execution.EnvironmentVariables["DISCORD_TOKEN"] != "${token}" {
+		t.Fatalf("unexpected Python Discord bot runtime: %+v", pythonBot)
+	}
 	pma := hostingTemplate("phpmyadmin")
 	if pma == nil || pma.Execution.EnvironmentVariables["APACHE_PORT"] != "${port}" {
 		t.Fatal("phpMyAdmin must listen on the allocated port")
