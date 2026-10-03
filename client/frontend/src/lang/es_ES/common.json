@@ -2,7 +2,7 @@
   "Name": "Nombre",
   "Language": "Idioma",
   "Online": "En línea",
-  "Offline": "Apagado",
+  "Offline": "Desconectado",
   "Installing": "Instalando",
   "Unknown": "Desconocido",
   "Loading": "Cargando...",
@@ -13,7 +13,7 @@
   "Host": "Servidor",
   "Port": "Puerto",
   "Collapse": "Colapsar",
-  "Expand": "Ampliar",
+  "Expand": "Expandir",
   "Copy": "Copiar al portapapeles",
   "Copied": "Copiado al portapapeles",
   "Back": "Atrás",
@@ -40,7 +40,7 @@
     "BaseColor": "Color Base",
     "ServerTypeDisplay": "Visualización del tipo de servidor",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Icono + Fondo",
       "Icon": "Icono",
       "None": "Ninguno"
     },
@@ -53,13 +53,13 @@
     "fontSize": {
       "Default": "Por defecto"
     },
-    "FontFace": "Cara del Texto",
+    "FontFace": "Tipo de letra",
     "fontFace": {
       "Default": "Por defecto",
       "A11y": "Accesibilidad optimizada"
     }
   },
   "NoResults": "No hay resultados",
-  "Yes": "Si",
+  "Yes": "Sí",
   "No": "No"
 }

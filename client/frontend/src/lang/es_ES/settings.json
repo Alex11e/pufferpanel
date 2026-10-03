@@ -5,12 +5,12 @@
   "EmailSettings": "Configuración del correo",
   "SaveEmailSettings": "Guardar configuración del correo electrónico",
   "MasterUrl": "URL Principal",
-  "MasterUrlHint": "El enlace desde el cual accederás al panel de control siguiendo el siguiente formato: http://localhost:8080",
+  "MasterUrlHint": "La URL base desde la cual se puede acceder al panel, en el formato http://localhost:8080",
   "CompanyName": "Nombre de la empresa",
   "DefaultTheme": "Tema por defecto",
   "RegistrationEnabled": "Permitir que los usuarios se puedan registrar",
-  "RegistrationEnabledHint": "Los usuarios autorregistrados no pueden realizar ninguna acción hasta que se les otorguen permisos. \n\nDeshabilitar esto solo impide el registro directo, las invitaciones a un servidor y la página de Usuarios no se ven afectadas",
-  "EmailProvider": "Proveedor de e-mail",
+  "RegistrationEnabledHint": "Los usuarios autorregistrados no pueden realizar ninguna acción hasta que se les otorguen permisos.\n\nDeshabilitar esto solo impide el registro directo, las invitaciones a un servidor y la página de Usuarios no se ven afectadas",
+  "EmailProvider": "Proveedor de correo electrónico",
   "emailProviders": {
     "none": "Ninguno",
     "smtp": "SMTP",
@@ -26,7 +26,7 @@
     "password": "Contraseña"
   },
   "Saved": "Guardado",
-  "TestEmail": "Email de prueba",
-  "TestEmailSent": "Email de prueba enviado",
-  "TestEmailFailed": "No se ha podido enviar el email de prueba"
+  "TestEmail": "Correo de prueba",
+  "TestEmailSent": "Correo de prueba enviado",
+  "TestEmailFailed": "No se ha podido enviar el correo de prueba"
 }
