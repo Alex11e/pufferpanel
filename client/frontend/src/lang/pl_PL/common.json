@@ -3,20 +3,20 @@
   "Language": "Język",
   "Online": "Online",
   "Offline": "Offline",
-  "Installing": "Installing",
+  "Installing": "Instalowanie",
   "Unknown": "Nieznany",
   "Loading": "Ładowanie...",
-  "Description": "Description",
+  "Description": "Opis",
   "Save": "Zapisz",
   "Cancel": "Anuluj",
   "Close": "Zamknij",
-  "Host": "Nazwa hosta",
+  "Host": "Host",
   "Port": "Port",
   "Collapse": "Zwiń",
   "Expand": "Rozwiń",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Copy": "Kopiuj do schowka",
+  "Copied": "Skopiowano do schowka",
+  "Back": "Wstecz",
   "Next": "Dalej",
   "Details": "Szczegóły",
   "ErrorDetails": "Szczegóły błędu",
@@ -24,42 +24,42 @@
   "Protocol": "Protokół",
   "Add": "Dodaj",
   "Apply": "Zastosuj",
-  "Confirm": "Confirm",
-  "Condition": "Condition",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Confirm": "Potwierdź",
+  "Condition": "Warunek",
+  "Discard": "Odrzuć",
+  "ConfirmLeave": "Masz niezapisane zmiany. Czy chcesz odrzucić te zmiany i opuścić tę stronę?",
   "theme": {
     "Theme": "Motyw",
     "Mode": "Tryb",
     "mode": {
       "Light": "Jasny",
       "Dark": "Ciemny",
-      "DarkHighContrast": "Dark (High Contrast)",
+      "DarkHighContrast": "Ciemny (wysoki kontrast)",
       "Auto": "Auto"
     },
     "BaseColor": "Kolor podstawowy",
     "ServerTypeDisplay": "Wyświetlanie typu serwera",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikona + tło",
       "Icon": "Ikona",
       "None": "Brak"
     },
-    "ListType": "Typ Listy",
+    "ListType": "Typ listy",
     "listType": {
       "Grid": "Siatka",
       "List": "Lista"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Rozmiar czcionki",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Domyślny"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Krój czcionki",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Domyślny",
+      "A11y": "Dostępność zoptymalizowana"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Brak wyników",
+  "Yes": "Tak",
+  "No": "Nie"
 }

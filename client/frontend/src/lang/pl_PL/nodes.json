@@ -10,38 +10,38 @@
   "Created": "Utworzono węzeł",
   "Updated": "Zaktualizowano węzeł",
   "Deleted": "Usunięto węzeł",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "Reachable": "Ten węzeł jest poprawnie skonfigurowany i działa",
+  "Unreachable": "Ten węzeł jest albo niepoprawnie skonfigurowany, albo obecnie niedostępny",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "System operacyjny",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "Architektura CPU",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker dostępny",
+      "false": "Docker niedostępny"
     },
-    "envs": "Available Environments"
+    "envs": "Dostępne środowiska"
   },
-  "PublicHost": "Publiczny Host",
-  "PublicPort": "Publiczny Port",
-  "PrivateHost": "Prywatny Host",
-  "PrivatePort": "Prywatny Port",
+  "PublicHost": "Publiczny host",
+  "PublicPort": "Publiczny port",
+  "PrivateHost": "Prywatny host",
+  "PrivatePort": "Prywatny port",
   "SftpPort": "Port SFTP",
-  "WithPrivateAddress": "Użyj innego hosta/portu dla serwera do komunikacji z serwerem",
-  "WithPrivateAddressHint": "Ten oddzielny adres jest używany, gdy maszyna główna musi rozmawiać z nową maszyną. Przydatne na przykład, gdy maszyny znajdują się w tej samej sieci za NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Wdrożenie węzła",
+  "WithPrivateAddress": "Użyj innego hosta/portu do komunikacji serwer-serwer",
+  "WithPrivateAddressHint": "Ten oddzielny adres jest używany, gdy główny węzeł musi komunikować się z nowym węzłem. Przydatne na przykład, gdy węzły znajdują się w tej samej sieci za NAT.",
+  "LocalNodeEdit": "Lokalny węzeł nie ma żadnych edytowalnych ustawień\n\nAby zmienić host wyświetlany dla serwerów hostowanych na tym węźle, dostosuj główny adres URL panelu w ustawieniach panelu",
+  "Deploy": "Wdróż węzeł",
   "deploy": {
     "Step1": "## Krok 1\n\nZainstaluj PufferPanel na nowym serwerze, [zobacz dokumentację po szczegóły](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Krok 2\n\nZatrzymaj usługę PufferPanel na nowym serwerze, jeśli została uruchomiona podczas instalacji poprzez uruchomienie `sudo systemctl stop pufferpanel`",
+    "Step2": "## Krok 2\n\nZatrzymaj usługę PufferPanel na nowym serwerze, jeśli została uruchomiona podczas instalacji, uruchamiając `sudo systemctl stop pufferpanel`",
     "Step3": "## Krok 3\n\nZastąp zawartość pliku konfiguracyjnego PufferPanel na nowym serwerze kodem poniżej\n\nPlik konfiguracyjny znajduje się zwykle w `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
     "Step4": "## Krok 4\n\nWłącz i (ponownie) uruchom usługę PufferPanel na nowym serwerze, uruchamiając `sudo systemctl enable --now pufferpanel`",
     "Step5": "### Twój nowy węzeł jest teraz skonfigurowany i gotowy do działania"
