@@ -1,12 +1,14 @@
 <script setup>
 import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
 import Btn from '@/components/ui/Btn.vue'
 
 const api = inject('api')
 const events = inject('events')
+const { t } = useI18n()
 const overview = ref(null)
 const ports = ref([])
 const activity = ref([])
@@ -32,6 +34,8 @@ const system = ref(null)
 const updateApplying = ref(false)
 const updateActionError = ref('')
 const autoDownloadUpdates = ref(readStoredBoolean('pufferpanel.autoDownloadUpdates', true))
+const autoDownloadStorageUnavailable = ref(false)
+const downloadedUpdateVersions = readStoredArray('pufferpanel.autoDownloadedUpdateVersions')
 let updatePoll = null
 let updatePageActive = true
 
@@ -41,6 +45,15 @@ function readStoredBoolean(key, defaultValue) {
     return value === null ? defaultValue : value === 'true'
   } catch {
     return defaultValue
+  }
+}
+
+function readStoredArray(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || '[]')
+    return new Set(Array.isArray(value) ? value.filter(item => typeof item === 'string') : [])
+  } catch {
+    return new Set()
   }
 }
 
@@ -144,24 +157,25 @@ function maybeAutoDownloadUpdate() {
   const asset = matchingUpdateAsset()
   if (!autoDownloadUpdates.value || !update.value?.updateAvailable || !tag || !asset) return
 
-  let downloaded = []
-  try {
-    downloaded = JSON.parse(localStorage.getItem('pufferpanel.autoDownloadedUpdateVersions') || '[]')
-  } catch {
-    downloaded = []
-  }
-  if (!Array.isArray(downloaded) || downloaded.includes(tag)) return
+  if (downloadedUpdateVersions.has(tag)) return
 
+  downloadedUpdateVersions.add(tag)
   downloadAsset(asset)
   try {
-    localStorage.setItem('pufferpanel.autoDownloadedUpdateVersions', JSON.stringify([...downloaded, tag].slice(-20)))
-  } catch {}
+    localStorage.setItem('pufferpanel.autoDownloadedUpdateVersions', JSON.stringify([...downloadedUpdateVersions].slice(-20)))
+    autoDownloadStorageUnavailable.value = false
+  } catch {
+    autoDownloadStorageUnavailable.value = true
+  }
 }
 
 watch(autoDownloadUpdates, enabled => {
   try {
     localStorage.setItem('pufferpanel.autoDownloadUpdates', String(enabled))
-  } catch {}
+    autoDownloadStorageUnavailable.value = false
+  } catch {
+    autoDownloadStorageUnavailable.value = true
+  }
   if (enabled) maybeAutoDownloadUpdate()
 })
 
@@ -310,7 +324,7 @@ function bulkAction(action) {
 }
 
 function activityTitle(record) {
-  return `${record.username} — ${record.action}`
+  return `${record.username} — ${t(`servers.activity.${record.action}`)}`
 }
 
 onMounted(load)
@@ -349,6 +363,7 @@ onMounted(load)
           <btn :disabled="updateChecking" @click="refreshUpdates"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
         </div>
         <label class="update-auto-download"><input v-model="autoDownloadUpdates" type="checkbox"> Automatikus letöltés új verzió esetén</label>
+        <p v-if="autoDownloadStorageUnavailable" class="hint" role="status">A böngésző nem tudja tartósan elmenteni ezt a beállítást.</p>
         <p v-if="releaseListError" class="error" role="alert">Verziólista: {{ releaseListError }}</p>
         <p v-if="updateActionError" class="error" role="alert">{{ updateActionError }}</p>
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>

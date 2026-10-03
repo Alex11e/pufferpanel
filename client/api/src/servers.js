@@ -290,8 +290,8 @@ export class ServerApi {
     return res.data
   }
 
-  async setAutomaticBackup(id, enabled, retention) {
-    await this._api.put(`/api/servers/${id}/backup/automatic`, { enabled, retention })
+  async setAutomaticBackup(id, enabled, retention, intervalHours = 24) {
+    await this._api.put(`/api/servers/${id}/backup/automatic`, { enabled, retention, intervalHours })
     return true
   }
 
@@ -479,10 +479,11 @@ class Server {
     return await this._api.server.getActivity(this.id)
   }
 
-  async setAutomaticBackup(enabled, retention) {
-    await this._api.server.setAutomaticBackup(this.id, enabled, retention)
+  async setAutomaticBackup(enabled, retention, intervalHours = 24) {
+    await this._api.server.setAutomaticBackup(this.id, enabled, retention, intervalHours)
     this.autoBackupEnabled = enabled
     this.autoBackupRetention = retention
+    this.autoBackupInterval = intervalHours
   }
 
   async updateMetadata(metadata) {

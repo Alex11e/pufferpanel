@@ -28,20 +28,92 @@ func recordActivity(c *gin.Context) {
 }
 
 func activityFromRequest(c *gin.Context) (action, serverID, details string) {
-	parts := strings.Split(strings.Trim(c.Request.URL.Path, "/"), "/")
-	if len(parts) < 3 { return }
+	return classifyActivity(c.Request.Method, c.Request.URL.Path)
+}
+
+func classifyActivity(method, requestPath string) (action, serverID, details string) {
+	parts := strings.Split(strings.Trim(requestPath, "/"), "/")
+	if len(parts) < 3 || parts[0] != "api" || parts[1] != "servers" {
+		return
+	}
 	serverID = parts[2]
-	if len(parts) >= 4 && parts[3] == "file" {
+	if serverID == "" {
+		return "", "", ""
+	}
+	if len(parts) == 3 {
+		switch method {
+		case http.MethodPut:
+			action = "server.create"
+		case http.MethodDelete:
+			action = "server.delete"
+		}
+		return
+	}
+
+	switch parts[3] {
+	case "start", "restart", "stop", "kill", "install", "reload":
+		if len(parts) == 4 && method == http.MethodPost {
+			action = "server." + parts[3]
+		}
+	case "name":
+		if len(parts) == 5 && method == http.MethodPut {
+			action, details = "server.rename", parts[4]
+		}
+	case "metadata":
+		if len(parts) == 4 && method == http.MethodPut {
+			action = "server.metadata.update"
+		}
+	case "definition":
+		if len(parts) == 4 && method == http.MethodPut {
+			action = "server.definition.update"
+		}
+	case "data":
+		if len(parts) == 4 && (method == http.MethodPost || method == http.MethodPut) {
+			action = "server.data.update"
+		}
+	case "console":
+		if len(parts) == 4 && method == http.MethodPost {
+			action = "server.console.command"
+		}
+	case "file":
+		if len(parts) < 5 {
+			return
+		}
 		details = strings.Join(parts[4:], "/")
-		switch c.Request.Method { case http.MethodGet: action = "server.file.read"; case http.MethodPut, http.MethodPost: action = "server.file.write"; case http.MethodDelete: action = "server.file.delete" }
-		return
+		switch method {
+		case http.MethodGet:
+			action = "server.file.read"
+		case http.MethodPut, http.MethodPost:
+			action = "server.file.write"
+		case http.MethodDelete:
+			action = "server.file.delete"
+		}
+	case "plugins":
+		if len(parts) == 5 && parts[4] == "download" && method == http.MethodPost {
+			action, details = "server.plugin.install", "plugins/"
+		}
+	case "backup":
+		if len(parts) == 5 && parts[4] == "create" && method == http.MethodPost {
+			action = "server.backup.create"
+		} else if len(parts) == 5 && parts[4] == "automatic" && method == http.MethodPut {
+			action = "server.backup.automatic.update"
+		} else if len(parts) == 5 && method == http.MethodDelete {
+			action, details = "server.backup.delete", parts[4]
+		} else if len(parts) == 6 && parts[4] == "restore" && method == http.MethodPost {
+			action, details = "server.backup.restore", parts[5]
+		} else if len(parts) == 6 && parts[4] == "download" && method == http.MethodGet {
+			action, details = "server.backup.download", parts[5]
+		}
+	case "tasks":
+		if len(parts) == 6 && parts[5] == "run" && method == http.MethodPost {
+			action, details = "server.task.run", parts[4]
+		}
+	case "archive", "extract":
+		if len(parts) >= 5 && method == http.MethodPost {
+			action = "server.file." + parts[3]
+			details = strings.Join(parts[4:], "/")
+		}
 	}
-	if len(parts) >= 5 && parts[3] == "plugins" && parts[4] == "download" && c.Request.Method == http.MethodPost {
-		action = "server.plugin.install"
-		details = "plugins/"
-		return
-	}
-	if len(parts) >= 5 && parts[3] == "backup" && parts[4] == "create" && c.Request.Method == http.MethodPost { action = "server.backup.create" }
 	return
 }
 

@@ -23,11 +23,13 @@ const backupError = ref('')
 const serverStatus = ref('unknown')
 const automaticEnabled = ref(false)
 const automaticRetention = ref(24)
+const automaticInterval = ref(24)
 const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
 
 onMounted(async () => {
   automaticEnabled.value = props.server.autoBackupEnabled
   automaticRetention.value = props.server.autoBackupRetention || 24
+  automaticInterval.value = props.server.autoBackupInterval || 24
   await Promise.all([loadBackups(), loadServerStatus()])
 })
 
@@ -41,7 +43,7 @@ async function loadServerStatus() {
 }
 
 async function saveAutomaticBackup() {
-  await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value))
+  await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value), Number(automaticInterval.value))
   toast.success(t('backup.AutomaticSaved'))
 }
 
@@ -193,8 +195,9 @@ const intl = new Intl.DateTimeFormat(
     <div v-if="server.hasScope('server.backup.create')" class="automatic-backup">
       <h3 v-text="t('backup.AutomaticHeader')" />
       <toggle v-model="automaticEnabled" :label="t('backup.AutomaticEnabled')" :hint="t('backup.AutomaticHint')" />
+      <text-field v-model="automaticInterval" :label="t('backup.AutomaticIntervalHours')" type="number" />
       <text-field v-model="automaticRetention" :label="t('backup.Retention')" type="number" />
-      <btn color="primary" :disabled="automaticRetention < 1 || automaticRetention > 168" @click="saveAutomaticBackup()"><icon name="save" />{{ t('common.Save') }}</btn>
+      <btn color="primary" :disabled="automaticInterval < 1 || automaticInterval > 168 || automaticRetention < 1 || automaticRetention > 168" @click="saveAutomaticBackup()"><icon name="save" />{{ t('common.Save') }}</btn>
     </div>
 
     <div class="group-header">

@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -13,8 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// StartAutomaticBackups runs enabled server backups once each hour. Each panel
-// instance owns its own scheduler, so deployments should run a single panel.
+// StartAutomaticBackups checks enabled servers hourly and creates backups when
+// their configured interval has elapsed. Deployments should run a single panel.
 func StartAutomaticBackups() {
 	go func() {
 		ticker := time.NewTicker(time.Hour)
@@ -27,7 +28,10 @@ func StartAutomaticBackups() {
 
 func RunAutomaticBackups() {
 	db, err := database.GetConnection()
-	if err != nil { logging.Error.Printf("automatic backups: %s", err); return }
+	if err != nil {
+		logging.Error.Printf("automatic backups: %s", err)
+		return
+	}
 	var servers []*models.Server
 	if err = db.Preload("Node").Where("auto_backup_enabled = ?", true).Find(&servers).Error; err != nil {
 		logging.Error.Printf("automatic backups: %s", err)
@@ -39,6 +43,15 @@ func RunAutomaticBackups() {
 }
 
 func runAutomaticBackup(db *gorm.DB, server *models.Server) {
+	var lastBackup models.Backup
+	err := db.Where("server_id = ? AND name LIKE ?", server.Identifier, "Automatic %").Order("created_at DESC").First(&lastBackup).Error
+	if err == nil && !automaticBackupDue(lastBackup.CreatedAt, time.Now(), server.AutoBackupInterval) {
+		return
+	}
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logging.Error.Printf("automatic backup lookup for %s failed: %s", server.Identifier, err)
+		return
+	}
 	ns := &Node{DB: db}
 	response, err := ns.CallNode(&server.Node, http.MethodPost, "/daemon/server/"+server.Identifier+"/backup/create", nil, nil)
 	defer utils.CloseResponse(response)
@@ -61,6 +74,16 @@ func runAutomaticBackup(db *gorm.DB, server *models.Server) {
 		return
 	}
 	pruneAutomaticBackups(db, server)
+}
+
+func automaticBackupDue(lastBackup, now time.Time, intervalHours uint) bool {
+	if lastBackup.IsZero() {
+		return true
+	}
+	if intervalHours == 0 {
+		intervalHours = 24
+	}
+	return now.Sub(lastBackup) >= time.Duration(intervalHours)*time.Hour
 }
 
 func pruneAutomaticBackups(db *gorm.DB, server *models.Server) {

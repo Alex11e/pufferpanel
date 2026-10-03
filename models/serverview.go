@@ -8,25 +8,26 @@ import (
 )
 
 type ServerView struct {
-	Identifier   string           `json:"id,omitempty"`
-	Name         string           `json:"name,omitempty"`
-	NodeId       uint             `json:"nodeId,omitempty"`
-	Node         *NodeView        `json:"node,omitempty"`
-	Data         interface{}      `json:"data,omitempty"`
-	Users        []ServerUserView `json:"users,omitempty"`
-	IP           string           `json:"ip,omitempty"`
-	Port         uint16           `json:"port,omitempty"`
-	Subdomain    *string          `json:"subdomain,omitempty"`
-	Allocations  []Allocation     `json:"allocations,omitempty"`
-	AutoBackupEnabled bool         `json:"autoBackupEnabled"`
-	AutoBackupRetention uint       `json:"autoBackupRetention,omitempty"`
-	Notes        string           `json:"notes,omitempty"`
-	Tags         string           `json:"tags,omitempty"`
-	ExpiresAt    *time.Time       `json:"expiresAt,omitempty"`
-	BackupLimit  uint             `json:"backupLimit,omitempty"`
-	Type         string           `json:"type"`
-	Icon         string           `json:"icon,omitempty"`
-	CanGetStatus bool             `json:"canGetStatus,omitempty"`
+	Identifier          string           `json:"id,omitempty"`
+	Name                string           `json:"name,omitempty"`
+	NodeId              uint             `json:"nodeId,omitempty"`
+	Node                *NodeView        `json:"node,omitempty"`
+	Data                interface{}      `json:"data,omitempty"`
+	Users               []ServerUserView `json:"users,omitempty"`
+	IP                  string           `json:"ip,omitempty"`
+	Port                uint16           `json:"port,omitempty"`
+	Subdomain           *string          `json:"subdomain,omitempty"`
+	Allocations         []Allocation     `json:"allocations,omitempty"`
+	AutoBackupEnabled   bool             `json:"autoBackupEnabled"`
+	AutoBackupRetention uint             `json:"autoBackupRetention,omitempty"`
+	AutoBackupInterval  uint             `json:"autoBackupInterval,omitempty"`
+	Notes               string           `json:"notes,omitempty"`
+	Tags                string           `json:"tags,omitempty"`
+	ExpiresAt           *time.Time       `json:"expiresAt,omitempty"`
+	BackupLimit         uint             `json:"backupLimit,omitempty"`
+	Type                string           `json:"type"`
+	Icon                string           `json:"icon,omitempty"`
+	CanGetStatus        bool             `json:"canGetStatus,omitempty"`
 } //@name ServerInfo
 
 type ServerUserView struct {
@@ -41,13 +42,14 @@ func FromServer(server *Server) *ServerView {
 		NodeId:     server.NodeID,
 		IP:         server.IP,
 		Port:       server.Port,
-		Subdomain: server.Subdomain, Allocations: server.Allocations,
+		Subdomain:  server.Subdomain, Allocations: server.Allocations,
 		AutoBackupEnabled: server.AutoBackupEnabled, AutoBackupRetention: server.AutoBackupRetention,
-		Notes: server.Notes, Tags: server.Tags,
+		AutoBackupInterval: server.AutoBackupInterval,
+		Notes:              server.Notes, Tags: server.Tags,
 		ExpiresAt: server.ExpiresAt, BackupLimit: server.BackupLimit,
-		Type:       server.Type,
-		Icon:       server.Icon,
-		Node:       FromNode(&server.Node),
+		Type: server.Type,
+		Icon: server.Icon,
+		Node: FromNode(&server.Node),
 	}
 
 	return model

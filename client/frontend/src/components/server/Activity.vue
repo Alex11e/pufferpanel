@@ -16,7 +16,7 @@ onMounted(async () => { records.value = await props.server.getActivity() })
     <loader v-if="records === null" />
     <div v-else-if="records.length === 0" class="alert info" v-text="t('servers.NoActivity')" />
     <div v-for="record in records" :key="record.id" class="list-item">
-      <div class="title">{{ record.username }} — {{ record.action }}</div>
+      <div class="title">{{ record.username }} — {{ t(`servers.activity.${record.action}`) }}</div>
       <div class="subline">{{ record.details || t('servers.NoDetails') }} · {{ record.ipAddress }} · {{ intl.format(new Date(record.createdAt)) }}</div>
     </div>
   </div>

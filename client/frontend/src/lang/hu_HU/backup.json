@@ -17,8 +17,9 @@
     "DeletePrompt": "Végleges biztonsági mentés törlése",
     "DeletePromptBody": "Tényleg szeretnéd törölni a biztonsági mentést véglegesen?"
     ,"AutomaticHeader": "Automatikus mentések"
-    ,"AutomaticEnabled": "Automatikus mentés készítése óránként"
-    ,"AutomaticHint": "Óránként fut, amíg a panel elérhető. A mentéshez az elsődleges szervernek le kell állítva lennie."
+    ,"AutomaticEnabled": "Automatikus mentések engedélyezése"
+    ,"AutomaticHint": "A beállított időközönként fut, amíg a panel elérhető. A mentéshez az elsődleges szervernek le kell állítva lennie."
+    ,"AutomaticIntervalHours": "Mentés gyakorisága (óra, 1–168)"
     ,"Retention": "Megtartandó mentések száma (1–168)"
     ,"AutomaticSaved": "Automatikus mentési beállítások elmentve"
 }

@@ -1396,8 +1396,9 @@ func validServerIcon(icon string) bool {
 func updateAutomaticBackup(c *gin.Context) {
 	server := getServerFromGin(c)
 	var settings struct {
-		Enabled   bool `json:"enabled"`
-		Retention uint `json:"retention"`
+		Enabled       bool `json:"enabled"`
+		Retention     uint `json:"retention"`
+		IntervalHours uint `json:"intervalHours"`
 	}
 	if err := c.ShouldBindJSON(&settings); response.HandleError(c, err, http.StatusBadRequest) {
 		return
@@ -1406,8 +1407,16 @@ func updateAutomaticBackup(c *gin.Context) {
 		response.HandleError(c, pufferpanel.ErrFieldNotBetween("retention", 1, 168), http.StatusBadRequest)
 		return
 	}
+	if settings.IntervalHours == 0 {
+		settings.IntervalHours = 24
+	}
+	if settings.IntervalHours > 168 {
+		response.HandleError(c, pufferpanel.ErrFieldNotBetween("intervalHours", 1, 168), http.StatusBadRequest)
+		return
+	}
 	server.AutoBackupEnabled = settings.Enabled
 	server.AutoBackupRetention = settings.Retention
+	server.AutoBackupInterval = settings.IntervalHours
 	if err := (&services.Server{DB: middleware.GetDatabase(c)}).Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}

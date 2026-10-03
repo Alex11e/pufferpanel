@@ -2,6 +2,7 @@
 import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/ui/Icon.vue'
+import Btn from '@/components/ui/Btn.vue'
 import TextField from '@/components/ui/TextField.vue'
 
 import ConsoleWorker from '@/utils/consoleWorker.js?worker&inline'
@@ -61,8 +62,8 @@ function onWorkerMessage(e) {
       lastElem = el
     }
   })
-  if (newElems + console.value.children.length > 1200) {
-    let elems = console.value.children.concat(newElems)
+  if (newElems.length + console.value.children.length > 1200) {
+    let elems = Array.from(console.value.children).concat(newElems)
     elems = elems.slice(elems.length - 1000, elems.length)
     console.value.replaceChildren(elems)
   } else {
@@ -72,6 +73,7 @@ function onWorkerMessage(e) {
 
 function clearConsole() {
   if (console.value) console.value.replaceChildren([])
+  lastElem = null
 }
 
 const history = ref([])
@@ -79,12 +81,15 @@ const historyIndex = ref(-1)
 const temporaryCommand = ref('')
 
 function sendCommand() {
+  const sentCommand = command.value.trim()
+  if (!sentCommand) return
+
   if (historyIndex.value !== -1) {
     history.value.splice(historyIndex.value, 1)
   }
 
-  if (history.value.length === 0 || history.value[history.value.length - 1] !== command.value) {
-    history.value.push(command.value)
+  if (history.value.length === 0 || history.value[history.value.length - 1] !== sentCommand) {
+    history.value.push(sentCommand)
   }
 
   historyIndex.value = -1
@@ -94,8 +99,14 @@ function sendCommand() {
     history.value.splice(0, 1)
   }
 
-  props.server.sendCommand(command.value)
+  props.server.sendCommand(sentCommand)
   command.value = ''
+}
+
+function clearCommandHistory() {
+  history.value = []
+  historyIndex.value = -1
+  temporaryCommand.value = ''
 }
 
 function previousCommand() {
@@ -145,6 +156,7 @@ function nextCommand() {
         @keydown.down.prevent="nextCommand()"
       />
       <icon name="send" @click="sendCommand()" />
+      <btn variant="icon" :tooltip="t('servers.ClearCommandHistory')" :disabled="history.length === 0" @click="clearCommandHistory()"><icon name="remove" /></btn>
     </div>
   </div>
 </template>
