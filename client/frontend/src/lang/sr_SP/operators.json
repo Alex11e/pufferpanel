@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Izvrši ovaj korak samo ako je ovaj uslov ispunjen",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Preuzmi Minecraft",
+    "formatted": "Preuzmi Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Upiši u datoteku",
+    "formatted": "Upiši u datoteku {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Odredi verziju Minecraft Forge",
+    "formatted": "Odredi verziju Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Preuzmi datoteku(e)",
+    "formatted": "Preuzmi {file} | Preuzmi {n} datoteka",
+    "files": "Datoteke"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Pokreni komandu(e)",
+    "formatted": "Pokreni {command} | Pokreni {n} komandi",
+    "commands": "Komande"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Izmeni datoteku",
+    "formatted": "Izmeni datoteku {target}",
+    "regex": "Tretiraj string pretrage kao regularni izraz",
+    "search": "Pretraži",
+    "replace": "Zameni poklapanja sa"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Premesti ili preimenuj datoteku",
+    "formatted": "Premesti datoteku {source} u {target}",
+    "source": "Izvorna putanja",
+    "target": "Odredišna putanja"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Napravi direktorijum",
+    "formatted": "Napravi direktorijum {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arhiviraj datoteke",
+    "formatted": "Arhiviraj {file} u {destination} | Arhiviraj {n} datoteka u {destination}",
+    "source": "Datoteke za arhiviranje"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Izvuci arhivu",
+    "formatted": "Izvuci {source} u {destination}",
+    "destination": "Odredište"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Poruka konzole",
+    "formatted": "Ispiši \"{message}\" u konzolu",
+    "message": "Poruka"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Sačekaj",
+    "formatted": "Sačekaj {duration}",
+    "duration": "Trajanje",
+    "durationHint": "Važeće vremenske jedinice su ns, us, ms, s, m i h. Više jedinica se može kombinovati. Na primer `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Instaliraj sa Steam-a",
+    "formatted": "Instaliraj Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Grana (ostavite prazno za podrazumevano)",
+    "branchPassword": "Lozinka grane (ako je potrebno)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Instaliraj Java",
+    "formatted": "Instaliraj Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Preuzmi Minecraft Forge",
+    "formatted": "Preuzmi Minecraft Forge",
+    "outputVariable": "Izlazna promenljiva"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Preuzmi Minecraft Neoforge",
+    "formatted": "Preuzmi Minecraft Neoforge",
+    "outputVariable": "Izlazna promenljiva"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Preuzmi Minecraft SpongeForge",
+    "formatted": "Preuzmi Minecraft SpongeForge",
+    "releaseType": "Tip izdanja"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Preuzmi Minecraft Fabric",
+    "formatted": "Preuzmi Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Preuzmi PaperMC projekat",
+    "formatted": "Preuzmi {project} u {target}",
+    "project": "PaperMC projekat",
+    "build": "Broj build-a"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Preuzmi sa CurseForge",
+    "formatted": "Preuzmi sa CurseForge",
+    "projectId": "ID projekta",
+    "fileId": "ID datoteke",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Instaliraj Node.js",
+    "formatted": "Instaliraj Node.js {version}"
   }
 }
