@@ -3,15 +3,15 @@
   "Nodes": "Вузли",
   "Edit": "Змінити вузол",
   "Add": "Додати вузол",
-  "Create": "Create Node",
+  "Create": "Створити вузол",
   "Update": "Оновити вузол",
   "Delete": "Видалити вузол",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Ви дійсно бажаєте видалити вузол {name}?",
+  "Created": "Вузол створено",
+  "Updated": "Вузол оновлено",
+  "Deleted": "Вузол видалено",
+  "Reachable": "Цей вузол налаштовано правильно і він працює",
+  "Unreachable": "Цей вузол або налаштовано неправильно, або він наразі недоступний",
   "features": {
     "os": {
       "label": "Операційна система",
@@ -19,16 +19,16 @@
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "Архітектура процесора",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker доступний",
+      "false": "Docker недоступний"
     },
-    "envs": "Available Environments"
+    "envs": "Доступні середовища"
   },
   "PublicHost": "Відкритий хост",
   "PublicPort": "Відкритий порт",
@@ -36,15 +36,15 @@
   "PrivatePort": "Приватний порт",
   "SftpPort": "Порт SFTP",
   "WithPrivateAddress": "Використовувати інший хост/порт для з'єднання з сервером",
-  "WithPrivateAddressHint": "Ця окрема адреса використовується, коли головний вузол повинен говорити з новим вузлом. Корисно, наприклад, коли вузли знаходяться в одній мережі за НАТО.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "WithPrivateAddressHint": "Ця окрема адреса використовується, коли головний вузол повинен говорити з новим вузлом. Корисно, наприклад, коли вузли знаходяться в одній мережі за NAT.",
+  "LocalNodeEdit": "Локальний вузол не має редагованих налаштувань\n\nЩоб змінити хост, який відображається для серверів, розміщених на цьому вузлі, налаштуйте головний URL панелі в налаштуваннях панелі",
+  "Deploy": "Розгорнути вузол",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Крок 1\n\nВстановіть PufferPanel на новому сервері, [див. документацію для деталей](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Крок 2\n\nЗупиніть службу PufferPanel на новому сервері, якщо вона була запущена під час встановлення, виконавши `sudo systemctl stop pufferpanel`",
+    "Step3": "## Крок 3\n\nЗамініть вміст файлу конфігурації PufferPanel на новому сервері наведеним нижче кодом\n\nФайл конфігурації зазвичай знаходиться за шляхом `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Крок 4\n\nУвімкніть і (пере)запустіть службу PufferPanel на новому сервері, виконавши `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Ваш новий вузол налаштовано та готово до використання"
   },
-  "DeploymentInstruction": "Щоб розгорнути вузол, встановіть PufferPanel на новий сервер і помістіть файл конфігурації в меню `/etc/pufferpanel/`<br/>Перезапустіть PufferPanel на новий сервер після цього."
+  "DeploymentInstruction": "Щоб розгорнути вузол, встановіть PufferPanel на новий сервер і помістіть файл конфігурації у теку `/etc/pufferpanel/`<br/>Після цього перезапустіть PufferPanel на новому сервері."
 }

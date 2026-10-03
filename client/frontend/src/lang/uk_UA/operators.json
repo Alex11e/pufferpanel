@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Виконуйте цей крок лише за умови виконання цієї умови",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Завантажити Minecraft",
+    "formatted": "Завантажити Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Записати у файл",
+    "formatted": "Записати у файл {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Визначити версію Minecraft Forge",
+    "formatted": "Визначити версію Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Завантажити файл(и)",
+    "formatted": "Завантажити {file} | Завантажити {n} файлів",
+    "files": "Файли"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Виконати команду(и)",
+    "formatted": "Виконати {command} | Виконати {n} команд",
+    "commands": "Команди"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Змінити файл",
+    "formatted": "Змінити файл {target}",
+    "regex": "Розглядати рядок пошуку як регулярний вираз",
+    "search": "Пошук",
+    "replace": "Замінити збіги на"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Перемістити або перейменувати файл",
+    "formatted": "Перемістити файл {source} до {target}",
+    "source": "Шлях джерела",
+    "target": "Шлях призначення"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Створити каталог",
+    "formatted": "Створити каталог {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Архівувати файли",
+    "formatted": "Архівувати {file} до {destination} | Архівувати {n} файлів до {destination}",
+    "source": "Файли для архівування"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Розпакувати архів",
+    "formatted": "Розпакувати {source} до {destination}",
+    "destination": "Призначення"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Повідомлення консолі",
+    "formatted": "Вивести \"{message}\" у консоль",
+    "message": "Повідомлення"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Зачекати",
+    "formatted": "Зачекати {duration}",
+    "duration": "Тривалість",
+    "durationHint": "Дійсні одиниці часу: ns, us, ms, s, m та h. Можна комбінувати кілька одиниць. Наприклад, `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Встановити зі Steam",
+    "formatted": "Встановити Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Гілка (залиште порожнім для стандартної)",
+    "branchPassword": "Пароль гілки (за потреби)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Встановити Java",
+    "formatted": "Встановити Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Завантажити Minecraft Forge",
+    "formatted": "Завантажити Minecraft Forge",
+    "outputVariable": "Вихідна змінна"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Завантажити Minecraft Neoforge",
+    "formatted": "Завантажити Minecraft Neoforge",
+    "outputVariable": "Вихідна змінна"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Завантажити Minecraft SpongeForge",
+    "formatted": "Завантажити Minecraft SpongeForge",
+    "releaseType": "Тип випуску"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Завантажити Minecraft Fabric",
+    "formatted": "Завантажити Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Завантажити проєкт PaperMC",
+    "formatted": "Завантажити {project} до {target}",
+    "project": "Проєкт PaperMC",
+    "build": "Номер збірки"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Завантажити з CurseForge",
+    "formatted": "Завантажити з CurseForge",
+    "projectId": "ID проєкту",
+    "fileId": "ID файлу",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Встановити Node.js",
+    "formatted": "Встановити Node.js {version}"
   }
 }
