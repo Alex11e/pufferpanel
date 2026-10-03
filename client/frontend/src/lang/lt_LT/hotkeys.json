@@ -8,13 +8,13 @@
     "g s": "Eiti į serverius",
     "g t": "Eiti į šablonus",
     "g u": "Eiti į vartotojus",
-    "/": "Global Search"
+    "/": "Globalinė paieška"
   },
   "Self": {
     "Title": "Paskyra",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
+    "t 2": "Eiti į dviejų veiksnių autentifikavimo skiltį",
+    "t a": "Eiti į paskyros duomenų skiltį",
+    "t o": "Eiti į OAuth skiltį",
     "t p": "Eiti į slaptažodžių skiltį",
     "t s": "Eiti į nustatymų skiltį"
   },
@@ -33,47 +33,47 @@
     "t 6": "Eiti į SFTP skiltį",
     "t 7": "Eiti į API skiltį",
     "t a": "Eiti į administratoriaus skiltį",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "c c": "Fokusuoti komandų įvestį",
+    "c x": "Išvalyti konsolę",
+    "r r": "Paleisti serverį",
+    "r s": "Sustabdyti serverį",
+    "r k": "Priverstinai sustabdyti serverį",
+    "r i": "Įdiegti serverį",
+    "f a": "Archyvuoti dabartinio katalogo turinį",
+    "f c d": "Sukurti naują katalogą",
+    "f c f": "Sukurti naują failą",
+    "f s a": "Archyvuoti pasirinktus failus",
+    "f s d": "Ištrinti pasirinktus failus",
+    "f d": "Įkelti katalogą",
+    "f l": "Fokusuoti pirmą failą/aplankalą sąraše",
+    "f r": "Perkrauti failų sąrašą",
+    "f u": "Įkelti failus",
+    "a e": "Redaguoti serverio aprašą",
+    "a r": "Perkrauti serverio aprašą iš disko"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Taškai",
+    "c": "Sukurti naują tašką",
+    "l": "Fokusuoti pirmą tašką sąraše"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Vartotojai",
+    "c": "Sukurti naują vartotoją",
+    "l": "Fokusuoti pirmą vartotoją sąraše"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Šablonai",
+    "c": "Sukurti naują šabloną",
+    "l": "Fokusuoti pirmą šabloną sąraše"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Šablonų redaktorius",
+    "t e": "Eiti į aplinkos skiltį",
+    "t g": "Eiti į bendrųjų nustatymų skiltį",
+    "t h": "Eiti į „Hook“ skiltį",
+    "t i": "Eiti į diegimo skiltį",
+    "t j": "Eiti į JSON skiltį",
+    "t r": "Eiti į vykdymo konfigūracijos skiltį",
+    "t v": "Eiti į kintamųjų skiltį"
   }
 }

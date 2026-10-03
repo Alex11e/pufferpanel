@@ -25,22 +25,22 @@
   "Add": "Pridėti",
   "Apply": "Taikyti",
   "Confirm": "Patvirtinti",
-  "Condition": "Būklė",
-  "Discard": "Atsikratyti",
-  "ConfirmLeave": "Jūs turite neišsaugotų pakeitimų, ar norite atsikratyti šių pakeitimų ir palikti puslapį?",
+  "Condition": "Sąlyga",
+  "Discard": "Atmesti",
+  "ConfirmLeave": "Jūs turite neišsaugotų pakeitimų, ar norite atmesti šiuos pakeitimus ir palikti puslapį?",
   "theme": {
     "Theme": "Tema",
     "Mode": "Režimas",
     "mode": {
       "Light": "Šviesusis",
       "Dark": "Tamsusis",
-      "DarkHighContrast": "Dark (High Contrast)",
-      "Auto": "Auto"
+      "DarkHighContrast": "Tamsusis (didelis kontrastas)",
+      "Auto": "Automatinis"
     },
     "BaseColor": "Pagrindinė spalva",
     "ServerTypeDisplay": "Serverio tipo rodymas",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Paveiksliukas + Fonas",
       "Icon": "Paveiksliukas",
       "None": "Joks"
     },
@@ -49,17 +49,17 @@
       "Grid": "Tinklelis",
       "List": "Sąrašas"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Šrifto dydis",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Numatytasis"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Šrifto tipas",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Numatytasis",
+      "A11y": "Prieinamumas optimizuotas"
     }
   },
   "NoResults": "Nėra rezultatų",
-  "Yes": "Yes",
-  "No": "No"
+  "Yes": "Taip",
+  "No": "Ne"
 }

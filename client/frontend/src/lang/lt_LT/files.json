@@ -20,13 +20,13 @@
   "Total": "Iš viso",
   "OpenLargeFile": "Šis failas galimai sulėtins jūsų naršyklę dėl jo didelio dydžio, ar jūs vis tiek norite jį atidaryti?",
   "OpenAnyways": "Atidaryti vis tiek",
-  "Saved": "File saved",
-  "Select": "Select file",
-  "Deselect": "Deselect file",
-  "Selected": "1 file selected | {n} files selected",
-  "ArchiveSelected": "Archive selected files",
-  "ArchiveSelectedName": "Archive Name",
-  "DeselectAll": "Deselect all",
-  "DeleteSelected": "Delete 1 file | Delete {n} files",
-  "ConfirmDeleteSelected": "Do you really want to delete this file? | Do you really want to delete these {n} files?"
+  "Saved": "Failas išsaugotas",
+  "Select": "Pasirinkti failą",
+  "Deselect": "Atšaukti failo pasirinkimą",
+  "Selected": "Pasirinktas 1 failas | Pasirinkti {n} failai",
+  "ArchiveSelected": "Archyvuoti pasirinktus failus",
+  "ArchiveSelectedName": "Archyvo pavadinimas",
+  "DeselectAll": "Atšaukti visų pasirinkimą",
+  "DeleteSelected": "Ištrinti 1 failą | Ištrinti {n} failus",
+  "ConfirmDeleteSelected": "Ar tikrai norite ištrinti šį failą? | Ar tikrai norite ištrinti šiuos {n} failus?"
 }
