@@ -63,22 +63,31 @@ func getLatestForMCVersion(minecraftVersion string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	splitVersion := strings.TrimPrefix(minecraftVersion, "1.")
+	versionPrefixes := []string{minecraftVersion, strings.TrimPrefix(minecraftVersion, "1.")}
 
 	var topVersion *version.Version
 
 	for _, v := range metadata.Versions {
-		if strings.HasPrefix(v, splitVersion) {
-			newVersion, err := version.NewVersion(v)
-			if err != nil {
-				logging.Debug.Printf("Failed to parse version for Neoforge: %s -> %s", v, err.Error())
-				continue
+		matched := false
+		for _, prefix := range versionPrefixes {
+			if strings.HasPrefix(v, prefix) {
+				matched = true
+				break
 			}
-			if topVersion == nil {
-				topVersion = newVersion
-			} else if newVersion.GreaterThan(topVersion) {
-				topVersion = newVersion
-			}
+		}
+		if !matched {
+			continue
+		}
+
+		newVersion, err := version.NewVersion(v)
+		if err != nil {
+			logging.Debug.Printf("Failed to parse version for Neoforge: %s -> %s", v, err.Error())
+			continue
+		}
+		if topVersion == nil {
+			topVersion = newVersion
+		} else if newVersion.GreaterThan(topVersion) {
+			topVersion = newVersion
 		}
 	}
 
