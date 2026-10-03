@@ -25,6 +25,9 @@ type BillingPlan struct {
 	Description         string    `gorm:"size:2000" json:"description,omitempty"`
 	Active              bool      `gorm:"not null;default:false;index" json:"active"`
 	Currency            string    `gorm:"not null;size:3" json:"currency"`
+	AllowOneTime        bool      `gorm:"not null;default:false" json:"allowOneTime"`
+	AllowMonthly        bool      `gorm:"not null;default:false" json:"allowMonthly"`
+	AllowYearly         bool      `gorm:"not null;default:false" json:"allowYearly"`
 	OneTimePriceMinor   int64     `gorm:"not null;default:0" json:"oneTimePriceMinor"`
 	MonthlyPriceMinor   int64     `gorm:"not null;default:0" json:"monthlyPriceMinor"`
 	YearlyPriceMinor    int64     `gorm:"not null;default:0" json:"yearlyPriceMinor"`
@@ -44,13 +47,16 @@ type BillingPurchase struct {
 	ServerIdentifier         *string    `gorm:"size:20;uniqueIndex" json:"serverId,omitempty"`
 	Status                   string     `gorm:"not null;size:20;index" json:"status"`
 	BillingCycle             string     `gorm:"not null;size:16" json:"billingCycle"`
+	AutoRenew                bool       `gorm:"not null;default:false" json:"autoRenew"`
 	PaymentProvider          string     `gorm:"not null;size:20" json:"paymentProvider,omitempty"`
-	ProviderCheckoutID       string     `gorm:"size:255;uniqueIndex" json:"-"`
+	ProviderCheckoutID       string     `gorm:"size:255;index" json:"-"`
 	ProviderPaymentID        string     `gorm:"size:255;index" json:"-"`
+	ProviderSubscriptionID   string     `gorm:"size:255;index" json:"-"`
 	Currency                 string     `gorm:"not null;size:3" json:"currency"`
 	AmountMinor              int64      `gorm:"not null" json:"amountMinor"`
 	ReservedCPUCapacityMilli uint64     `gorm:"not null;default:0" json:"-"`
 	ReservedMemoryCapacityMB uint64     `gorm:"not null;default:0" json:"-"`
+	ProvisionPayload         []byte     `gorm:"type:blob" json:"-"`
 	ExpiresAt                *time.Time `gorm:"index" json:"expiresAt,omitempty"`
 	CreatedAt                time.Time  `json:"createdAt"`
 	UpdatedAt                time.Time  `json:"updatedAt"`

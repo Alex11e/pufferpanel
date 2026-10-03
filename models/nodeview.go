@@ -27,7 +27,7 @@ type NodeView struct {
 type NodesView []*NodeView //@name Nodes
 
 func FromNode(n *Node) *NodeView {
-	return &NodeView{
+	view := &NodeView{
 		Id:             n.ID,
 		Name:           n.Name,
 		PublicHost:     n.PublicHost,
@@ -36,11 +36,16 @@ func FromNode(n *Node) *NodeView {
 		PrivatePort:    n.PrivatePort,
 		SFTPPort:       n.SFTPPort,
 		PortRangeStart: n.PortRangeStart, PortRangeEnd: n.PortRangeEnd,
-		BillingCPUCapacityMilli: &n.BillingCPUCapacityMilli,
-		BillingMemoryCapacityMB: &n.BillingMemoryCapacityMB,
-		FirewallEnabled:         n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
+		FirewallEnabled: n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
 		Local: n.IsLocal(),
 	}
+	if n.BillingCPUCapacityMilli > 0 {
+		view.BillingCPUCapacityMilli = &n.BillingCPUCapacityMilli
+	}
+	if n.BillingMemoryCapacityMB > 0 {
+		view.BillingMemoryCapacityMB = &n.BillingMemoryCapacityMB
+	}
+	return view
 }
 
 func FromNodes(n []*Node) *NodesView {

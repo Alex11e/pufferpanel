@@ -158,6 +158,16 @@ export default (api) => [
     }
   },
   {
+    path: '/billing/checkout',
+    component: () => import('@/views/BillingCheckout.vue'),
+    name: 'BillingCheckout'
+  },
+  {
+    path: '/billing/complete',
+    component: () => import('@/views/BillingComplete.vue'),
+    name: 'BillingComplete'
+  },
+  {
     path: '/support',
     component: () => import('@/views/SupportTickets.vue'),
     name: 'SupportTickets',

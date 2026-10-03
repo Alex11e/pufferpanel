@@ -18,7 +18,7 @@ const grant = ref({ userId: '', planId: '', nodeId: 0, billingCycle: 'once' })
 
 function emptyPlan() {
   return {
-    name: '', description: '', active: true, currency: 'HUF',
+    name: '', description: '', active: true, currency: 'HUF', allowOneTime: true, allowMonthly: false, allowYearly: false,
     oneTimePriceMinor: 0, monthlyPriceMinor: 0, yearlyPriceMinor: 0,
     oneTimeDurationDays: 0, cpuCapacityMilli: 1000, memoryCapacityMB: 1024, maxServers: 1
   }
@@ -34,6 +34,10 @@ function fromMinor(amount, currency) {
 
 function toMinor(amount, currency) {
   return Math.round(Number(amount || 0) * (10 ** decimals(currency)))
+}
+
+function planPrice(item, enabled, amount) {
+  return enabled ? `${item.currency} ${fromMinor(amount, item.currency)}` : '–'
 }
 
 async function load() {
@@ -139,9 +143,12 @@ onMounted(load)
           <label>Név<input v-model.trim="plan.name" maxlength="100" required></label>
           <label>Leírás<textarea v-model="plan.description" maxlength="2000" rows="2" /></label>
           <label>Pénznem<select v-model="plan.currency"><option>HUF</option><option>EUR</option><option>USD</option></select></label>
-          <label>Egyszeri ár ({{ plan.currency }})<input v-model="priceInputs.oneTime" type="number" min="0" step="0.01"></label>
-          <label>Havi ár ({{ plan.currency }})<input v-model="priceInputs.monthly" type="number" min="0" step="0.01"></label>
-          <label>Éves ár ({{ plan.currency }})<input v-model="priceInputs.yearly" type="number" min="0" step="0.01"></label>
+          <label class="check"><input v-model="plan.allowOneTime" type="checkbox"> Egyszeri vásárlás engedélyezése</label>
+          <label>Egyszeri ár ({{ plan.currency }})<input v-model="priceInputs.oneTime" type="number" min="0" step="0.01" :disabled="!plan.allowOneTime"></label>
+          <label class="check"><input v-model="plan.allowMonthly" type="checkbox"> Havi előfizetés engedélyezése</label>
+          <label>Havi ár ({{ plan.currency }})<input v-model="priceInputs.monthly" type="number" min="0" step="0.01" :disabled="!plan.allowMonthly"></label>
+          <label class="check"><input v-model="plan.allowYearly" type="checkbox"> Éves előfizetés engedélyezése</label>
+          <label>Éves ár ({{ plan.currency }})<input v-model="priceInputs.yearly" type="number" min="0" step="0.01" :disabled="!plan.allowYearly"></label>
           <label>Egyszeri csomag érvényessége (nap, 0 = korlátlan)<input v-model.number="plan.oneTimeDurationDays" type="number" min="0" step="1"></label>
           <label>CPU keret (mag)<input v-model.number="plan.cpuCapacityMilli" type="number" min="0.1" step="0.1" required></label>
           <label>Memóriakeret (MB)<input v-model.number="plan.memoryCapacityMB" type="number" min="128" step="128" required></label>
@@ -166,7 +173,7 @@ onMounted(load)
         <div v-for="item in plans" :key="item.id" class="plan-row">
           <div class="plan-details">
             <strong>{{ item.name }} <small>#{{ item.id }} · {{ item.active ? 'aktív' : 'archivált' }}</small></strong>
-            <span>{{ item.currency }} {{ fromMinor(item.oneTimePriceMinor, item.currency) }} egyszeri · {{ fromMinor(item.monthlyPriceMinor, item.currency) }}/hó · {{ fromMinor(item.yearlyPriceMinor, item.currency) }}/év</span>
+            <span>{{ planPrice(item, item.allowOneTime, item.oneTimePriceMinor) }} egyszeri · {{ planPrice(item, item.allowMonthly, item.monthlyPriceMinor) }}/hó · {{ planPrice(item, item.allowYearly, item.yearlyPriceMinor) }}/év</span>
             <small>{{ item.cpuCapacityMilli / 1000 }} CPU · {{ item.memoryCapacityMB }} MB RAM · {{ item.maxServers }} szerver</small>
           </div>
           <div class="row-actions"><btn variant="icon" tooltip="Szerkesztés" @click="editPlan(item)"><icon name="edit" /></btn><btn variant="icon" tooltip="Archiválás" :disabled="!item.active" @click="archivePlan(item)"><icon name="remove" /></btn></div>

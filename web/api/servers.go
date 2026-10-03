@@ -19,6 +19,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid/v5"
 	"github.com/pufferpanel/pufferpanel/v3"
+	"github.com/pufferpanel/pufferpanel/v3/config"
 	"github.com/pufferpanel/pufferpanel/v3/database"
 	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
@@ -526,6 +527,35 @@ func createServer(c *gin.Context) {
 	if response.HandleError(c, err, http.StatusBadRequest) {
 		return
 	}
+	var billingPurchase *models.BillingPurchase
+	userValue, hasUser := c.Get("user")
+	var requestUser *models.User
+	if hasUser {
+		requestUser = userValue.(*models.User)
+	}
+	admin := false
+	if requestUser != nil {
+		admin, err = (&services.Permission{DB: middleware.GetDatabase(c)}).HasPermission(requestUser.ID, "", scopes.ScopeAdmin)
+		if response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
+	}
+	if config.BillingEnabled.Value() && !admin && postBody.BillingPurchaseID == 0 {
+		c.JSON(http.StatusPaymentRequired, gin.H{"error": gin.H{"msg": "a paid billing package is required to create a server"}})
+		return
+	}
+	if postBody.BillingPurchaseID > 0 {
+		if requestUser == nil {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+		var purchaseErr error
+		billingPurchase, purchaseErr = validateBillingPurchaseForServer(middleware.GetDatabase(c), postBody.BillingPurchaseID, requestUser.ID, postBody.NodeId, postBody)
+		if response.HandleError(c, purchaseErr, http.StatusConflict) {
+			return
+		}
+		postBody.Users = []string{requestUser.Username}
+	}
 	if postBody.Type.Type == vpsType {
 		if postBody.PortForwards == nil {
 			postBody.PortForwards = defaultVpsPortForwards()
@@ -724,6 +754,14 @@ func createServer(c *gin.Context) {
 		_, _ = c.Writer.Write(resData)
 		c.Abort()
 		return
+	}
+	if billingPurchase != nil {
+		serverIdentifier := server.Identifier
+		billingPurchase.ServerIdentifier = &serverIdentifier
+		billingPurchase.ProvisionPayload = nil
+		if err = db.Save(billingPurchase).Error; response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
 	}
 
 	es := services.GetEmailService()

@@ -6,10 +6,11 @@ import (
 
 type ServerCreation struct {
 	pufferpanel.Server
-	NodeId       uint                `json:"node"`
-	Users        []string            `json:"users"`
-	Name         string              `json:"name"`
-	PortForwards []ServerPortForward `json:"portForwards,omitempty"`
+	NodeId            uint                `json:"node"`
+	Users             []string            `json:"users"`
+	Name              string              `json:"name"`
+	BillingPurchaseID uint                `json:"billingPurchaseId,omitempty"`
+	PortForwards      []ServerPortForward `json:"portForwards,omitempty"`
 } //@name CreatedServer
 
 type ServerPortForward struct {

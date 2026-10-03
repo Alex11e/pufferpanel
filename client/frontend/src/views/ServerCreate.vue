@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SelectTemplate from '@/components/ui/serverCreateSteps/SelectTemplate.vue'
@@ -10,9 +10,19 @@ const router = useRouter()
 const { t } = useI18n()
 const api = inject('api')
 const step = ref('environment')
+const billingEnabled = ref(false)
 const environment = ref({})
 const users = ref([])
 const template = ref({})
+
+onMounted(async () => {
+  try {
+    const response = await api.get('/api/billing/options')
+    billingEnabled.value = Boolean(response.data?.enabled)
+  } catch {
+    billingEnabled.value = false
+  }
+})
 
 function envConfirmed(name, nodeId, nodeOs, nodeArch, env, u) {
   users.value = u
@@ -58,6 +68,12 @@ async function settingsConfirmed(settings, envSettings) {
     if (request.data[setting].type === 'integer') {
       request.data[setting].value = Number(request.data[setting].value)
     }
+  }
+
+  if (billingEnabled.value && !api.auth.hasScope('admin')) {
+    sessionStorage.setItem('billingCheckoutRequest', JSON.stringify(request))
+    router.push({ name: 'BillingCheckout' })
+    return
   }
 
   const id = await api.server.create(request)

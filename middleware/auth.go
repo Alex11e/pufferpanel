@@ -2,16 +2,17 @@ package middleware
 
 import (
 	"errors"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pufferpanel/pufferpanel/v3/database"
 	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/services"
 	"gorm.io/gorm"
-	"net/http"
-	"strings"
 )
 
-var noLogin = []string{"/auth/", "/error/", "/api/config"}
+var noLogin = []string{"/auth/", "/error/", "/api/config", "/api/billing/webhook/stripe"}
 var overrideRequireLogin = []string{"/auth/reauth", "/auth/logout"}
 
 const WWWAuthenticateHeader = "WWW-Authenticate"
