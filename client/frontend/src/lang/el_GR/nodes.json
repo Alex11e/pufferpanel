@@ -3,32 +3,32 @@
   "Nodes": "Κόμβοι",
   "Edit": "Επεξεργασία Κόμβου",
   "Add": "Προσθήκη Κόμβου",
-  "Create": "Create Node",
+  "Create": "Δημιουργία Κόμβου",
   "Update": "Ενημέρωση Κόμβου",
   "Delete": "Διαγραφή Κόμβου",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Θέλετε πραγματικά να διαγράψετε τον κόμβο {name};",
+  "Created": "Ο κόμβος δημιουργήθηκε",
+  "Updated": "Ο κόμβος ενημερώθηκε",
+  "Deleted": "Ο κόμβος διαγράφηκε",
+  "Reachable": "Αυτός ο κόμβος έχει ρυθμιστεί σωστά και λειτουργεί",
+  "Unreachable": "Αυτός ο κόμβος είτε δεν έχει ρυθμιστεί σωστά είτε δεν είναι διαθέσιμος αυτή τη στιγμή",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Λειτουργικό Σύστημα",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "Αρχιτεκτονική CPU",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Το Docker είναι διαθέσιμο",
+      "false": "Το Docker δεν είναι διαθέσιμο"
     },
-    "envs": "Available Environments"
+    "envs": "Διαθέσιμα Περιβάλλοντα"
   },
   "PublicHost": "Δημόσιος Διακομιστής",
   "PublicPort": "Δημόσια Θύρα",
@@ -37,14 +37,14 @@
   "SftpPort": "Θύρα SFTP",
   "WithPrivateAddress": "Χρήση διαφορετικού κεντρικού υπολογιστή/θύρας για το διακομιστή κατά την επικοινωνία με τον διακομιστή",
   "WithPrivateAddressHint": "Αυτή η ξεχωριστή διεύθυνση χρησιμοποιείται όταν ο κύριος κόμβος πρέπει να \"μιλήσει\" στον νέο κόμβο. Χρήσιμο, για παράδειγμα, όταν οι κόμβοι βρίσκονται στο ίδιο δίκτυο πίσω από NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "LocalNodeEdit": "Ο τοπικός κόμβος δεν έχει ρυθμίσεις που μπορούν να επεξεργαστούν\n\nΓια να αλλάξετε τον κεντρικό υπολογιστή που εμφανίζεται με τους διακομιστές που φιλοξενούνται σε αυτόν τον κόμβο, προσαρμόστε το master url του πίνακα στις ρυθμίσεις του πίνακα",
+  "Deploy": "Ανάπτυξη Κόμβου",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Βήμα 1\n\nΕγκαταστήστε το PufferPanel στον νέο διακομιστή, [δείτε την τεκμηρίωση για λεπτομέρειες](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Βήμα 2\n\nΣταματήστε την υπηρεσία PufferPanel στον νέο διακομιστή εάν ξεκίνησε κατά την εγκατάσταση εκτελώντας `sudo systemctl stop pufferpanel`",
+    "Step3": "## Βήμα 3\n\nΑντικαταστήστε τα περιεχόμενα του αρχείου config του PufferPanel στον νέο διακομιστή με τον παρακάτω κώδικα\n\nΤο αρχείο config βρίσκεται συνήθως στο `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Βήμα 4\n\nΕνεργοποιήστε και (επαν)εκκινήστε την υπηρεσία PufferPanel στον νέο διακομιστή εκτελώντας `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Ο νέος κόμβος σας έχει πλέον ρυθμιστεί και είναι έτοιμος για χρήση"
   },
   "DeploymentInstruction": "Για να αναρτήσετε/χρησιμοποιήσετε τον κόμβο, εγκαταστήστε το PufferPanel στο νέο διακομιστή και τοποθετήστε το αρχείο config στον φάκελο `/etc/pufferpanel/`<br/>. Επανεκκινήστε το PufferPanel στο νέο διακομιστή αμέσως μετά."
 }

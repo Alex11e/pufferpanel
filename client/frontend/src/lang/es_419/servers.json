@@ -4,9 +4,9 @@
   "Console": "Consola",
   "SFTPInfo": "Información SFTP",
   "Start": "Iniciar",
-  "Restart": "Restart",
+  "Restart": "Reiniciar",
   "Stop": "Parar",
-  "Kill": "Matar",
+  "Kill": "Forzar detención",
   "Install": "Instalar",
   "InstallPrompt": "¿Quieres ejecutar la instalación automática ahora?",
   "InstallPromptBody": "Si no lo ejecutas ahora, tendrás que hacerlo más tarde o configurar el servidor manualmente",
@@ -32,7 +32,7 @@
   "NoSettings": "Este servidor no tiene ninguna configuración que puedas cambiar",
   "Delete": "Eliminar servidor",
   "ConfirmDelete": "¿Realmente deseas eliminar este servidor? (Esto no se puede deshacer)",
-  "Deleting": "Removing Server, please wait...",
+  "Deleting": "Eliminando servidor, por favor espera...",
   "Deleted": "Servidor eliminado",
   "SftpConnection": "Conectar a SFTP",
   "EditDefinition": "Editar definición del servidor",
@@ -53,10 +53,10 @@
     "autoRestartOnGraceful": "Reiniciar el servidor cuando se detenga",
     "autoRestartOnCrash": "Reiniciar el servidor cuando se bloquee"
   },
-  "IncompatibleTemplates": "Incompatible templates",
-  "IncompatibleTemplatesDescription": "These templates are incompatible with at least one of your previous selections",
-  "IncompatibleArch": "Incompatible with architecture '{arch}'",
-  "IncompatibleOs": "Incompatible with OS '{os}'",
-  "IncompatibleEnv": "Incompatible with environment '{env}'",
-  "AdvancedSettings": "Advanced Settings"
+  "IncompatibleTemplates": "Plantillas incompatibles",
+  "IncompatibleTemplatesDescription": "Estas plantillas son incompatibles con al menos una de tus selecciones anteriores",
+  "IncompatibleArch": "Incompatible con la arquitectura '{arch}'",
+  "IncompatibleOs": "Incompatible con el sistema operativo '{os}'",
+  "IncompatibleEnv": "Incompatible con el entorno '{env}'",
+  "AdvancedSettings": "Configuración avanzada"
 }

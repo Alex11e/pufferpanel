@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Εκτελέστε αυτό το βήμα μόνο εάν πληρούται αυτή η συνθήκη",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Λήψη Minecraft",
+    "formatted": "Λήψη Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Εγγραφή σε αρχείο",
+    "formatted": "Εγγραφή στο αρχείο {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Επίλυση Έκδοσης Minecraft Forge",
+    "formatted": "Επίλυση Έκδοσης Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Λήψη αρχείου(ων)",
+    "formatted": "Λήψη {file} | Λήψη {n} αρχείων",
+    "files": "Αρχεία"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Εκτέλεση εντολής(ών)",
+    "formatted": "Εκτέλεση {command} | Εκτέλεση {n} εντολών",
+    "commands": "Εντολές"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Τροποποίηση αρχείου",
+    "formatted": "Τροποποίηση αρχείου {target}",
+    "regex": "Χειρισμός συμβολοσειράς αναζήτησης ως κανονική έκφραση",
+    "search": "Αναζήτηση",
+    "replace": "Αντικατάσταση αντιστοιχιών με"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Μετακίνηση ή μετονομασία αρχείου",
+    "formatted": "Μετακίνηση αρχείου {source} στο {target}",
+    "source": "Διαδρομή Προέλευσης",
+    "target": "Διαδρομή Προορισμού"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Δημιουργία καταλόγου",
+    "formatted": "Δημιουργία καταλόγου {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Αρχειοθέτηση αρχείων",
+    "formatted": "Αρχειοθέτηση {file} στο {destination} | Αρχειοθέτηση {n} αρχείων στο {destination}",
+    "source": "Αρχεία για αρχειοθέτηση"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Εξαγωγή αρχείου αρχειοθέτησης",
+    "formatted": "Εξαγωγή {source} στο {destination}",
+    "destination": "Προορισμός"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Μήνυμα κονσόλας",
+    "formatted": "Εκτύπωση \"{message}\" στην κονσόλα",
+    "message": "Μήνυμα"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Αναμονή",
+    "formatted": "Αναμονή για {duration}",
+    "duration": "Διάρκεια",
+    "durationHint": "Οι έγκυρες μονάδες χρόνου είναι ns, us, ms, s, m και h. Πολλαπλές μονάδες μπορούν να συνδυαστούν. Για παράδειγμα `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Εγκατάσταση από το Steam",
+    "formatted": "Εγκατάσταση Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Κλάδος (αφήστε κενό για προεπιλογή)",
+    "branchPassword": "Κωδικός Κλάδου (εάν απαιτείται)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Εγκατάσταση Java",
+    "formatted": "Εγκατάσταση Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Λήψη Minecraft Forge",
+    "formatted": "Λήψη Minecraft Forge",
+    "outputVariable": "Μεταβλητή εξόδου"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Λήψη Minecraft Neoforge",
+    "formatted": "Λήψη Minecraft Neoforge",
+    "outputVariable": "Μεταβλητή εξόδου"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Λήψη Minecraft SpongeForge",
+    "formatted": "Λήψη Minecraft SpongeForge",
+    "releaseType": "Τύπος Έκδοσης"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Λήψη Minecraft Fabric",
+    "formatted": "Λήψη Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Λήψη έργου PaperMC",
+    "formatted": "Λήψη {project} στο {target}",
+    "project": "Έργο PaperMC",
+    "build": "Αριθμός έκδοσης"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Λήψη από το CurseForge",
+    "formatted": "Λήψη από το CurseForge",
+    "projectId": "ID Έργου",
+    "fileId": "ID Αρχείου",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Εγκατάσταση Node.js",
+    "formatted": "Εγκατάσταση Node.js {version}"
   }
 }

@@ -6,7 +6,7 @@
   "Create": "Crear Nodo",
   "Update": "Actualizar Nodo",
   "Delete": "Eliminar Nodo",
-  "ConfirmDelete": "¿Realmente quieres eliminar este nodo?",
+  "ConfirmDelete": "¿Realmente quieres eliminar el nodo {name}?",
   "Created": "Nodo Creado",
   "Updated": "Nodo Actualizado",
   "Deleted": "Nodo Eliminado",
@@ -30,8 +30,8 @@
     },
     "envs": "Entornos Disponibles"
   },
-  "PublicHost": "Host publico",
-  "PublicPort": "Puerto publico",
+  "PublicHost": "Host público",
+  "PublicPort": "Puerto público",
   "PrivateHost": "Host privado",
   "PrivatePort": "Puerto privado",
   "SftpPort": "Puerto SFTP",
@@ -46,5 +46,5 @@
     "Step4": "## Paso 4\n\nHabilita y reinicia el servicio de PufferPanel en el nuevo servidor ejecutando `sudo systemctl enable --now pufferpanel`",
     "Step5": "### Tu nuevo nodo está configurado y listo para usar"
   },
-  "DeploymentInstruction": "Para desplegar el nodo, instale PufferPanel en el nuevo servidor y coloque el archivo de configuración en `etc/pufferpanel/`<br/>Después en el nuevo servidor reinicie PufferPanel."
+  "DeploymentInstruction": "Para desplegar el nodo, instala PufferPanel en el nuevo servidor y coloca el archivo de configuración en `/etc/pufferpanel/`<br/>Después reinicia PufferPanel en el nuevo servidor."
 }
