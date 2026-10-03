@@ -35,6 +35,7 @@ var updateHexPattern = regexp.MustCompile(`^[0-9a-f]+$`)
 var updateAssetNamePattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._+-]{0,200}$`)
 
 const maxUpdateDownloadSize int64 = 1 << 30
+const updateReleaseRefreshCooldown = 5 * time.Minute
 
 type updateAsset struct {
 	Name string `json:"name"`
@@ -92,15 +93,17 @@ type updateInfo struct {
 
 var updateState struct {
 	sync.Mutex
-	cached       *updateInfo
-	cachedTag    string
-	cachedRepo   string
-	fetchedAt    time.Time
-	releases     []updateRelease
-	releasesRepo string
-	releasesAt   time.Time
-	running      bool
-	lastResult   string
+	cached            *updateInfo
+	cachedTag         string
+	cachedRepo        string
+	fetchedAt         time.Time
+	releases          []updateRelease
+	releasesRepo      string
+	releasesAt        time.Time
+	releasesRetryRepo string
+	releasesRetryAt   time.Time
+	running           bool
+	lastResult        string
 }
 
 func registerUpdates(g *gin.RouterGroup) {
@@ -283,11 +286,21 @@ func normalizeUpdateTag(tag string) (string, error) {
 func getUpdateReleases(c *gin.Context) {
 	force := c.Query("refresh") == "true"
 	repo := config.UpdateRepo.Value()
+	now := time.Now()
 	updateState.Lock()
-	if !force && updateState.releases != nil && updateState.releasesRepo == repo && time.Since(updateState.releasesAt) < time.Hour {
+	hasCache := updateState.releases != nil && updateState.releasesRepo == repo
+	rateLimited := updateState.releasesRetryRepo == repo && now.Before(updateState.releasesRetryAt)
+	refreshTooSoon := force && hasCache && now.Sub(updateState.releasesAt) < updateReleaseRefreshCooldown
+	if hasCache && ((!force && now.Sub(updateState.releasesAt) < time.Hour) || rateLimited || refreshTooSoon) {
 		versions := append([]updateRelease(nil), updateState.releases...)
 		updateState.Unlock()
 		c.JSON(http.StatusOK, versions)
+		return
+	}
+	if rateLimited && !hasCache {
+		retryAt := updateState.releasesRetryAt
+		updateState.Unlock()
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": gin.H{"msg": "GitHub release API rate limit reached; retry after " + retryAt.UTC().Format(time.RFC3339)}})
 		return
 	}
 	updateState.Unlock()
@@ -311,6 +324,21 @@ func getUpdateReleases(c *gin.Context) {
 	}
 	defer func() { _ = result.Body.Close() }()
 	if result.StatusCode != http.StatusOK {
+		if result.StatusCode == http.StatusForbidden || result.StatusCode == http.StatusTooManyRequests {
+			retryAt := githubRateLimitRetryAt(result.Header, time.Now())
+			updateState.Lock()
+			updateState.releasesRetryRepo = repo
+			updateState.releasesRetryAt = retryAt
+			if updateState.releasesRepo == repo && updateState.releases != nil {
+				versions := append([]updateRelease(nil), updateState.releases...)
+				updateState.Unlock()
+				c.JSON(http.StatusOK, versions)
+				return
+			}
+			updateState.Unlock()
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": gin.H{"msg": "GitHub release API rate limit reached; retry after " + retryAt.UTC().Format(time.RFC3339)}})
+			return
+		}
 		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": fmt.Sprintf("release lookup returned HTTP %d", result.StatusCode)}})
 		return
 	}
@@ -327,22 +355,35 @@ func getUpdateReleases(c *gin.Context) {
 		versions = append(versions, toUpdateRelease(release))
 	}
 	commits, err := fetchGitHubCommits(c.Request.Context(), repo, "", 1)
-	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "could not check repository commits"}})
-		return
-	}
-	for _, commit := range commits {
-		if !updateFullCommitPattern.MatchString(commit.SHA) {
-			continue
+	if err == nil {
+		for _, commit := range commits {
+			if !updateFullCommitPattern.MatchString(commit.SHA) {
+				continue
+			}
+			versions = append(versions, toCommitUpdateRelease(commit))
 		}
-		versions = append(versions, toCommitUpdateRelease(commit))
 	}
 	updateState.Lock()
 	updateState.releases = versions
 	updateState.releasesRepo = repo
 	updateState.releasesAt = time.Now()
+	updateState.releasesRetryRepo = ""
+	updateState.releasesRetryAt = time.Time{}
 	updateState.Unlock()
 	c.JSON(http.StatusOK, versions)
+}
+
+func githubRateLimitRetryAt(headers http.Header, now time.Time) time.Time {
+	if resetAt, err := strconv.ParseInt(headers.Get("X-RateLimit-Reset"), 10, 64); err == nil {
+		retryAt := time.Unix(resetAt, 0)
+		if retryAt.After(now) {
+			return retryAt
+		}
+	}
+	if retryAfter, err := strconv.Atoi(headers.Get("Retry-After")); err == nil && retryAfter > 0 {
+		return now.Add(time.Duration(retryAfter) * time.Second)
+	}
+	return now.Add(updateReleaseRefreshCooldown)
 }
 
 func fetchUpdateInfo(ctx context.Context, force bool, requestedTag string) (*updateInfo, error) {

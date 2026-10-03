@@ -1,6 +1,11 @@
 package api
 
-import "testing"
+import (
+	"net/http"
+	"strconv"
+	"testing"
+	"time"
+)
 
 func TestIsNewerVersion(t *testing.T) {
 	cases := []struct {
@@ -91,5 +96,37 @@ func TestTrustedUpdateDownloadURL(t *testing.T) {
 		if got := trustedUpdateDownloadURL(test.url); got != test.want {
 			t.Errorf("trustedUpdateDownloadURL(%q) = %t, want %t", test.url, got, test.want)
 		}
+	}
+}
+
+func TestGitHubRateLimitRetryAt(t *testing.T) {
+	now := time.Unix(2_000_000_000, 0)
+	tests := []struct {
+		name    string
+		headers http.Header
+		want    time.Time
+	}{
+		{
+			name:    "GitHub reset time",
+			headers: http.Header{"X-Ratelimit-Reset": []string{strconv.FormatInt(now.Add(2*time.Hour).Unix(), 10)}},
+			want:    now.Add(2 * time.Hour),
+		},
+		{
+			name:    "Retry-After header",
+			headers: http.Header{"Retry-After": []string{"90"}},
+			want:    now.Add(90 * time.Second),
+		},
+		{
+			name:    "default retry delay",
+			headers: make(http.Header),
+			want:    now.Add(updateReleaseRefreshCooldown),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := githubRateLimitRetryAt(test.headers, now); !got.Equal(test.want) {
+				t.Fatalf("githubRateLimitRetryAt() = %s, want %s", got, test.want)
+			}
+		})
 	}
 }
