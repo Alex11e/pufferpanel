@@ -33,6 +33,9 @@ const error = ref('')
 const publicAccess = ref(props.kind === 'web')
 const pmaHost = ref('127.0.0.1')
 const pmaPort = ref(3306)
+const pmaDatabase = ref('app')
+const pmaUser = ref('app')
+const pmaPassword = ref('')
 
 const isPma = computed(() => props.kind === 'db' && engine.value === 'phpmyadmin')
 
@@ -53,7 +56,8 @@ const canSubmit = computed(() =>
   Number.isInteger(Number(memory.value)) && Number(memory.value) >= 128 &&
   Number.isFinite(Number(cpu.value)) && Number(cpu.value) > 0 &&
   (isBot.value ? botToken.value.trim().length > 0 : !isDb.value || (isPma.value
-    ? pmaHost.value.trim() !== '' && Number.isInteger(Number(pmaPort.value)) && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536
+    ? pmaHost.value.trim() !== '' && Number.isInteger(Number(pmaPort.value)) && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536 &&
+      pmaDatabase.value.trim() !== '' && pmaUser.value.trim() !== '' && pmaPassword.value.length > 0
     : identifier.test(dbName.value) && identifier.test(dbUser.value) &&
       dbPassword.value.length >= 8 && (engine.value !== 'mariadb' || rootPassword.value.length >= 8)
   ))
@@ -119,6 +123,9 @@ async function create() {
     } else if (isPma.value) {
       data.pma_host.value = pmaHost.value.trim()
       data.pma_port.value = Number(pmaPort.value)
+      data.pma_database.value = pmaDatabase.value.trim()
+      data.pma_user.value = pmaUser.value.trim()
+      data.pma_password.value = pmaPassword.value
     } else if (isDb.value) {
       data.version.value = version.value
       data.db_name.value = dbName.value
@@ -180,7 +187,10 @@ async function create() {
       <template v-if="isPma">
         <label>Adatbázis-szerver címe<input v-model="pmaHost" maxlength="253"></label>
         <label>Adatbázis-szerver portja<input v-model.number="pmaPort" type="number" min="1" max="65535"></label>
-        <p class="hint">A bejelentkezéshez az adatbázis saját felhasználóneve és jelszava kell. A phpMyAdmin host hálózaton fut, így a node loopback címén lévő (privát) adatbázisokat is eléri; a webfelület minden interfészen hallgat.</p>
+        <label>Adatbázis neve<input v-model="pmaDatabase" maxlength="64" required></label>
+        <label>Adatbázis-felhasználó<input v-model="pmaUser" maxlength="128" autocomplete="username" required></label>
+        <label>Adatbázis-jelszó<input v-model="pmaPassword" type="password" autocomplete="new-password" required></label>
+        <p class="hint">A phpMyAdmin a megadott adatbázis-fiókkal csatlakozik. A felhasználónév és jelszó privát szerveradatként tárolódik. A phpMyAdmin host hálózaton fut, így a node loopback címén lévő adatbázisokat is eléri; a webfelület minden interfészen hallgat.</p>
       </template>
       <template v-else-if="isDb">
         <label>Adatbázis neve<input v-model="dbName" maxlength="32" pattern="[A-Za-z0-9_]+"></label>

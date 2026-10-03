@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
@@ -31,11 +31,22 @@ const releaseListError = ref('')
 const system = ref(null)
 const updateApplying = ref(false)
 const updateActionError = ref('')
+const autoDownloadUpdates = ref(readStoredBoolean('pufferpanel.autoDownloadUpdates', true))
 let updatePoll = null
 let updatePageActive = true
 
+function readStoredBoolean(key, defaultValue) {
+  try {
+    const value = localStorage.getItem(key)
+    return value === null ? defaultValue : value === 'true'
+  } catch {
+    return defaultValue
+  }
+}
+
 async function loadSystem() {
   system.value = (await api.get('/api/admin/system')).data
+  maybeAutoDownloadUpdate()
 }
 
 function formatUptime(seconds) {
@@ -65,7 +76,10 @@ async function checkUpdate(refresh = false, version = selectedUpdateVersion.valu
     if (refresh) query.refresh = true
     if (version && version !== 'latest') query.version = version
     const res = await api.get('/api/admin/update', query, {}, { unhandledErrors: [502] })
-    if (res) update.value = res.data
+    if (res) {
+      update.value = res.data
+      maybeAutoDownloadUpdate()
+    }
     else updateFailed.value = true
     return Boolean(res)
   } catch {
@@ -88,6 +102,68 @@ function formatAssetSize(size) {
   if (size < 1024 * 1024) return `${Math.ceil(size / 1024)} KB`
   return `${(size / (1024 * 1024)).toFixed(1)} MB`
 }
+
+function matchingUpdateAsset() {
+  if (!system.value || !update.value?.assets?.length) return null
+  const assetName = update.value.assets.map(asset => ({
+    asset,
+    normalizedName: asset.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  }))
+  const osAliases = {
+    linux: ['linux'],
+    windows: ['windows'],
+    darwin: ['darwin', 'macos', 'osx']
+  }
+  const architectureAliases = {
+    amd64: ['amd64', 'x86-64', 'x64'],
+    arm64: ['arm64', 'aarch64'],
+    '386': ['386', 'i386'],
+    arm: ['arm']
+  }
+  const os = osAliases[system.value.os] || [system.value.os]
+  const architecture = architectureAliases[system.value.arch] || [system.value.arch]
+  return assetName.find(({ normalizedName }) =>
+    os.some(alias => new RegExp(`(^|-)${alias}(-|$)`).test(normalizedName)) &&
+    architecture.some(alias => new RegExp(`(^|-)${alias}(-|$)`).test(normalizedName))
+  )?.asset || null
+}
+
+function downloadAsset(asset) {
+  const link = document.createElement('a')
+  link.href = asset.url
+  link.download = asset.name
+  link.rel = 'noopener noreferrer'
+  link.target = '_blank'
+  document.body.append(link)
+  link.click()
+  link.remove()
+}
+
+function maybeAutoDownloadUpdate() {
+  const tag = update.value?.latest
+  const asset = matchingUpdateAsset()
+  if (!autoDownloadUpdates.value || !update.value?.updateAvailable || !tag || !asset) return
+
+  let downloaded = []
+  try {
+    downloaded = JSON.parse(localStorage.getItem('pufferpanel.autoDownloadedUpdateVersions') || '[]')
+  } catch {
+    downloaded = []
+  }
+  if (!Array.isArray(downloaded) || downloaded.includes(tag)) return
+
+  downloadAsset(asset)
+  try {
+    localStorage.setItem('pufferpanel.autoDownloadedUpdateVersions', JSON.stringify([...downloaded, tag].slice(-20)))
+  } catch {}
+}
+
+watch(autoDownloadUpdates, enabled => {
+  try {
+    localStorage.setItem('pufferpanel.autoDownloadUpdates', String(enabled))
+  } catch {}
+  if (enabled) maybeAutoDownloadUpdate()
+})
 
 async function pollUpdate() {
   const checked = await checkUpdate()
@@ -272,6 +348,7 @@ onMounted(load)
           </select>
           <btn :disabled="updateChecking" @click="refreshUpdates"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
         </div>
+        <label class="update-auto-download"><input v-model="autoDownloadUpdates" type="checkbox"> Automatikus letöltés új verzió esetén</label>
         <p v-if="releaseListError" class="error" role="alert">Verziólista: {{ releaseListError }}</p>
         <p v-if="updateActionError" class="error" role="alert">{{ updateActionError }}</p>
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
@@ -289,8 +366,8 @@ onMounted(load)
           </div>
           <div v-if="update.assets?.length" class="release-assets">
             <h3>Letölthető fájlok</h3>
-            <a v-for="asset in update.assets" :key="asset.url" :href="asset.url" target="_blank" rel="noopener noreferrer" class="release-asset">
-              <icon name="download" /><span>{{ asset.name }}</span><small>{{ formatAssetSize(asset.size) }}</small>
+            <a v-for="asset in update.assets" :key="asset.url" :href="asset.url" :download="asset.name" target="_blank" rel="noopener noreferrer" class="release-asset">
+              <span>{{ asset.name }} <small>{{ formatAssetSize(asset.size) }}</small></span><strong><icon name="download" /> Letöltés</strong>
             </a>
           </div>
           <small v-if="update.lastResult">Utolsó frissítés: {{ update.lastResult }}</small>
@@ -376,12 +453,14 @@ section { border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(
 .update-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .update-card.available { border-color: var(--color-primary); }
 .update-head select { flex: 1 1 200px; min-width: 180px; max-width: 100%; padding: 8px 10px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 5px; }
+.update-auto-download { display: flex; align-items: center; gap: 8px; margin: 14px 0; color: var(--color-text-secondary); }
 .update-new { color: var(--color-primary); font-weight: 600; }
 .update-notes { max-height: 180px; overflow: auto; white-space: pre-wrap; padding: 10px; border-radius: 6px; background: var(--color-background); font-size: .85rem; }
 .release-assets { display: grid; gap: 8px; margin-top: 14px; }
 .release-assets h3 { margin: 0; }
-.release-asset { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 6px; }
-.release-asset span { flex: 1; overflow-wrap: anywhere; }
-.release-asset small { white-space: nowrap; }
+.release-asset { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 6px; text-decoration: none; }
+.release-asset > span { flex: 1; overflow-wrap: anywhere; }
+.release-asset > strong { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.release-asset small { margin-left: 8px; white-space: nowrap; }
 @media (max-width: 700px) { .heading { flex-direction: column; align-items: flex-start; } .announcement-form { grid-template-columns: 1fr; } }
 </style>
