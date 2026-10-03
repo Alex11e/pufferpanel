@@ -5,8 +5,8 @@
   "Add": "Agregar Nodo",
   "Create": "Crear Nodo",
   "Update": "Actualizar Nodo",
-  "Delete": "Borrar Nodo",
-  "ConfirmDelete": "¿Realmente quieres eliminar este nodo?",
+  "Delete": "Eliminar Nodo",
+  "ConfirmDelete": "¿Realmente quieres eliminar el nodo {name}?",
   "Created": "Nodo Creado",
   "Updated": "Nodo Actualizado",
   "Deleted": "Nodo Eliminado",
@@ -46,5 +46,5 @@
     "Step4": "## Paso 4\n\nHabilita y reinicia el servicio de PufferPanel en el nuevo servidor ejecutando `sudo systemctl enable --now pufferpanel`",
     "Step5": "### Tu nuevo nodo está configurado y listo para usar"
   },
-  "DeploymentInstruction": "Para desplegar el nodo, instale PufferPanel en el nuevo servidor y coloque el archivo de configuración en `/etc/pufferpanel/`<br/>Reinicie PufferPanel en el nuevo servidor después."
+  "DeploymentInstruction": "Para desplegar el nodo, instala PufferPanel en el nuevo servidor y coloca el archivo de configuración en `/etc/pufferpanel/`<br/>Después reinicia PufferPanel en el nuevo servidor."
 }

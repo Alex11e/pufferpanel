@@ -8,7 +8,7 @@
     "g s": "Ir a los servidores",
     "g t": "Ir a las plantillas",
     "g u": "Ir a los usuarios",
-    "/": "Global Search"
+    "/": "Búsqueda global"
   },
   "Self": {
     "Title": "Cuenta",
@@ -31,10 +31,10 @@
     "t s": "Ir a la pestaña de Configuración",
     "t u": "Ir a la pestaña de Usuarios",
     "t 6": "Ir a la pestaña de SFTP",
-    "t 7": "Ir a la pestaña de Api",
+    "t 7": "Ir a la pestaña de API",
     "t a": "Ir a la pestaña de Administración",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
+    "c c": "Enfocar la entrada de comandos",
+    "c x": "Limpiar consola",
     "r r": "Iniciar Servidor",
     "r s": "Detener Servidor",
     "r k": "Finalizar Servidor",
@@ -42,8 +42,8 @@
     "f a": "Archivar el contenido del directorio actual",
     "f c d": "Crear nuevo directorio",
     "f c f": "Crear nuevo archivo",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
+    "f s a": "Archivar archivos seleccionados",
+    "f s d": "Eliminar archivos seleccionados",
     "f d": "Subir directorio",
     "f l": "Enfocar el primer archivo/carpeta de la lista",
     "f r": "Recargar lista de archivos",
