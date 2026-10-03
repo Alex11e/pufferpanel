@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -55,11 +54,11 @@ func downloadDD(rootBinaryFolder string, version string) error {
 }
 
 func getLatestVersion() (string, error) {
-	client := pufferpanel.Http()
-	request := &http.Request{}
+	return getLatestVersionFrom(pufferpanel.Http(), RepoReleases, runtime.GOOS, runtime.GOARCH)
+}
 
-	var err error
-	request.URL, err = url.Parse(RepoReleases)
+func getLatestVersionFrom(client *http.Client, releasesURL, operatingSystem, architecture string) (string, error) {
+	request, err := http.NewRequest(http.MethodGet, releasesURL, nil)
 	if err != nil {
 		return "", err
 	}
@@ -86,12 +85,12 @@ func getLatestVersion() (string, error) {
 	for _, release := range data {
 		for _, asset := range release.Assets {
 			assetName := strings.ToLower(asset.Name)
-			if strings.Contains(assetName, strings.ToLower(runtime.GOOS)) {
-				if runtime.GOARCH == "amd64" {
+			if strings.Contains(assetName, strings.ToLower(operatingSystem)) {
+				if architecture == "amd64" {
 					if strings.Contains(assetName, "x64") {
 						return asset.DownloadUrl, nil
 					}
-				} else if strings.Contains(assetName, strings.ToLower(runtime.GOARCH)) {
+				} else if strings.Contains(assetName, strings.ToLower(architecture)) {
 					return asset.DownloadUrl, nil
 				}
 			}
