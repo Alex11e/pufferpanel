@@ -1,73 +1,92 @@
-# PufferPanel [![Release](https://img.shields.io/github/release/PufferPanel/PufferPanel.svg?maxAge=3600)](https://github.com/PufferPanel/PufferPanel/releases) [![Downloads](https://img.shields.io/github/downloads/PufferPanel/PufferPanel/total.svg?maxAge=3600)](https://github.com/PufferPanel/PufferPanel/releases) ![Build](https://github.com/PufferPanel/PufferPanel/workflows/Build/badge.svg)
+# PufferPanel
+
+[![Release](https://img.shields.io/github/release/PufferPanel/PufferPanel.svg?maxAge=3600)](https://github.com/PufferPanel/PufferPanel/releases) 
+[![Downloads](https://img.shields.io/github/downloads/PufferPanel/PufferPanel/total.svg?maxAge=3600)](https://github.com/PufferPanel/PufferPanel/releases) 
+![Build](https://github.com/PufferPanel/PufferPanel/workflows/Build/badge.svg)
 
 [![PufferPanel logo](https://raw.githubusercontent.com/pufferpanel/www/master/logo-alt.png "PufferPanel")](https://pufferpanel.com)
 
-[Website](https://pufferpanel.com) |
-[Discord](https://discord.gg/v8dz49e) |
-[Documentation](https://docs.pufferpanel.com/) |
-[Translations](https://crowdin.com/project/pufferpanel)
+[Website](https://pufferpanel.com) | [Discord](https://discord.gg/v8dz49e) | [Documentation](https://docs.pufferpanel.com/) | [Translations](https://crowdin.com/project/pufferpanel)
 
-## What is PufferPanel?
-PufferPanel is a web-based Game Server Management System. PufferPanel allows you to manage multiple different game servers all from one central location. You can give other users their own servers or allow them to access to your servers.
+---
+
+## Overview
+
+**PufferPanel** is an open-source, web-based Game Server Management System. It allows you to manage multiple game servers across nodes from a single central panel, manage user permissions, and allocate dedicated server instances.
+
+---
 
 ## Installation
-Please follow the installation guide for PufferPanel located [here](https://docs.pufferpanel.com/en/latest/installing.html).
 
-### Custom Docker installer
+### Standard Installation
+For official guides on installing, configuring, and updating PufferPanel, please refer to the [Official Documentation](https://docs.pufferpanel.com/en/latest/installing.html).
 
-This fork includes a portable Docker installer. From the repository root run
-`./install.sh` on Linux/macOS, or `./install.ps1` in PowerShell on Windows.
-It stores configuration, data and logs in `data/`, and starts the panel at
-`http://localhost:8080`. Docker Engine/Desktop with Docker Compose v2 is required.
+### Custom Docker Installer (Fork Features)
 
-For a fresh Debian/Ubuntu server, use the remote installer:
+This fork provides a quick, portable Docker setup.
+
+#### Local Installation
+Requirements: **Docker Engine / Desktop** with **Docker Compose v2**.
+
+Run one of the following commands from the repository root:
+* **Linux / macOS:** `./install.sh`
+* **Windows (PowerShell):** `./install.ps1`
+
+The setup saves configuration, logs, and server data under the `data/` directory and exposes the web interface at `http://localhost:8080`.
+
+#### Remote Server Setup (Debian / Ubuntu)
+For a fresh Debian or Ubuntu server, run the automated installation script:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh)
+bash <(curl -fsSL [https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh](https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh))
 ```
 
-### Contabo VPS management
+---
 
-The `/contabo` admin page manages existing Contabo Cloud VPS/VDS instances.
-Storage VPS products are not supported by Contabo's API. Configure these
-environment variables on the panel container; never commit API credentials to
-the repository or enter them in the browser:
+## Contabo VPS Management
 
-- `PUFFER_CONTABO_CLIENT_ID`
-- `PUFFER_CONTABO_CLIENT_SECRET`
-- `PUFFER_CONTABO_API_USER`
-- `PUFFER_CONTABO_API_PASSWORD`
+This fork includes an integrated `/contabo` administration page to manage existing Contabo Cloud VPS/VDS instances directly from the panel. *(Note: Contabo Storage VPS products are not supported via their API).*
 
-The page supports power actions, OS reinstall from a standard image, custom
-`.iso`/`.qcow2` images hosted at a public HTTPS URL, and Contabo firewall rules.
-Reinstall erases the instance disk. Contabo firewall protection may require a
-paid add-on; the panel asks for a separate confirmation before requesting it.
-The existing `/vps` page remains the local QEMU VM workflow, with VNC boot and
-ISO selection on one of your PufferPanel nodes. For browser SSH, also configure
-`PUFFER_CONTABO_SSH_PRIVATE_KEY_FILE` and
-`PUFFER_CONTABO_SSH_KNOWN_HOSTS_FILE` on the Compose host, then place those
-files in the mounted panel configuration directory. By default the container
-expects `/etc/pufferpanel/contabo_ssh_key` and
-`/etc/pufferpanel/contabo_known_hosts`. Use an unencrypted private key whose
-matching public key is installed on the VPS. The configured host keys must
-match the Contabo instance IPs; the panel rejects unknown or changed keys.
+### Configuration
 
-### What's different about PufferPanel?
-In addition to being a free and open source project, PufferPanel provides an easy-to-use interface for everyone from individual users to large networks. We strive to create a friendly community, and we would love for you to join us.
+Configure the following environment variables on your panel container. **Never commit API credentials to the repository or enter them into browser forms.**
 
-## Having issues or want to help?
-If you need help with PufferPanel, or you'd like to help out, you can contact us on [Discord](https://discord.gg/v8dz49e). Check out our [Documentation](https://docs.pufferpanel.com/) for guides on how to install, update, and manage PufferPanel.
+```env
+PUFFER_CONTABO_CLIENT_ID=<your_client_id>
+PUFFER_CONTABO_CLIENT_SECRET=<your_client_secret>
+PUFFER_CONTABO_API_USER=<your_api_username>
+PUFFER_CONTABO_API_PASSWORD=<your_api_password>
 
-## Copyright Notices
-Some Javascript and CSS used is licensed under a MIT, Apache 2.0, or GPL license. Please check their header files for information.
+```
 
-Some images used within PufferPanel are Copyright (c) their respective owners.
+### Key Capabilities
 
-## Water Provided By
+* **Power Management:** Start, stop, restart instances.
+* **OS Reinstall:** Deploy standard images or custom `.iso`/`.qcow2` images hosted at public HTTPS URLs. *(Warning: Reinstalling erases instance disk data).*
+* **Firewall Rules:** Manage firewall configurations. *(Note: Firewall protection may require a paid Contabo add-on; a confirmation prompt will appear before requesting).*
+* **Browser SSH:** Requires adding host keys and key files on the Compose host, mounted into the panel config directory (default paths inside container: `/etc/pufferpanel/contabo_ssh_key` and `/etc/pufferpanel/contabo_known_hosts`). Use an unencrypted private key whose matching public key is installed on the VPS. Host keys must strictly match the instance IPs.
 
-Repositories hosted by [packagecloud](https://packagecloud.io)
+> **Note on Local VMs:** The `/vps` page continues to support the local QEMU virtual machine workflow with VNC boot and ISO selection across your nodes.
 
-## AI Generated Content
+---
 
-We do not accept AI generated content in any form. If we suspect something was done by AI, we will reject it. This includes PR requests,
-security advisories, and issues.
+## Community & Support
+
+* Need assistance? Join the conversation on [Discord](https://discord.gg/zr2bamrwyZ).
+* Read detailed guides on installation, node management, and security at [docs.pufferpanel.com](https://docs.pufferpanel.com/).
+
+---
+
+## Contributing & AI Policy
+
+* **Translations:** Managed by `Daniyt_th` (assisted by AI). If you catch translation errors, feel free to fork the repository, make corrections, and submit a Pull Request!
+* **AI Generated Content Policy:** **We do not accept AI-generated content in any form.** Any pull requests, issue reports, or security advisories suspected to be generated by AI will be rejected.
+
+---
+
+## License & Credits
+
+* Certain JavaScript and CSS dependencies are licensed under MIT, Apache 2.0, or GPL licenses (see header files for details).
+* Images and logos are copyrighted by their respective owners.
+* Repositories hosted by [packagecloud](https://packagecloud.io).
+
