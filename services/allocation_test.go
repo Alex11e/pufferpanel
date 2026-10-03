@@ -62,8 +62,8 @@ func TestAllocateRangeSkipsLegacyAndReservedPorts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(visible) != 1 || visible[0].Port != 5903 {
-		t.Fatalf("expected only the normal port allocation to be visible, got %+v", visible)
+	if len(visible) != 2 || visible[0].Port != 5903 || visible[1].Port != 5904 || visible[1].Purpose != "vnc" {
+		t.Fatalf("expected normal and VNC allocations to be visible, got %+v", visible)
 	}
 }
 
@@ -78,7 +78,7 @@ func TestAllocateForwardStoresGuestPortAndProtocol(t *testing.T) {
 
 	node := *models.LocalNode
 	node.PortRangeStart = 25565
-	node.PortRangeEnd = 25566
+	node.PortRangeEnd = 25567
 	service := &Allocation{DB: db}
 
 	forward, err := service.AllocateForward(&node, "vps-one", 22, "tcp")
