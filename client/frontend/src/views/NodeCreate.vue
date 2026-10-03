@@ -21,6 +21,8 @@ const privatePort = ref('8080')
 const sftpPort = ref('5657')
 const portRangeStart = ref('1000')
 const portRangeEnd = ref('8000')
+const billingCpuCapacityMilli = ref('0')
+const billingMemoryCapacityMB = ref('0')
 const firewallEnabled = ref(false)
 const subdomainBase = ref('')
 
@@ -57,6 +59,8 @@ async function create() {
     sftpPort: portValue(sftpPort.value),
     portRangeStart: portValue(portRangeStart.value),
     portRangeEnd: portValue(portRangeEnd.value),
+    billingCpuCapacityMilli: Math.max(0, Math.round(Number(billingCpuCapacityMilli.value) * 1000)),
+    billingMemoryCapacityMB: Math.max(0, Math.floor(Number(billingMemoryCapacityMB.value))),
     firewallEnabled: firewallEnabled.value,
     subdomainBase: subdomainBase.value
   }
@@ -86,6 +90,9 @@ async function create() {
     <h2 v-text="t('nodes.PortAllocation')" />
     <text-field v-model="portRangeStart" :label="t('nodes.PortRangeStart')" type="number" />
     <text-field v-model="portRangeEnd" :label="t('nodes.PortRangeEnd')" type="number" />
+    <h2 v-text="t('nodes.BillingCapacity')" />
+    <text-field v-model="billingCpuCapacityMilli" :label="t('nodes.BillingCPUCapacity')" type="number" :hint="t('nodes.BillingCapacityHint')" />
+    <text-field v-model="billingMemoryCapacityMB" :label="t('nodes.BillingMemoryCapacity')" type="number" />
     <toggle v-model="firewallEnabled" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
     <text-field v-model="subdomainBase" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
     <btn :disabled="!canCreate()" color="primary" @click="create()"><icon name="save" />{{ t('nodes.Create') }}</btn>

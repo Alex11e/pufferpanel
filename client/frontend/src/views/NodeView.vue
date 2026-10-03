@@ -29,6 +29,8 @@ const privatePort = ref('8080')
 const sftpPort = ref('5657')
 const portRangeStart = ref('1000')
 const portRangeEnd = ref('8000')
+const billingCpuCapacityMilli = ref('0')
+const billingMemoryCapacityMB = ref('0')
 const firewallEnabled = ref(false)
 const subdomainBase = ref('')
 const allocations = ref([])
@@ -62,6 +64,8 @@ onMounted(async () => {
     sftpPort.value = node.sftpPort
     portRangeStart.value = node.portRangeStart || 1000
     portRangeEnd.value = node.portRangeEnd || 8000
+    billingCpuCapacityMilli.value = String((node.billingCpuCapacityMilli || 0) / 1000)
+    billingMemoryCapacityMB.value = String(node.billingMemoryCapacityMB || 0)
     firewallEnabled.value = node.firewallEnabled
     subdomainBase.value = node.subdomainBase
     withPrivateHost.value = !(node.publicHost === node.privateHost && node.publicPort === node.privatePort)
@@ -117,6 +121,8 @@ async function submit() {
     await api.node.update(route.params.id, {
       portRangeStart: portValue(portRangeStart.value),
       portRangeEnd: portValue(portRangeEnd.value),
+      billingCpuCapacityMilli: Math.max(0, Math.round(Number(billingCpuCapacityMilli.value) * 1000)),
+      billingMemoryCapacityMB: Math.max(0, Math.floor(Number(billingMemoryCapacityMB.value))),
       firewallEnabled: firewallEnabled.value,
       subdomainBase: subdomainBase.value
     })
@@ -130,6 +136,8 @@ async function submit() {
     sftpPort: portValue(sftpPort.value),
     portRangeStart: portValue(portRangeStart.value),
     portRangeEnd: portValue(portRangeEnd.value),
+    billingCpuCapacityMilli: Math.max(0, Math.round(Number(billingCpuCapacityMilli.value) * 1000)),
+    billingMemoryCapacityMB: Math.max(0, Math.floor(Number(billingMemoryCapacityMB.value))),
     firewallEnabled: firewallEnabled.value, subdomainBase: subdomainBase.value
   }
   if (withPrivateHost.value) {
@@ -261,6 +269,9 @@ function closeDeploy() {
       <h3 class="port-allocation-title" v-text="t('nodes.PortAllocation')" />
       <text-field v-model="portRangeStart" class="port-range-start" :label="t('nodes.PortRangeStart')" type="number" />
       <text-field v-model="portRangeEnd" class="port-range-end" :label="t('nodes.PortRangeEnd')" type="number" />
+      <h2 v-text="t('nodes.BillingCapacity')" />
+      <text-field v-model="billingCpuCapacityMilli" :label="t('nodes.BillingCPUCapacity')" type="number" :hint="t('nodes.BillingCapacityHint')" />
+      <text-field v-model="billingMemoryCapacityMB" :label="t('nodes.BillingMemoryCapacity')" type="number" />
       <toggle v-model="firewallEnabled" class="local-firewall" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
       <text-field v-model="subdomainBase" class="subdomain-base" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
       <div class="allocations">

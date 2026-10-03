@@ -30,6 +30,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	registerUserSettings(rg.Group("/userSettings"))
 	registerAdmin(rg.Group("/admin"))
 	registerUpdates(rg.Group("/admin"))
+	registerBilling(rg.Group("/billing"))
 	registerVps(rg.Group("/vps"))
 	registerContabo(rg.Group("/contabo"))
 	registerHosting(rg.Group("/hosting"))

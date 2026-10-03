@@ -65,6 +65,8 @@ func SyncNodeToConfig() {
 	}
 	models.LocalNode.PortRangeStart = uint16(config.LocalNodePortRangeStart.Value())
 	models.LocalNode.PortRangeEnd = uint16(config.LocalNodePortRangeEnd.Value())
+	models.LocalNode.BillingCPUCapacityMilli = uint64(config.LocalNodeBillingCPUCapacityMilli.Value())
+	models.LocalNode.BillingMemoryCapacityMB = uint64(config.LocalNodeBillingMemoryCapacityMB.Value())
 	models.LocalNode.FirewallEnabled = config.LocalNodeFirewallEnabled.Value()
 	models.LocalNode.SubdomainBase = config.LocalNodeSubdomainBase.Value()
 }
@@ -105,7 +107,7 @@ func (ns *Node) Update(model *models.Node) error {
 		if err := model.IsValid(); err != nil {
 			return err
 		}
-		if err := config.SaveLocalNodeSettings(model.PortRangeStart, model.PortRangeEnd, model.FirewallEnabled, model.SubdomainBase); err != nil {
+		if err := config.SaveLocalNodeSettings(model.PortRangeStart, model.PortRangeEnd, model.BillingCPUCapacityMilli, model.BillingMemoryCapacityMB, model.FirewallEnabled, model.SubdomainBase); err != nil {
 			return err
 		}
 		SyncNodeToConfig()

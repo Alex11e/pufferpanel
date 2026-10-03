@@ -1,40 +1,45 @@
 package models
 
 import (
+	"net/url"
+
 	"github.com/pufferpanel/pufferpanel/v3"
 	"gopkg.in/go-playground/validator.v9"
-	"net/url"
 )
 
 type NodeView struct {
-	Id          uint   `json:"id"`
-	Name        string `json:"name,omitempty"`
-	PublicHost  string `json:"publicHost,omitempty"`
-	PrivateHost string `json:"privateHost,omitempty"`
-	PublicPort  uint16 `json:"publicPort,omitempty"`
-	PrivatePort uint16 `json:"privatePort,omitempty"`
-	SFTPPort    uint16 `json:"sftpPort,omitempty"`
-	PortRangeStart uint16 `json:"portRangeStart,omitempty"`
-	PortRangeEnd uint16 `json:"portRangeEnd,omitempty"`
-	FirewallEnabled bool `json:"firewallEnabled"`
-	SubdomainBase string `json:"subdomainBase,omitempty"`
-	Local       bool   `json:"isLocal"`
+	Id                      uint    `json:"id"`
+	Name                    string  `json:"name,omitempty"`
+	PublicHost              string  `json:"publicHost,omitempty"`
+	PrivateHost             string  `json:"privateHost,omitempty"`
+	PublicPort              uint16  `json:"publicPort,omitempty"`
+	PrivatePort             uint16  `json:"privatePort,omitempty"`
+	SFTPPort                uint16  `json:"sftpPort,omitempty"`
+	PortRangeStart          uint16  `json:"portRangeStart,omitempty"`
+	PortRangeEnd            uint16  `json:"portRangeEnd,omitempty"`
+	BillingCPUCapacityMilli *uint64 `json:"billingCpuCapacityMilli,omitempty"`
+	BillingMemoryCapacityMB *uint64 `json:"billingMemoryCapacityMB,omitempty"`
+	FirewallEnabled         bool    `json:"firewallEnabled"`
+	SubdomainBase           string  `json:"subdomainBase,omitempty"`
+	Local                   bool    `json:"isLocal"`
 } //@name Node
 
 type NodesView []*NodeView //@name Nodes
 
 func FromNode(n *Node) *NodeView {
 	return &NodeView{
-		Id:          n.ID,
-		Name:        n.Name,
-		PublicHost:  n.PublicHost,
-		PrivateHost: n.PrivateHost,
-		PublicPort:  n.PublicPort,
-		PrivatePort: n.PrivatePort,
-		SFTPPort:    n.SFTPPort,
+		Id:             n.ID,
+		Name:           n.Name,
+		PublicHost:     n.PublicHost,
+		PrivateHost:    n.PrivateHost,
+		PublicPort:     n.PublicPort,
+		PrivatePort:    n.PrivatePort,
+		SFTPPort:       n.SFTPPort,
 		PortRangeStart: n.PortRangeStart, PortRangeEnd: n.PortRangeEnd,
-		FirewallEnabled: n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
-		Local:       n.IsLocal(),
+		BillingCPUCapacityMilli: &n.BillingCPUCapacityMilli,
+		BillingMemoryCapacityMB: &n.BillingMemoryCapacityMB,
+		FirewallEnabled:         n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
+		Local: n.IsLocal(),
 	}
 }
 
@@ -72,8 +77,18 @@ func (n *NodeView) CopyToModel(newModel *Node) {
 	if n.SFTPPort > 0 {
 		newModel.SFTPPort = n.SFTPPort
 	}
-	if n.PortRangeStart > 0 { newModel.PortRangeStart = n.PortRangeStart }
-	if n.PortRangeEnd > 0 { newModel.PortRangeEnd = n.PortRangeEnd }
+	if n.PortRangeStart > 0 {
+		newModel.PortRangeStart = n.PortRangeStart
+	}
+	if n.PortRangeEnd > 0 {
+		newModel.PortRangeEnd = n.PortRangeEnd
+	}
+	if n.BillingCPUCapacityMilli != nil {
+		newModel.BillingCPUCapacityMilli = *n.BillingCPUCapacityMilli
+	}
+	if n.BillingMemoryCapacityMB != nil {
+		newModel.BillingMemoryCapacityMB = *n.BillingMemoryCapacityMB
+	}
 	newModel.FirewallEnabled = n.FirewallEnabled
 	newModel.SubdomainBase = n.SubdomainBase
 }

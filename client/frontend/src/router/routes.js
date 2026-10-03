@@ -148,6 +148,16 @@ export default (api) => [
     }
   },
   {
+    path: '/admin/billing',
+    component: () => import('@/views/BillingPlans.vue'),
+    name: 'BillingPlans',
+    meta: {
+      tkey: 'Csomagok',
+      permission: 'admin',
+      icon: 'admin'
+    }
+  },
+  {
     path: '/support',
     component: () => import('@/views/SupportTickets.vue'),
     name: 'SupportTickets',

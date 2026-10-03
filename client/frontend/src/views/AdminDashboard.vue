@@ -416,6 +416,7 @@ onMounted(load)
         <router-link to="/users"><btn><icon name="users" /> Felhasználók kezelése</btn></router-link>
         <router-link to="/nodes"><btn><icon name="node" /> Node-ok és portok</btn></router-link>
         <router-link to="/templates"><btn><icon name="template" /> Sablonok és eggek</btn></router-link>
+        <router-link to="/admin/billing"><btn><icon name="admin" /> Csomagok és jogosultságok</btn></router-link>
         <a href="/api/admin/activity/export"><btn><icon name="download" /> Műveleti napló CSV</btn></a>
         <a href="/api/admin/servers/export"><btn><icon name="download" /> Szerverlista CSV</btn></a>
       </div>

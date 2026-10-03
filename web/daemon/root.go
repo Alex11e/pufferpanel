@@ -13,6 +13,8 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/servers"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/mem"
 )
 
 func RegisterDaemonRoutes(e *gin.RouterGroup) {
@@ -51,6 +53,11 @@ func getStatusHEAD(c *gin.Context) {
 // @Security OAuth2Application[none]
 func getFeatures(c *gin.Context) {
 	features := make([]string, 0)
+	cpuCount, _ := cpu.Counts(true)
+	var memoryMB uint64
+	if memory, err := mem.VirtualMemory(); err == nil {
+		memoryMB = memory.Total / (1024 * 1024)
+	}
 
 	envs := servers.GetSupportedEnvironments()
 
@@ -65,7 +72,7 @@ func getFeatures(c *gin.Context) {
 		envs = utils.Remove(envs, "bubblewrap")
 	}
 
-	c.JSON(http.StatusOK, Features{Features: features, Environments: envs, OS: runtime.GOOS, Arch: runtime.GOARCH, Version: pufferpanel.Version})
+	c.JSON(http.StatusOK, Features{Features: features, Environments: envs, OS: runtime.GOOS, Arch: runtime.GOARCH, Version: pufferpanel.Version, CPUCount: cpuCount, MemoryCapacityMB: memoryMB})
 }
 
 func testDocker() bool {
@@ -82,9 +89,11 @@ func testDocker() bool {
 }
 
 type Features struct {
-	Features     []string `json:"features"`
-	Environments []string `json:"environments"`
-	OS           string   `json:"os"`
-	Arch         string   `json:"arch"`
-	Version      string   `json:"version"`
+	Features         []string `json:"features"`
+	Environments     []string `json:"environments"`
+	OS               string   `json:"os"`
+	Arch             string   `json:"arch"`
+	Version          string   `json:"version"`
+	CPUCount         int      `json:"cpuCount"`
+	MemoryCapacityMB uint64   `json:"memoryCapacityMB"`
 } //@name Features
