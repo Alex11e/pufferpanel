@@ -1,14 +1,62 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pufferpanel/pufferpanel/v3"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
+	"github.com/pufferpanel/pufferpanel/v3/models"
 	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/scopes"
 )
+
+func defaultVpsPortForwards() []models.ServerPortForward {
+	return []models.ServerPortForward{
+		{GuestPort: 22, Protocol: "tcp"},
+		{GuestPort: 80, Protocol: "tcp"},
+		{GuestPort: 443, Protocol: "tcp"},
+		{GuestPort: 25565, Protocol: "tcp,udp"},
+	}
+}
+
+func normalizeVpsPortForwards(forwards []models.ServerPortForward) ([]models.ServerPortForward, error) {
+	if len(forwards) > 32 {
+		return nil, fmt.Errorf("at most 32 guest port forwards are allowed")
+	}
+	seen := make(map[uint16]bool, len(forwards))
+	normalized := make([]models.ServerPortForward, len(forwards))
+	for index, forward := range forwards {
+		protocol := strings.ToLower(strings.TrimSpace(forward.Protocol))
+		if forward.GuestPort == 0 {
+			return nil, fmt.Errorf("guest port must be between 1 and 65535")
+		}
+		if seen[forward.GuestPort] {
+			return nil, fmt.Errorf("guest port %d is listed more than once", forward.GuestPort)
+		}
+		if protocol != "tcp" && protocol != "udp" && protocol != "tcp,udp" {
+			return nil, fmt.Errorf("guest port %d must use tcp, udp, or tcp,udp", forward.GuestPort)
+		}
+		seen[forward.GuestPort] = true
+		normalized[index] = models.ServerPortForward{GuestPort: forward.GuestPort, Protocol: protocol}
+	}
+	return normalized, nil
+}
+
+func qemuPortForwardArgs(allocations []models.Allocation) string {
+	args := make([]string, 0, len(allocations)*2)
+	for _, allocation := range allocations {
+		if allocation.Purpose != "forward" || allocation.TargetPort == 0 {
+			continue
+		}
+		for _, protocol := range strings.Split(allocation.Protocols, ",") {
+			args = append(args, fmt.Sprintf("hostfwd=%s::%d-:%d", protocol, allocation.Port, allocation.TargetPort))
+		}
+	}
+	return strings.Join(args, ",")
+}
 
 const (
 	vpsType  = "hypervm"
@@ -106,7 +154,7 @@ var vpsVariables = []vpsVariableDef{
 	{"use_gpu", "USE_GPU", "VirtIO GPU", "GPU acceleration (needs a host GPU), otherwise standard VGA.", "boolean", false, false, true},
 	{"iso_file", "ISO_FILE", "ISO file", "Boot ISO inside the server files (leave empty to boot from disk).", "string", "netboot.xyz.iso", false, true},
 	{"shared_dir", "SHARED_DIR", "Shared directory", "Optional folder exposed to the VPS as a FAT drive.", "string", "", false, true},
-	{"forward_ports", "FORWARD_PORTS", "Forwarded ports", "Format hostfwd=tcp::HOST-:GUEST, comma separated.", "string", "", false, true},
+	{"forward_ports", "FORWARD_PORTS", "Forwarded ports", "Guest ports are automatically mapped to free node ports.", "string", "", false, false},
 	{"vnc_display", "VNC_DISPLAY", "VNC display", "VNC listen port is automatically reserved per node.", "integer", 1, true, false},
 	{"vnc_password", "VNC_PASSWORD", "VNC password", "Password for the VNC console (QEMU uses only the first 8 characters).", "string", "", true, true},
 }

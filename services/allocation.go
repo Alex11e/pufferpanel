@@ -23,6 +23,20 @@ func (s *Allocation) AllocateRange(node *models.Node, serverID string, start, en
 }
 
 func (s *Allocation) AllocateRangeWithPurpose(node *models.Node, serverID string, start, end uint16, purpose string) (*models.Allocation, error) {
+	return s.allocateRange(node, serverID, start, end, purpose, 0, "tcp,udp")
+}
+
+func (s *Allocation) AllocateForward(node *models.Node, serverID string, targetPort uint16, protocols string) (*models.Allocation, error) {
+	if targetPort == 0 {
+		return nil, errors.New("target port must be between 1 and 65535")
+	}
+	if protocols != "tcp" && protocols != "udp" && protocols != "tcp,udp" {
+		return nil, errors.New("protocols must be tcp, udp, or tcp,udp")
+	}
+	return s.allocateRange(node, serverID, node.PortRangeStart, node.PortRangeEnd, "forward", targetPort, protocols)
+}
+
+func (s *Allocation) allocateRange(node *models.Node, serverID string, start, end uint16, purpose string, targetPort uint16, protocols string) (*models.Allocation, error) {
 	for candidate := int(start); candidate <= int(end); candidate++ {
 		port := uint16(candidate)
 		var legacy models.Server
@@ -38,7 +52,7 @@ func (s *Allocation) AllocateRangeWithPurpose(node *models.Node, serverID string
 		if legacyQuery.First(&legacy).Error == nil {
 			continue
 		}
-		allocation := &models.Allocation{NodeID: node.ID, ServerIdentifier: serverID, Port: port, Protocols: "tcp,udp", Purpose: purpose}
+		allocation := &models.Allocation{NodeID: node.ID, ServerIdentifier: serverID, Port: port, TargetPort: targetPort, Protocols: protocols, Purpose: purpose}
 		err := s.DB.Create(allocation).Error
 		if err == nil {
 			return allocation, nil

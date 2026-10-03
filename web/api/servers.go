@@ -340,6 +340,18 @@ func createServer(c *gin.Context) {
 	if response.HandleError(c, err, http.StatusBadRequest) {
 		return
 	}
+	if postBody.Type.Type == vpsType {
+		if postBody.PortForwards == nil {
+			postBody.PortForwards = defaultVpsPortForwards()
+		}
+		postBody.PortForwards, err = normalizeVpsPortForwards(postBody.PortForwards)
+		if response.HandleError(c, err, http.StatusBadRequest) {
+			return
+		}
+	} else if len(postBody.PortForwards) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "portForwards is only supported for VPS servers"}})
+		return
+	}
 
 	node, err := ns.Get(postBody.NodeId)
 
@@ -402,10 +414,14 @@ func createServer(c *gin.Context) {
 			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free port in node range"}})
 			return
 		}
-		if response.HandleError(c, allocationErr, http.StatusInternalServerError) { return }
+		if response.HandleError(c, allocationErr, http.StatusInternalServerError) {
+			return
+		}
 		server.Port = allocation.Port
 		postBody.Variables["port"] = pufferpanel.Variable{Type: pufferpanel.Type{Type: "integer"}, Value: int(allocation.Port)}
-		if err = ss.Update(server); response.HandleError(c, err, http.StatusInternalServerError) { return }
+		if err = ss.Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
 	}
 
 	if postBody.Type.Type == vpsType {
@@ -414,7 +430,9 @@ func createServer(c *gin.Context) {
 			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free VNC port is available on this node"}})
 			return
 		}
-		if response.HandleError(c, allocationErr, http.StatusInternalServerError) { return }
+		if response.HandleError(c, allocationErr, http.StatusInternalServerError) {
+			return
+		}
 		if postBody.Variables == nil {
 			postBody.Variables = make(map[string]pufferpanel.Variable)
 		}
@@ -422,6 +440,24 @@ func createServer(c *gin.Context) {
 		vncDisplay.Type = pufferpanel.Type{Type: "integer"}
 		vncDisplay.Value = int(allocation.Port) - 5900
 		postBody.Variables["vnc_display"] = vncDisplay
+
+		forwardAllocations := make([]models.Allocation, 0, len(postBody.PortForwards))
+		allocationService := &services.Allocation{DB: db}
+		for _, forward := range postBody.PortForwards {
+			forwardAllocation, forwardErr := allocationService.AllocateForward(node, server.Identifier, forward.GuestPort, forward.Protocol)
+			if forwardErr == services.ErrNoPortAvailable {
+				c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free node port is available for a VPS port forward"}})
+				return
+			}
+			if response.HandleError(c, forwardErr, http.StatusInternalServerError) {
+				return
+			}
+			forwardAllocations = append(forwardAllocations, *forwardAllocation)
+		}
+		forwardPorts := postBody.Variables["forward_ports"]
+		forwardPorts.Type = pufferpanel.Type{Type: "string"}
+		forwardPorts.Value = qemuPortForwardArgs(forwardAllocations)
+		postBody.Variables["forward_ports"] = forwardPorts
 	}
 
 	for _, v := range users {
@@ -1424,8 +1460,13 @@ func searchModrinthPlugins(c *gin.Context) {
 	request.Header.Set("User-Agent", "PufferPanel/3 plugin manager")
 	remoteResponse, err := pufferpanel.Http().Do(request)
 	defer utils.CloseResponse(remoteResponse)
-	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) { return }
-	if remoteResponse.StatusCode != http.StatusOK { response.HandleError(c, errors.New("plugin catalogue is unavailable"), http.StatusBadGateway); return }
+	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	if remoteResponse.StatusCode != http.StatusOK {
+		response.HandleError(c, errors.New("plugin catalogue is unavailable"), http.StatusBadGateway)
+		return
+	}
 	c.DataFromReader(http.StatusOK, remoteResponse.ContentLength, "application/json", remoteResponse.Body, nil)
 }
 
@@ -1434,7 +1475,9 @@ func getModrinthPluginVersion(c *gin.Context) {
 	endpoint, _ := url.Parse(modrinthAPIBase + "/project/" + url.PathEscape(projectID) + "/version")
 	params := endpoint.Query()
 	params.Set("loaders", `["paper","purpur","spigot","bukkit"]`)
-	if gameVersion := strings.TrimSpace(c.Query("gameVersion")); gameVersion != "" { params.Set("game_versions", "[\""+gameVersion+"\"]") }
+	if gameVersion := strings.TrimSpace(c.Query("gameVersion")); gameVersion != "" {
+		params.Set("game_versions", "[\""+gameVersion+"\"]")
+	}
 	params.Set("featured", "true")
 	params.Set("include_changelog", "false")
 	endpoint.RawQuery = params.Encode()
@@ -1442,11 +1485,32 @@ func getModrinthPluginVersion(c *gin.Context) {
 	request.Header.Set("User-Agent", "PufferPanel/3 plugin manager")
 	remoteResponse, err := pufferpanel.Http().Do(request)
 	defer utils.CloseResponse(remoteResponse)
-	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) { return }
-	if remoteResponse.StatusCode != http.StatusOK { response.HandleError(c, errors.New("plugin version is unavailable"), http.StatusBadGateway); return }
-	var versions []struct { VersionNumber string `json:"version_number"`; Files []struct { URL string `json:"url"`; Filename string `json:"filename"`; Primary bool `json:"primary"` } `json:"files"` }
-	if err = json.NewDecoder(remoteResponse.Body).Decode(&versions); response.HandleError(c, err, http.StatusBadGateway) { return }
-	for _, version := range versions { for _, file := range version.Files { if file.Primary || len(version.Files) == 1 { c.JSON(http.StatusOK, gin.H{"url": file.URL, "filename": file.Filename, "version": version.VersionNumber}); return } } }
+	if (remoteResponse == nil || remoteResponse.StatusCode != http.StatusOK) && response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	if remoteResponse.StatusCode != http.StatusOK {
+		response.HandleError(c, errors.New("plugin version is unavailable"), http.StatusBadGateway)
+		return
+	}
+	var versions []struct {
+		VersionNumber string `json:"version_number"`
+		Files         []struct {
+			URL      string `json:"url"`
+			Filename string `json:"filename"`
+			Primary  bool   `json:"primary"`
+		} `json:"files"`
+	}
+	if err = json.NewDecoder(remoteResponse.Body).Decode(&versions); response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	for _, version := range versions {
+		for _, file := range version.Files {
+			if file.Primary || len(version.Files) == 1 {
+				c.JSON(http.StatusOK, gin.H{"url": file.URL, "filename": file.Filename, "version": version.VersionNumber})
+				return
+			}
+		}
+	}
 	response.HandleError(c, errors.New("no compatible plugin version was found"), http.StatusNotFound)
 }
 

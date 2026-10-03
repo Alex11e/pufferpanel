@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/buildkite/shellwords"
+	"github.com/pufferpanel/pufferpanel/v3/models"
 )
 
 func TestPterodactylShellStartupIsWrapped(t *testing.T) {
@@ -61,5 +62,40 @@ func TestVpsTemplate(t *testing.T) {
 		if strings.Contains(vpsStartScript, "${"+key+"}") {
 			t.Errorf("script contains panel token ${%s}", key)
 		}
+	}
+}
+
+func TestNormalizeVpsPortForwards(t *testing.T) {
+	forwards, err := normalizeVpsPortForwards([]models.ServerPortForward{
+		{GuestPort: 22, Protocol: "TCP"},
+		{GuestPort: 25565, Protocol: "tcp,udp"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if forwards[0].Protocol != "tcp" || forwards[1].Protocol != "tcp,udp" {
+		t.Fatalf("protocols were not normalized: %+v", forwards)
+	}
+
+	if _, err = normalizeVpsPortForwards([]models.ServerPortForward{
+		{GuestPort: 25565, Protocol: "tcp"},
+		{GuestPort: 25565, Protocol: "udp"},
+	}); err == nil {
+		t.Fatal("expected duplicate guest ports to be rejected")
+	}
+	if _, err = normalizeVpsPortForwards([]models.ServerPortForward{{GuestPort: 22, Protocol: "icmp"}}); err == nil {
+		t.Fatal("expected unsupported protocol to be rejected")
+	}
+}
+
+func TestQemuPortForwardArgs(t *testing.T) {
+	args := qemuPortForwardArgs([]models.Allocation{
+		{Port: 3001, TargetPort: 22, Protocols: "tcp", Purpose: "forward"},
+		{Port: 3002, TargetPort: 25565, Protocols: "tcp,udp", Purpose: "forward"},
+		{Port: 5902, TargetPort: 0, Purpose: "vnc"},
+	})
+	want := "hostfwd=tcp::3001-:22,hostfwd=tcp::3002-:25565,hostfwd=udp::3002-:25565"
+	if args != want {
+		t.Fatalf("QEMU forwards = %q, want %q", args, want)
 	}
 }

@@ -26,6 +26,32 @@ For a fresh Debian/Ubuntu server, use the remote installer:
 bash <(curl -fsSL https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh)
 ```
 
+### Contabo VPS management
+
+The `/contabo` admin page manages existing Contabo Cloud VPS/VDS instances.
+Storage VPS products are not supported by Contabo's API. Configure these
+environment variables on the panel container; never commit API credentials to
+the repository or enter them in the browser:
+
+- `PUFFER_CONTABO_CLIENT_ID`
+- `PUFFER_CONTABO_CLIENT_SECRET`
+- `PUFFER_CONTABO_API_USER`
+- `PUFFER_CONTABO_API_PASSWORD`
+
+The page supports power actions, OS reinstall from a standard image, custom
+`.iso`/`.qcow2` images hosted at a public HTTPS URL, and Contabo firewall rules.
+Reinstall erases the instance disk. Contabo firewall protection may require a
+paid add-on; the panel asks for a separate confirmation before requesting it.
+The existing `/vps` page remains the local QEMU VM workflow, with VNC boot and
+ISO selection on one of your PufferPanel nodes. For browser SSH, also configure
+`PUFFER_CONTABO_SSH_PRIVATE_KEY_FILE` and
+`PUFFER_CONTABO_SSH_KNOWN_HOSTS_FILE` on the Compose host, then place those
+files in the mounted panel configuration directory. By default the container
+expects `/etc/pufferpanel/contabo_ssh_key` and
+`/etc/pufferpanel/contabo_known_hosts`. Use an unencrypted private key whose
+matching public key is installed on the VPS. The configured host keys must
+match the Contabo instance IPs; the panel rejects unknown or changed keys.
+
 ### What's different about PufferPanel?
 In addition to being a free and open source project, PufferPanel provides an easy-to-use interface for everyone from individual users to large networks. We strive to create a friendly community, and we would love for you to join us.
 

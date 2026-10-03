@@ -335,6 +335,7 @@ class Server {
     this.name = serverData.server.name
     this.node = serverData.server.node
     this.port = serverData.server.port
+    this.allocations = serverData.server.allocations || []
     this.subdomain = serverData.server.subdomain
     this.autoBackupEnabled = serverData.server.autoBackupEnabled
     this.autoBackupRetention = serverData.server.autoBackupRetention || 24

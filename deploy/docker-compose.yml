@@ -6,6 +6,14 @@ services:
     image: pufferpanel-custom:latest
     container_name: pufferpanel
     restart: unless-stopped
+    environment:
+      PUFFER_CONTABO_CLIENT_ID: ${PUFFER_CONTABO_CLIENT_ID:-}
+      PUFFER_CONTABO_CLIENT_SECRET: ${PUFFER_CONTABO_CLIENT_SECRET:-}
+      PUFFER_CONTABO_API_USER: ${PUFFER_CONTABO_API_USER:-}
+      PUFFER_CONTABO_API_PASSWORD: ${PUFFER_CONTABO_API_PASSWORD:-}
+      PUFFER_CONTABO_API_URL: ${PUFFER_CONTABO_API_URL:-https://api.contabo.com}
+      PUFFER_CONTABO_SSH_PRIVATE_KEY_FILE: ${PUFFER_CONTABO_SSH_PRIVATE_KEY_FILE:-/etc/pufferpanel/contabo_ssh_key}
+      PUFFER_CONTABO_SSH_KNOWN_HOSTS_FILE: ${PUFFER_CONTABO_SSH_KNOWN_HOSTS_FILE:-/etc/pufferpanel/contabo_known_hosts}
     healthcheck:
       test: ["CMD-SHELL", "wget -q -T 3 -O /dev/null http://127.0.0.1:8080/ || exit 1"]
       interval: 5s

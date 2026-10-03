@@ -66,3 +66,38 @@ func TestAllocateRangeSkipsLegacyAndReservedPorts(t *testing.T) {
 		t.Fatalf("expected only the normal port allocation to be visible, got %+v", visible)
 	}
 }
+
+func TestAllocateForwardStoresGuestPortAndProtocol(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file:allocation-forward?mode=memory&cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = db.AutoMigrate(&models.Node{}, &models.Server{}, &models.Allocation{}); err != nil {
+		t.Fatal(err)
+	}
+
+	node := *models.LocalNode
+	node.PortRangeStart = 25565
+	node.PortRangeEnd = 25566
+	service := &Allocation{DB: db}
+
+	forward, err := service.AllocateForward(&node, "vps-one", 22, "tcp")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if forward.Port != 25565 || forward.TargetPort != 22 || forward.Protocols != "tcp" || forward.Purpose != "forward" {
+		t.Fatalf("unexpected forwarded allocation: %+v", forward)
+	}
+
+	second, err := service.AllocateForward(&node, "vps-one", 25565, "tcp,udp")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if second.Port != 25566 || second.TargetPort != 25565 || second.Protocols != "tcp,udp" {
+		t.Fatalf("unexpected second forwarded allocation: %+v", second)
+	}
+
+	if _, err = service.AllocateForward(&node, "vps-one", 443, "icmp"); err == nil {
+		t.Fatal("expected unsupported protocol to be rejected")
+	}
+}

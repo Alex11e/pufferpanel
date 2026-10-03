@@ -60,6 +60,22 @@ function value(key, fallback = '') {
   return entry && entry.value !== undefined && entry.value !== '' ? entry.value : fallback
 }
 
+function allocationPort(purpose) {
+  return props.server.allocations?.find(allocation => allocation.purpose === purpose)?.port
+}
+
+function noVncPort() {
+  return Number(props.server.port || value('port', 0))
+}
+
+function vncPort() {
+  return Number(allocationPort('vnc') || (5900 + Number(value('vnc_display', 1))))
+}
+
+function forwardedPorts() {
+  return (props.server.allocations || []).filter(allocation => allocation.purpose === 'forward' && allocation.targetPort)
+}
+
 onMounted(() => {
   timer = setInterval(refresh, 10000)
   refresh()
@@ -97,8 +113,15 @@ onUnmounted(() => clearInterval(timer))
     <p v-if="dataError" class="error" role="alert">A VPS beállításai nem tölthetők be: {{ dataError }}</p>
     <section v-if="vars" class="connection">
       <h3>VNC kapcsolat</h3>
-      <p v-if="Number(value('port', 0)) > 0">Böngészős konzol: <a :href="`http://${server.node?.publicHost}:${value('port')}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">http://{{ server.node?.publicHost }}:{{ value('port') }}</a></p>
-      <p>Cím: <code>{{ server.node?.publicHost }}:{{ 5900 + Number(value('vnc_display', 1)) }}</code></p>
+      <p v-if="noVncPort() > 0">noVNC port: <a :href="`http://${server.node?.publicHost}:${noVncPort()}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">{{ server.node?.publicHost }}:{{ noVncPort() }}</a></p>
+      <p>VNC port: <code>{{ server.node?.publicHost }}:{{ vncPort() }}</code></p>
+      <h3>Automatikusan kiosztott portok</h3>
+      <ul>
+        <li v-for="allocation in forwardedPorts()" :key="allocation.id">
+          {{ allocation.protocols.toUpperCase() }} · {{ server.node?.publicHost }}:{{ allocation.port }} → vendég {{ allocation.targetPort }}
+        </li>
+        <li v-if="!forwardedPorts().length" class="hint">Nincs további vendégport továbbítás.</li>
+      </ul>
       <p class="hint">Használj VNC klienst. A jelszó a Beállítások fülön módosítható, módosítás után indítsd újra a VPS-t.</p>
       <h3>Konfiguráció</h3>
       <ul>

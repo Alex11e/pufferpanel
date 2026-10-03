@@ -7,6 +7,7 @@ import { NodeApi } from './nodes'
 import { ServerApi } from './servers'
 import { TemplateApi } from './templates'
 import { SettingsApi } from './settings'
+import { ContaboApi } from './contabo'
 
 export class ApiClient {
   _axios = null
@@ -18,6 +19,7 @@ export class ApiClient {
   node = null
   user = null
   template = null
+  contabo = null
 
   constructor(
     host,
@@ -35,6 +37,7 @@ export class ApiClient {
     this.user = new UserApi(this)
     this.template = new TemplateApi(this)
     this.settings = new SettingsApi(this)
+    this.contabo = new ContaboApi(this)
   }
 
   _handleError(e) {

@@ -31,6 +31,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	registerAdmin(rg.Group("/admin"))
 	registerUpdates(rg.Group("/admin"))
 	registerVps(rg.Group("/vps"))
+	registerContabo(rg.Group("/contabo"))
 	registerHosting(rg.Group("/hosting"))
 	registerAnnouncements(rg.Group("/announcements"))
 	registerTickets(rg.Group("/tickets"))

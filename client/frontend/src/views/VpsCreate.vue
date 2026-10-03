@@ -20,6 +20,13 @@ const uefi = ref(true)
 const kvm = ref(false)
 const vncPassword = ref('')
 const iso = ref('netboot.xyz.iso')
+const portForwards = ref([
+  { id: 'ssh', guestPort: 22, protocol: 'tcp', label: 'SSH' },
+  { id: 'http', guestPort: 80, protocol: 'tcp', label: 'HTTP' },
+  { id: 'https', guestPort: 443, protocol: 'tcp', label: 'HTTPS' },
+  { id: 'minecraft', guestPort: 25565, protocol: 'tcp,udp', label: 'Minecraft' }
+])
+let customForwardId = 0
 const creating = ref(false)
 const error = ref('')
 const loadError = ref('')
@@ -29,11 +36,22 @@ const canSubmit = computed(() =>
   nodes.value.some(node => node.value === nodeId.value) &&
   Number.isInteger(Number(ram.value)) && Number(ram.value) >= 256 &&
   Number.isInteger(Number(disk.value)) && Number(disk.value) >= 1 &&
+  portForwards.value.every(forward => Number.isInteger(Number(forward.guestPort)) && Number(forward.guestPort) >= 1 && Number(forward.guestPort) <= 65535) &&
+  new Set(portForwards.value.map(forward => Number(forward.guestPort))).size === portForwards.value.length &&
   /^[\x20-\x7e]{1,8}$/.test(vncPassword.value)
 )
 
 function errorMessage(error) {
   return error?.msg || error?.message || 'Ismeretlen hiba történt.'
+}
+
+function addPortForward() {
+  customForwardId += 1
+  portForwards.value.push({ id: `custom-${customForwardId}`, guestPort: '', protocol: 'tcp', label: '' })
+}
+
+function removePortForward(id) {
+  portForwards.value = portForwards.value.filter(forward => forward.id !== id)
 }
 
 async function loadSetup() {
@@ -78,7 +96,15 @@ async function create() {
     // KVM only works when the container can see the host device.
     if (kvm.value) environment.hostConfig = { Devices: [{ PathOnHost: '/dev/kvm', PathInContainer: '/dev/kvm', CgroupPermissions: 'rwm' }] }
 
-    const request = { ...template.value, name: name.value.trim(), node: nodeId.value, environment, users: [self.username], data }
+    const request = {
+      ...template.value,
+      name: name.value.trim(),
+      node: nodeId.value,
+      environment,
+      users: [self.username],
+      data,
+      portForwards: portForwards.value.map(forward => ({ guestPort: Number(forward.guestPort), protocol: forward.protocol }))
+    }
     const id = await api.server.create(request)
     toast.success('A VPS létrejött.')
     router.push({ name: 'ServerView', params: { id }, query: { created: true } })
@@ -111,7 +137,15 @@ async function create() {
       <label>Lemez (GB)<input v-model.number="disk" type="number" min="1" step="1" required></label>
       <label>Boot ISO<input v-model="iso" placeholder="üres = lemezről indul"></label>
       <label>VNC jelszó (max. 8 karakter)<input v-model="vncPassword" type="password" maxlength="8" autocomplete="new-password" required></label>
-      <p class="hint">A VPS VNC-portját a rendszer automatikusan, node-onként egyedien foglalja le.</p>
+      <h2>Porttovábbítás</h2>
+      <p class="hint">Csak a vendég portját válaszd ki. A panel automatikusan szabad külső portot foglal a node-on.</p>
+      <div v-for="forward in portForwards" :key="forward.id" class="forward-row">
+        <label>{{ forward.label || 'Egyedi szolgáltatás' }} vendég portja<input v-model.number="forward.guestPort" type="number" min="1" max="65535" required></label>
+        <label>Protokoll<select v-model="forward.protocol"><option value="tcp">TCP</option><option value="udp">UDP</option><option value="tcp,udp">TCP + UDP</option></select></label>
+        <btn variant="icon" :title="`${forward.label || 'Egyedi port'} eltávolítása`" @click="removePortForward(forward.id)"><icon name="remove" /></btn>
+      </div>
+      <btn type="button" @click="addPortForward"><icon name="plus" /> Vendég port hozzáadása</btn>
+      <p class="hint">A noVNC és a VNC portját a rendszer külön foglalja, ezek is látszani fognak a VPS adatlapján.</p>
       <label class="check"><input v-model="uefi" type="checkbox"> UEFI indítás</label>
       <label class="check"><input v-model="kvm" type="checkbox"> KVM gyorsítás (a node-nak elérhetővé kell tennie a /dev/kvm eszközt)</label>
       <div v-if="error" class="error">{{ error }}</div>
@@ -127,7 +161,9 @@ h1 { display: flex; align-items: center; gap: 10px; }
 form { display: flex; flex-direction: column; gap: 14px; }
 label { display: flex; flex-direction: column; gap: 4px; color: var(--color-text-secondary); }
 label.check { flex-direction: row; align-items: center; gap: 8px; }
+.forward-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 40px; align-items: end; gap: 10px; }
 input:not([type="checkbox"]), select { padding: 9px; border: 1px solid var(--color-background); border-radius: 5px; background: var(--color-background-secondary); color: var(--color-text); }
 .error { color: var(--color-error); }
 .hint { color: var(--color-text-secondary); }
+@media (max-width: 560px) { .forward-row { grid-template-columns: 1fr 1fr; } .forward-row :deep(button) { justify-self: end; grid-column: 2; } }
 </style>

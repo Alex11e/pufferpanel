@@ -62,6 +62,16 @@ export default (api) => [
     name: 'VpsCreate'
   },
   {
+    path: '/contabo',
+    component: () => import('@/views/ContaboVps.vue'),
+    name: 'ContaboVps',
+    meta: {
+      tkey: 'Contabo VPS',
+      permission: 'admin',
+      icon: 'node'
+    }
+  },
+  {
     path: '/hosting/web',
     component: () => import('@/views/VpsList.vue'),
     name: 'WebHostingList',
