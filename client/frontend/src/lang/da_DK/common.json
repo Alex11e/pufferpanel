@@ -38,9 +38,9 @@
       "Auto": "Auto"
     },
     "BaseColor": "Grundfarve",
-    "ServerTypeDisplay": "Server Type Visning",
+    "ServerTypeDisplay": "Visning af servertype",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikon + baggrund",
       "Icon": "Ikon",
       "None": "Ingen"
     },
@@ -49,11 +49,11 @@
       "Grid": "Gitter",
       "List": "Liste"
     },
-    "FontSize": "Font-størrelse",
+    "FontSize": "Fontstørrelse",
     "fontSize": {
       "Default": "Standard"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Skrifttype",
     "fontFace": {
       "Default": "Standard",
       "A11y": "Tilgængelighed optimeret"
