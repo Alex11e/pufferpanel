@@ -21,7 +21,7 @@
   "Version": "الإصدار",
   "Environment": "البيئة",
   "EnvEnabled": "البيئة مفعلة",
-  "AddEnvVar": "Add env variable",
+  "AddEnvVar": "إضافة متغير بيئة",
   "EnvVars": "متغيرات البيئة",
   "DockerImage": "صورة الدوكر",
   "RunConfig": "تشغيل الإعداد",
@@ -38,13 +38,13 @@
   "CommandConditionHint": "استخدم هذا الأمر فقط إذا تم الوفاء بهذا الشرط",
   "AddCommand": "اضافة امر",
   "AddEnvironment": "إضافة بيئة",
-  "AddRepo": "Add Template Repository",
-  "RepoName": "Repository Name",
-  "RepoUrl": "Repository URL",
-  "RepoBranch": "Repository Branch",
-  "ConfirmDeleteRepo": "Are you sure you want to delete the repository '{name}'?",
-  "DeleteRepo": "Delete Repository",
-  "MinecraftVersion": "Minecraft Version",
+  "AddRepo": "إضافة مستودع قوالب",
+  "RepoName": "اسم المستودع",
+  "RepoUrl": "رابط المستودع",
+  "RepoBranch": "فرع المستودع",
+  "ConfirmDeleteRepo": "هل أنت متأكد أنك تريد حذف المستودع '{name}'؟",
+  "DeleteRepo": "حذف المستودع",
+  "MinecraftVersion": "إصدار ماينكرافت",
   "signals": {
     "1": "SIGHUP",
     "2": "SIGINT (CTRL+C)",
@@ -72,28 +72,28 @@
       "Number": "رقم",
       "Options": "الخيارات"
     },
-    "EditGroup": "Edit group",
-    "RemoveGroup": "Remove group",
-    "MoveToGroup": "Move to different group",
-    "Remove": "Remove"
+    "EditGroup": "تعديل المجموعة",
+    "RemoveGroup": "إزالة المجموعة",
+    "MoveToGroup": "نقل إلى مجموعة مختلفة",
+    "Remove": "إزالة"
   },
   "description": {
     "Name": "يستخدم هذا الاسم كمعرف للنموذج",
     "Display": "هذا هو الاسم الذي سيتم عرضه للمستخدمين على سبيل المثال أثناء إنشاء الخادم",
     "Type": "يتم استخدام هذا لتجميع نماذج مختلفة وتحديد أيقونة لعرضها في قائمة الخوادم",
-    "Variables": "Variables will be shown to users as settings on a server, they are useful for example to let the user define what version to use or to define some settings like the port to use",
-    "Install": "Here you define what steps will be run when a user hits the install button of a server created from this template",
-    "Command": "This is the command that will be executed to start the server",
-    "StopCommand": "Write a command to the servers console when a users hits the srvers stop button",
-    "StopSignal": "Send a signal to the server when a users hits the srvers stop button, this can for example be used to emulate hitting CTRL+C",
-    "PreRunHook": "Here you can define some steps to run every time just before the server starts",
-    "PostRunHook": "Here you can define some steps to run every time after the server stops"
+    "Variables": "سيتم عرض المتغيرات للمستخدمين كإعدادات على الخادم، وهي مفيدة على سبيل المثال للسماح للمستخدم بتحديد الإصدار الذي سيستخدمه أو لتحديد بعض الإعدادات مثل المنفذ الذي سيستخدمه",
+    "Install": "هنا تحدد الخطوات التي سيتم تشغيلها عندما يضغط المستخدم على زر التثبيت لخادم تم إنشاؤه من هذا القالب",
+    "Command": "هذا هو الأمر الذي سيتم تنفيذه لبدء تشغيل الخادم",
+    "StopCommand": "اكتب أمرًا إلى وحدة تحكم الخادم عندما يضغط المستخدم على زر إيقاف الخادم",
+    "StopSignal": "أرسل إشارة إلى الخادم عندما يضغط المستخدم على زر إيقاف الخادم، يمكن استخدام هذا على سبيل المثال لمحاكاة الضغط على CTRL+C",
+    "PreRunHook": "هنا يمكنك تحديد بعض الخطوات التي سيتم تشغيلها في كل مرة قبل بدء تشغيل الخادم مباشرة",
+    "PostRunHook": "هنا يمكنك تحديد بعض الخطوات التي سيتم تشغيلها في كل مرة بعد توقف الخادم"
   },
-  "WorkingDirectory": "Working Directory",
-  "General": "General",
-  "Hooks": "Hooks",
-  "Import": "Import template",
+  "WorkingDirectory": "دليل العمل",
+  "General": "عام",
+  "Hooks": "الخطافات",
+  "Import": "استيراد القالب",
   "import": {
-    "CommunityWarning": "These templates are made by the community and provided without any warranties"
+    "CommunityWarning": "هذه القوالب مصنوعة من قبل المجتمع ويتم توفيرها دون أي ضمانات"
   }
 }

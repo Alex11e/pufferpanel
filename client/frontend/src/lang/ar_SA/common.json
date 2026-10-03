@@ -40,7 +40,7 @@
     "BaseColor": "اللون الأساسي",
     "ServerTypeDisplay": "عرض نوع الخادم",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "أيقونة + خلفية",
       "Icon": "الأيقونة",
       "None": "بدون"
     },
