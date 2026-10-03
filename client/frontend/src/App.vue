@@ -28,6 +28,7 @@ const confirmOpen = ref(false)
 const confirm = ref({})
 const announcements = ref([])
 let lastWidth = window.innerWidth
+let reauthTimer = null
 
 function showErrorDetails(e) {
   const getCircularReplacer = () => {
@@ -55,8 +56,9 @@ function showErrorDetails(e) {
     }
   }
 
-  let statusMessage = `${e.status} ${e.statusText}`
-  switch (e.status) {
+  const status = e?.status
+  let statusMessage = status ? `${status} ${e.statusText || ''}`.trim() : 'Network error'
+  switch (status) {
     case 401:
       statusMessage = 'Not logged in (401)'
       break
@@ -74,14 +76,19 @@ function showErrorDetails(e) {
       break
   }
 
-  let body = e.request.data
-  if (body) {
-    body = JSON.stringify(JSON.parse(body), getCircularReplacer(), 2)
+  let body = e?.request?.data
+  if (body !== undefined && body !== null) {
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body) } catch { /* Keep non-JSON request bodies readable. */ }
+    }
+    if (typeof body !== 'string') {
+      try { body = JSON.stringify(body, getCircularReplacer(), 2) } catch { body = String(body) }
+    }
   }
 
   error.value = `${statusMessage}${e.msg ? '\n\nDetails: ' + e.msg : ''}${e.code && e.code !== 'ErrUnknownError' ? '\nCode: ' + e.code : ''}
 
-Endpoint: ${e.request.method} ${e.request.url}
+Endpoint: ${e?.request?.method || 'unknown'} ${e?.request?.url || 'unknown'}
 
 ${body ? 'Request Body: ' + body : ''}`
     .replace(/>/g, '&gt;')
@@ -120,7 +127,7 @@ onMounted(async () => {
 
   document.documentElement.style.setProperty('--inner-height', `${window.innerHeight}px`)
   allowSidebar.value = !route.meta.noAuth
-  setInterval(() => {
+  reauthTimer = setInterval(() => {
     if (api.auth.isLoggedIn()) api.auth.reauth()
   }, 1000 * 60 * 15)
   if (api.auth.isLoggedIn()) {
@@ -155,6 +162,7 @@ function dismissAnnouncement(announcement) {
 }
 
 onUnmounted(() => {
+  clearInterval(reauthTimer)
   window.removeEventListener('resize', onResize)
 })
 
