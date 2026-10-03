@@ -40,7 +40,7 @@
     "BaseColor": "Základní barva",
     "ServerTypeDisplay": "Zobrazení typu serveru",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikona + pozadí",
       "Icon": "Ikona",
       "None": "Nic"
     },

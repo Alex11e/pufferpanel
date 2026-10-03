@@ -42,9 +42,9 @@
   "deploy": {
     "Step1": "## Krok 1\n\nNainstalujte PufferPanel na nový server, [viz dokumentace pro detaily](https://docs.pufferpanel.com/en/latest/installing.html)",
     "Step2": "## Krok 2\n\nZastavte službu PufferPanel na novém serveru, pokud byl spuštěn během instalace spuštěním `sudo systemctl stop pufferpanel`",
-    "Step3": "## Krok 3\n\nNahradit obsah konfiguračního souboru PufferPanel na novém serveru kódem pod\n\nKonfigurační soubor je obvykle nalezen v `/etc/pufferpanel/config. son`\n\n```\n{config}\n```",
-    "Step4": "## Krok 4\n\nPovolit a (re)spusťte službu PufferPanel na novém serveru spuštěním `sudo systemctl povolit --now pufferpanel`",
-    "Step5": "### Váš nový uzel je nyní nastaven a připraven k přechodu"
+    "Step3": "## Krok 3\n\nNahradit obsah konfiguračního souboru PufferPanel na novém serveru kódem níže\n\nKonfigurační soubor je obvykle nalezen v `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Krok 4\n\nPovolit a (re)spusťte službu PufferPanel na novém serveru spuštěním `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Váš nový uzel je nyní nastaven a připraven k použití"
   },
-  "DeploymentInstruction": "Pro nasazení uzlu nainstalujte PufferPanel  na nový server a umístěte konfigurační soubor do `/etc/pufferpanel/`<br/>Poté restartujte PufferPanel na novém serveru."
+  "DeploymentInstruction": "Pro nasazení uzlu nainstalujte PufferPanel na nový server a umístěte konfigurační soubor do `/etc/pufferpanel/`<br/>Poté restartujte PufferPanel na novém serveru."
 }
