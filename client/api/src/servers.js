@@ -48,6 +48,11 @@ export class ServerApi {
     return res.data
   }
 
+  async updatePrimaryPort(id, port) {
+    const res = await this._api.put(`/api/servers/${id}/allocations/primary`, { port: Number(port) })
+    return res.data
+  }
+
   async releasePort(id, allocationId) {
     await this._api.delete(`/api/servers/${id}/allocations/${allocationId}`)
     return true

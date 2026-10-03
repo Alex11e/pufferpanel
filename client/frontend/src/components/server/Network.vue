@@ -10,6 +10,8 @@ const api = inject('api')
 const toast = inject('toast')
 const { t } = useI18n()
 const allocations = ref([])
+const primaryPort = ref(String(props.server.port || ''))
+const primaryPortValue = ref(Number(props.server.port || 0))
 const requestedPort = ref('')
 const guestPort = ref('')
 const protocols = ref('tcp,udp')
@@ -18,6 +20,12 @@ const busy = ref(false)
 const error = ref('')
 const canEditPorts = computed(() => api.auth.hasScope('nodes.edit') || api.auth.hasScope('admin'))
 const isVps = computed(() => props.server.type === 'hypervm')
+const canSavePrimaryPort = computed(() => {
+  const port = Number(primaryPort.value)
+  const minimum = Number(props.server.node?.portRangeStart || 1)
+  const maximum = Number(props.server.node?.portRangeEnd || 65535)
+  return canEditPorts.value && !busy.value && Number.isInteger(port) && port >= minimum && port <= maximum && port !== primaryPortValue.value
+})
 const canAllocatePort = computed(() => {
   if (busy.value || loading.value) return false
   const port = Number(isVps.value ? guestPort.value : requestedPort.value)
@@ -35,6 +43,22 @@ async function refresh() {
     error.value = cause?.msg || cause?.message || t('servers.PortAllocationFailed')
   } finally {
     loading.value = false
+  }
+}
+
+async function savePrimaryPort() {
+  busy.value = true
+  error.value = ''
+  try {
+    const response = await api.server.updatePrimaryPort(props.server.id, Number(primaryPort.value))
+    primaryPortValue.value = Number(response?.port || primaryPort.value)
+    primaryPort.value = String(primaryPortValue.value)
+    await refresh()
+    toast.success(t('servers.PrimaryPortUpdated'))
+  } catch (cause) {
+    error.value = cause?.msg || cause?.message || t('servers.PortAllocationFailed')
+  } finally {
+    busy.value = false
   }
 }
 
@@ -77,8 +101,16 @@ async function releasePort(allocation) {
     <h2 v-text="t('servers.Network')" />
     <div class="primary-port">
       <strong v-text="t('servers.PrimaryPort')" />
-      <span>{{ server.node?.publicHost || server.ip }}<template v-if="server.port">:{{ server.port }}</template></span>
+      <div class="primary-port-control">
+        <span>{{ server.node?.publicHost || server.ip }}:</span>
+        <input v-if="canEditPorts && primaryPortValue" v-model="primaryPort" type="number" :min="server.node?.portRangeStart || 1" :max="server.node?.portRangeEnd || 65535">
+        <span v-else>{{ primaryPortValue || t('common.NotAvailable') }}</span>
+        <btn v-if="canEditPorts && primaryPortValue" variant="icon" :tooltip="t('servers.SavePrimaryPort')" :disabled="!canSavePrimaryPort" @click="savePrimaryPort">
+          <icon :name="busy ? 'loading' : 'save'" :spin="busy" />
+        </btn>
+      </div>
     </div>
+    <p v-if="canEditPorts" class="hint" v-text="t('servers.PrimaryPortRestartHint')" />
 
     <div class="allocation-heading">
       <h3 v-text="t('servers.AllocatedPorts')" />
@@ -103,7 +135,7 @@ async function releasePort(allocation) {
           <template v-if="allocation.targetPort"> · {{ t('servers.GuestPort') }} {{ allocation.targetPort }}</template>
           <template v-if="allocation.purpose"> · {{ t('servers.PortPurpose', { purpose: allocation.purpose }) }}</template>
         </span>
-        <btn v-if="canEditPorts && allocation.port !== server.port && !(isVps && allocation.purpose === 'vnc')" variant="icon" :tooltip="t('nodes.ReleasePort')" :disabled="busy" @click="releasePort(allocation)">
+        <btn v-if="canEditPorts && allocation.port !== primaryPortValue && !(isVps && allocation.purpose === 'vnc')" variant="icon" :tooltip="t('nodes.ReleasePort')" :disabled="busy" @click="releasePort(allocation)">
           <icon name="remove" />
         </btn>
       </div>
@@ -114,7 +146,9 @@ async function releasePort(allocation) {
 
 <style scoped>
 .network { max-width: 52rem; }
-.primary-port { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--color-background-secondary); }
+.primary-port { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--color-background-secondary); }
+.primary-port-control { display: flex; align-items: center; gap: .5rem; }
+.primary-port-control input { width: 7rem; padding: .5rem; border: 1px solid var(--color-background); border-radius: .3rem; background: var(--color-background-secondary); color: var(--color-text); }
 .allocation-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; }
 .allocation-heading h3 { margin: 0; }
 .allocation-form { display: flex; align-items: flex-end; gap: .75rem; flex-wrap: wrap; margin-top: .75rem; }
@@ -125,5 +159,6 @@ async function releasePort(allocation) {
 .port { font-weight: 600; overflow-wrap: anywhere; }
 .details { flex: 1; color: var(--color-text-secondary); }
 .empty { color: var(--color-text-secondary); }
+.hint { color: var(--color-text-secondary); }
 .error { color: var(--color-error); }
 </style>

@@ -41,8 +41,10 @@ func registerServers(g *gin.RouterGroup) {
 	g.GET("/:serverId/allocations", middleware.RequiresPermission(scopes.ScopeServerView), middleware.ResolveServerPanel, getServerAllocations)
 	g.POST("/:serverId/allocations", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.ResolveServerPanel, middleware.HasTransaction, allocateServerPort)
 	g.DELETE("/:serverId/allocations/:allocationId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.ResolveServerPanel, middleware.HasTransaction, releaseServerPort)
+	g.PUT("/:serverId/allocations/primary", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.ResolveServerPanel, middleware.HasTransaction, updateServerPrimaryPort)
 	g.OPTIONS("/:serverId/allocations", response.CreateOptions("GET", "POST"))
 	g.OPTIONS("/:serverId/allocations/:allocationId", response.CreateOptions("DELETE"))
+	g.OPTIONS("/:serverId/allocations/primary", response.CreateOptions("PUT"))
 
 	g.Handle("PUT", "/:serverId/name/:name", middleware.RequiresPermission(scopes.ScopeServerEditName), middleware.ResolveServerPanel, middleware.HasTransaction, renameServer)
 	g.Handle("OPTIONS", "/:serverId/name", response.CreateOptions("PUT"))
@@ -405,6 +407,55 @@ func releaseServerPort(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func updateServerPrimaryPort(c *gin.Context) {
+	server := getServerFromGin(c)
+	request := struct {
+		Port uint16 `json:"port"`
+	}{}
+	if err := c.ShouldBindJSON(&request); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if server.Port == 0 {
+		response.HandleError(c, errors.New("this server does not have a configurable primary port"), http.StatusBadRequest)
+		return
+	}
+	if request.Port == 0 || request.Port < server.Node.PortRangeStart || request.Port > server.Node.PortRangeEnd {
+		response.HandleError(c, errors.New("port must be within the node allocation range"), http.StatusBadRequest)
+		return
+	}
+	if request.Port == server.Port {
+		c.Status(http.StatusNoContent)
+		return
+	}
+	db := middleware.GetDatabase(c)
+	oldPort := server.Port
+	allocation, err := (&services.Allocation{DB: db}).AllocateRange(&server.Node, server.Identifier, request.Port, request.Port)
+	if errors.Is(err, services.ErrNoPortAvailable) {
+		c.JSON(http.StatusConflict, gin.H{"error": "requested port is already in use"})
+		return
+	}
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	server.Port = request.Port
+	if err = (&services.Server{DB: db}).Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if !updateServerRuntimeData(c, server, db, map[string]interface{}{"port": int(request.Port)}) {
+		return
+	}
+	var previous models.Allocation
+	err = db.Where("node_id = ? AND server_identifier = ? AND port = ?", server.Node.ID, server.Identifier, oldPort).First(&previous).Error
+	if err == nil {
+		if err = (&services.Allocation{DB: db}).Delete(server.Node.ID, previous.ID); response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) && response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"port": allocation.Port})
+}
+
 func syncVpsPortForwards(c *gin.Context, server *models.Server, db *gorm.DB, excluded *models.Allocation) bool {
 	var allocations []models.Allocation
 	query := db.Where("node_id = ? AND server_identifier = ? AND purpose = ?", server.Node.ID, server.Identifier, "forward")
@@ -414,7 +465,11 @@ func syncVpsPortForwards(c *gin.Context, server *models.Server, db *gorm.DB, exc
 	if err := query.Order("port").Find(&allocations).Error; response.HandleError(c, err, http.StatusInternalServerError) {
 		return false
 	}
-	body, err := json.Marshal(map[string]string{"forward_ports": qemuPortForwardArgs(allocations)})
+	return updateServerRuntimeData(c, server, db, map[string]interface{}{"forward_ports": qemuPortForwardArgs(allocations)})
+}
+
+func updateServerRuntimeData(c *gin.Context, server *models.Server, db *gorm.DB, values map[string]interface{}) bool {
+	body, err := json.Marshal(values)
 	if response.HandleError(c, err, http.StatusInternalServerError) {
 		return false
 	}

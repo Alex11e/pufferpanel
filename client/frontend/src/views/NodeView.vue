@@ -257,22 +257,26 @@ function closeDeploy() {
       <text-field v-if="withPrivateHost" v-model="privatePort" class="private-port" :label="t('nodes.PrivatePort')" type="number" />
       <text-field v-model="sftpPort" class="sftp-port" :label="t('nodes.SftpPort')" type="number" />
       </template>
-      <p v-else v-text="t('nodes.LocalNodeEdit')" />
-      <h3 v-text="t('nodes.PortAllocation')" />
-      <text-field v-model="portRangeStart" :label="t('nodes.PortRangeStart')" type="number" />
-      <text-field v-model="portRangeEnd" :label="t('nodes.PortRangeEnd')" type="number" />
-      <toggle v-model="firewallEnabled" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
-      <text-field v-model="subdomainBase" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
+      <p v-else class="local-node-hint" v-text="t('nodes.LocalNodeEdit')" />
+      <h3 class="port-allocation-title" v-text="t('nodes.PortAllocation')" />
+      <text-field v-model="portRangeStart" class="port-range-start" :label="t('nodes.PortRangeStart')" type="number" />
+      <text-field v-model="portRangeEnd" class="port-range-end" :label="t('nodes.PortRangeEnd')" type="number" />
+      <toggle v-model="firewallEnabled" class="local-firewall" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
+      <text-field v-model="subdomainBase" class="subdomain-base" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
       <div class="allocations">
-        <text-field v-model="allocationServerId" :label="t('nodes.ServerId')" />
-        <btn :disabled="!allocationServerId" @click="addAllocation()"><icon name="plus" />{{ t('nodes.AddPort') }}</btn>
-        <div v-for="allocation in allocations" :key="allocation.id" class="subline">
-          {{ allocation.port }} · {{ allocation.protocols }} · {{ allocation.serverId }}
-          <btn variant="icon" :title="t('nodes.ReleasePort')" @click="releaseAllocation(allocation)"><icon name="remove" /></btn>
+        <div class="allocation-entry">
+          <text-field v-model="allocationServerId" :label="t('nodes.ServerId')" />
+          <btn :disabled="!allocationServerId" @click="addAllocation()"><icon name="plus" />{{ t('nodes.AddPort') }}</btn>
         </div>
-        <div class="subline" v-text="allocationSummary()" />
+        <div class="allocation-list">
+          <div v-for="allocation in allocations" :key="allocation.id" class="allocation-row">
+            <span>{{ allocation.port }} · {{ allocation.protocols }} · {{ allocation.serverId }}</span>
+            <btn variant="icon" :title="t('nodes.ReleasePort')" @click="releaseAllocation(allocation)"><icon name="remove" /></btn>
+          </div>
+        </div>
+        <div class="allocation-summary" v-text="allocationSummary()" />
       </div>
-      <btn :disabled="!canSubmit()" color="primary" @click="submit()"><icon name="save" />{{ t('nodes.Update') }}</btn>
+      <btn class="node-submit" :disabled="!canSubmit()" color="primary" @click="submit()"><icon name="save" />{{ t('nodes.Update') }}</btn>
       <template v-if="!isLocalNode">
         <btn color="error" @click="deleteNode()"><icon name="remove" />{{ t('nodes.Delete') }}</btn>
         <btn @click="deploymentOpen = true" v-text="t('nodes.Deploy')" />
@@ -286,3 +290,32 @@ function closeDeploy() {
     </overlay>
   </div>
 </template>
+
+<style scoped>
+.nodeview .edit .local-node-hint,
+.nodeview .edit .port-allocation-title,
+.nodeview .edit .allocations,
+.nodeview .edit .node-submit { grid-column: 1 / -1; }
+.nodeview .edit .local-node-hint { margin: 0; color: var(--color-text-secondary); }
+.nodeview .edit .port-allocation-title { margin: .75rem 0 0; }
+.nodeview .edit .port-range-start,
+.nodeview .edit .port-range-end,
+.nodeview .edit .local-firewall,
+.nodeview .edit .subdomain-base { grid-column: span 6; min-width: 0; }
+.nodeview .edit .allocations { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; min-width: 0; }
+.allocation-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .75rem; min-width: 0; }
+.allocation-list { display: grid; gap: .5rem; min-width: 0; }
+.allocation-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-width: 0; padding: .45rem .75rem; border-radius: .35rem; background: var(--color-background-secondary); }
+.allocation-row span { min-width: 0; overflow-wrap: anywhere; }
+.allocation-summary { color: var(--color-text-secondary); text-align: right; }
+.node-submit { justify-self: start; }
+
+@media (max-width: 700px) {
+  .nodeview .edit .port-range-start,
+  .nodeview .edit .port-range-end,
+  .nodeview .edit .local-firewall,
+  .nodeview .edit .subdomain-base { grid-column: 1 / -1; }
+  .allocation-entry { grid-template-columns: minmax(0, 1fr); }
+  .allocation-entry :deep(button) { justify-self: start; }
+}
+</style>

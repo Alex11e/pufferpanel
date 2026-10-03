@@ -15,6 +15,8 @@ const router = useRouter()
 
 const engine = ref('mariadb')
 const template = ref(null)
+const loading = ref(true)
+const loadError = ref('')
 const nodes = ref([])
 const nodeId = ref(null)
 const name = ref('')
@@ -38,13 +40,17 @@ const templateKind = computed(() => (isDb.value ? engine.value : 'web'))
 const versions = computed(() => (template.value?.data?.[isDb.value ? 'version' : 'php_version']?.options || []).map(o => o.value))
 const identifier = /^[A-Za-z0-9_]{1,32}$/
 
+function errorMessage(failure) {
+  return failure?.msg || failure?.message || 'Ismeretlen hiba történt.'
+}
+
 const canSubmit = computed(() =>
   /^[\x20-\x7e]+$/.test(name.value.trim()) &&
   nodeId.value !== null &&
-  Number(memory.value) >= 128 &&
-  Number(cpu.value) > 0 &&
+  Number.isInteger(Number(memory.value)) && Number(memory.value) >= 128 &&
+  Number.isFinite(Number(cpu.value)) && Number(cpu.value) > 0 &&
   (!isDb.value || (isPma.value
-    ? pmaHost.value.trim() !== '' && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536
+    ? pmaHost.value.trim() !== '' && Number.isInteger(Number(pmaPort.value)) && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536
     : identifier.test(dbName.value) && identifier.test(dbUser.value) &&
       dbPassword.value.length >= 8 && (engine.value !== 'mariadb' || rootPassword.value.length >= 8)
   ))
@@ -58,17 +64,34 @@ function randomPassword() {
 
 async function loadTemplate() {
   template.value = null
-  template.value = (await api.get(`/api/hosting/templates/${templateKind.value}`)).data
-  if (!isPma.value) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
+  loadError.value = ''
+  try {
+    template.value = (await api.get(`/api/hosting/templates/${templateKind.value}`)).data
+    if (!isPma.value) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
+  } catch (failure) {
+    loadError.value = errorMessage(failure)
+  }
 }
 
-onMounted(async () => {
-  nodes.value = (await api.node.list()).map(n => ({ value: n.id, label: n.name }))
-  if (nodes.value.length === 1) nodeId.value = nodes.value[0].value
-  await loadTemplate()
-})
+async function loadSetup() {
+  loading.value = true
+  loadError.value = ''
+  try {
+    nodes.value = (await api.node.list()).map(n => ({ value: n.id, label: n.name }))
+    if (nodes.value.length === 1) nodeId.value = nodes.value[0].value
+    await loadTemplate()
+  } catch (failure) {
+    loadError.value = errorMessage(failure)
+  } finally {
+    loading.value = false
+  }
+}
 
-watch(engine, loadTemplate)
+onMounted(loadSetup)
+
+watch(engine, () => {
+  if (!loading.value) loadTemplate()
+})
 
 async function create() {
   if (!canSubmit.value || creating.value) return
@@ -106,6 +129,8 @@ async function create() {
     const id = await api.server.create(request)
     toast.success('Létrehozva.')
     router.push({ name: 'ServerView', params: { id }, query: { created: true } })
+  } catch (failure) {
+    error.value = errorMessage(failure)
   } finally {
     creating.value = false
   }
@@ -115,8 +140,12 @@ async function create() {
 <template>
   <div class="hosting-create">
     <h1><icon name="server" /> {{ isDb ? 'Új adatbázis' : 'Új webtárhely' }}</h1>
-    <loader v-if="!template" />
-    <form v-else @submit.prevent="create">
+    <loader v-if="loading || (!template && !loadError)" />
+    <div v-else-if="loadError" class="error-state" role="alert">
+      <p>{{ loadError }}</p>
+      <btn @click="loadSetup"><icon name="reload" /> Újrapróbálás</btn>
+    </div>
+    <form v-else-if="template" @submit.prevent="create">
       <label>Név<input v-model="name" maxlength="40" required></label>
       <label>Node
         <select v-model="nodeId" required>
