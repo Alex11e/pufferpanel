@@ -3,7 +3,7 @@
   "Language": "Språk",
   "Online": "Tilkoblet",
   "Offline": "Frakoblet",
-  "Installing": "Installing",
+  "Installing": "Installerer",
   "Unknown": "Ukjent",
   "Loading": "Laster...",
   "Description": "Beskrivelse",
@@ -13,10 +13,10 @@
   "Host": "Vert",
   "Port": "Port",
   "Collapse": "Skjul",
-  "Expand": "Utvide",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Expand": "Utvid",
+  "Copy": "Kopier til utklippstavlen",
+  "Copied": "Kopiert til utklippstavlen",
+  "Back": "Tilbake",
   "Next": "Neste",
   "Details": "Detaljer",
   "ErrorDetails": "Feildetaljer",
@@ -34,32 +34,32 @@
     "mode": {
       "Light": "Lyst",
       "Dark": "Mørk",
-      "DarkHighContrast": "Dark (High Contrast)",
+      "DarkHighContrast": "Mørk (høy kontrast)",
       "Auto": "Auto"
     },
     "BaseColor": "Basisfarge",
-    "ServerTypeDisplay": "Server Type Display",
+    "ServerTypeDisplay": "Visning av servertype",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikon + bakgrunn",
       "Icon": "Ikon",
       "None": "Ingen"
     },
-    "ListType": "Liste type",
+    "ListType": "Listetype",
     "listType": {
       "Grid": "Rutenett",
       "List": "Liste"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Skriftstørrelse",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Standard"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Skrifttype",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Standard",
+      "A11y": "Tilgjengelighet optimalisert"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Ingen resultater",
+  "Yes": "Ja",
+  "No": "Nei"
 }

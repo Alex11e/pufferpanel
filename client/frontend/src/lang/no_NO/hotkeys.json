@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Hurtigtaster",
   "Global": {
-    "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "Title": "Globalt",
+    "g a": "Gå til konto",
+    "g c": "Gå til panelkonfigurasjon",
+    "g n": "Gå til noder",
+    "g s": "Gå til servere",
+    "g t": "Gå til maler",
+    "g u": "Gå til brukere",
+    "/": "Globalt søk"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Konto",
+    "t 2": "Gå til to-faktor-autentisering-fanen",
+    "t a": "Gå til kontodetaljer-fanen",
+    "t o": "Gå til OAuth-fanen",
+    "t p": "Gå til passord-fanen",
+    "t s": "Gå til innstillinger-fanen"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Servere",
+    "c": "Opprett en ny server",
+    "l": "Fokuser den første serveren i listen"
   },
   "ServerView": {
     "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "t c": "Gå til konsoll-fanen",
+    "t i": "Gå til statistikk-fanen",
+    "t f": "Gå til filer-fanen",
+    "t s": "Gå til innstillinger-fanen",
+    "t u": "Gå til brukere-fanen",
+    "t 6": "Gå til SFTP-fanen",
+    "t 7": "Gå til API-fanen",
+    "t a": "Gå til admin-fanen",
+    "c c": "Fokuser kommandolinjen",
+    "c x": "Tøm konsollen",
+    "r r": "Start server",
+    "r s": "Stopp server",
+    "r k": "Drep server",
+    "r i": "Installer server",
+    "f a": "Arkiver innholdet i gjeldende katalog",
+    "f c d": "Opprett ny katalog",
+    "f c f": "Opprett ny fil",
+    "f s a": "Arkiver valgte filer",
+    "f s d": "Slett valgte filer",
+    "f d": "Last opp katalog",
+    "f l": "Fokuser første fil/mappe i listen",
+    "f r": "Last inn fillisten på nytt",
+    "f u": "Last opp filer",
+    "a e": "Rediger serverdefinisjon",
+    "a r": "Last inn serverdefinisjonen på nytt fra disk"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Noder",
+    "c": "Opprett en ny node",
+    "l": "Fokuser den første noden i listen"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Brukere",
+    "c": "Opprett en ny bruker",
+    "l": "Fokuser den første brukeren i listen"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Maler",
+    "c": "Opprett en ny mal",
+    "l": "Fokuser den første malen i listen"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Malredigerer",
+    "t e": "Gå til miljø-fanen",
+    "t g": "Gå til generelt-fanen",
+    "t h": "Gå til hooks-fanen",
+    "t i": "Gå til installasjon-fanen",
+    "t j": "Gå til JSON-fanen",
+    "t r": "Gå til kjøringskonfigurasjon-fanen",
+    "t v": "Gå til variabler-fanen"
   }
 }

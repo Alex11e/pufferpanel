@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Utfør bare dette trinnet hvis denne betingelsen er oppfylt",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Last ned Minecraft",
+    "formatted": "Last ned Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Skriv til fil",
+    "formatted": "Skriv til filen {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Finn Minecraft Forge-versjon",
+    "formatted": "Finn Minecraft Forge-versjon"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Last ned fil(er)",
+    "formatted": "Last ned {file} | Last ned {n} filer",
+    "files": "Filer"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Kjør kommando(er)",
+    "formatted": "Kjør {command} | Kjør {n} kommandoer",
+    "commands": "Kommandoer"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Endre en fil",
+    "formatted": "Endre filen {target}",
+    "regex": "Behandle søkestrengen som et regulært uttrykk",
+    "search": "Søk",
+    "replace": "Erstatt treff med"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Flytt eller gi nytt navn til en fil",
+    "formatted": "Flytt filen {source} til {target}",
+    "source": "Kildefilbane",
+    "target": "Målfilbane"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Opprett en katalog",
+    "formatted": "Opprett katalogen {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arkiver filer",
+    "formatted": "Arkiver {file} til {destination} | Arkiver {n} filer til {destination}",
+    "source": "Filer som skal arkiveres"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Pakk ut arkiv",
+    "formatted": "Pakk ut {source} til {destination}",
+    "destination": "Destinasjon"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Konsollmelding",
+    "formatted": "Skriv ut \"{message}\" til konsollen",
+    "message": "Melding"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Vent",
+    "formatted": "Vent i {duration}",
+    "duration": "Varighet",
+    "durationHint": "Gyldige tidsenheter er ns, us, ms, s, m og h. Flere enheter kan kombineres. For eksempel `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Installer fra Steam",
+    "formatted": "Installer Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Gren (la stå tom for standard)",
+    "branchPassword": "Grenpassord (hvis nødvendig)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Installer Java",
+    "formatted": "Installer Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Last ned Minecraft Forge",
+    "formatted": "Last ned Minecraft Forge",
+    "outputVariable": "Utdatavariabel"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Last ned Minecraft Neoforge",
+    "formatted": "Last ned Minecraft Neoforge",
+    "outputVariable": "Utdatavariabel"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Last ned Minecraft SpongeForge",
+    "formatted": "Last ned Minecraft SpongeForge",
+    "releaseType": "Utgivelsestype"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Last ned Minecraft Fabric",
+    "formatted": "Last ned Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Last ned PaperMC-prosjekt",
+    "formatted": "Last ned {project} til {target}",
+    "project": "PaperMC-prosjekt",
+    "build": "Byggnummer"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Last ned fra CurseForge",
+    "formatted": "Last ned fra CurseForge",
+    "projectId": "Prosjekt-ID",
+    "fileId": "Fil-ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Installer Node.js",
+    "formatted": "Installer Node.js {version}"
   }
 }
