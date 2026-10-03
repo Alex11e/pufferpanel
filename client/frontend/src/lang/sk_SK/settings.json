@@ -5,7 +5,7 @@
   "EmailSettings": "Nastavenia e-mailu",
   "SaveEmailSettings": "Uložiť nastavenia e-mailu",
   "MasterUrl": "Hlavná adresa URL",
-  "MasterUrlHint": "Základná adresa URL panela je dostupná vo formáte http://localhost:8080",
+  "MasterUrlHint": "Základná adresa URL, pod ktorou je panel dostupný, vo formáte http://localhost:8080",
   "CompanyName": "Názov spoločnosti",
   "DefaultTheme": "Predvolená téma",
   "RegistrationEnabled": "Umožniť užívateľom zaregistrovať sa",
@@ -22,11 +22,11 @@
     "domain": "Doména",
     "key": "API kľúč",
     "host": "Hostiteľ",
-    "username": "Uživateľské meno",
+    "username": "Používateľské meno",
     "password": "Heslo"
   },
   "Saved": "Uložené",
-  "TestEmail": "Testovací email",
-  "TestEmailSent": "Testovací email bol poslaný",
-  "TestEmailFailed": "Testovací email sa nepodarilo poslať"
+  "TestEmail": "Testovací e-mail",
+  "TestEmailSent": "Testovací e-mail bol odoslaný",
+  "TestEmailFailed": "Testovací e-mail sa nepodarilo odoslať"
 }
