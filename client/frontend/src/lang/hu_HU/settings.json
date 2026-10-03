@@ -1,32 +1,32 @@
 {
   "Settings": "Beállítások",
-  "PanelSettings": "Panel Beállítások",
+  "PanelSettings": "Panel beállítások",
   "SavePanelSettings": "Panel beállítások mentése",
-  "EmailSettings": "Email Beállítások",
-  "SaveEmailSettings": "Email beállítások mentése",
+  "EmailSettings": "E-mail beállítások",
+  "SaveEmailSettings": "E-mail beállítások mentése",
   "MasterUrl": "Fő URL",
-  "MasterUrlHint": "Az alap URL, amin a http://localhost:8080 formában lehet elérni a panelt",
-  "CompanyName": "Vállakozás Neve",
-  "DefaultTheme": "Alapértelmezett Téma",
+  "MasterUrlHint": "Az alap URL, amin a http://localhost:8080 formátumban lehet elérni a panelt",
+  "CompanyName": "Vállalkozás neve",
+  "DefaultTheme": "Alapértelmezett téma",
   "RegistrationEnabled": "A felhasználók maguk regisztrálhatnak",
   "RegistrationEnabledHint": "Az önregisztrált felhasználók semmit sem tehetnek, amíg nem kapnak engedélyeket\n\nEnnek letiltása csak a közvetlen regisztrációt akadályozza meg, a szerverre való meghívást és a Felhasználók oldalt nem érinti",
-  "EmailProvider": "Email Szolgáltató",
+  "EmailProvider": "E-mail szolgáltató",
   "emailProviders": {
-    "none": "Ezek közül egyik sem",
+    "none": "Nincs",
     "smtp": "SMTP",
     "mailgun": "Mailgun",
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Küldő cìm",
+    "from": "Küldő címe",
     "domain": "Domain",
     "key": "API kulcs",
-    "host": "Kiszolgáló",
+    "host": "Gazdagép",
     "username": "Felhasználónév",
     "password": "Jelszó"
   },
   "Saved": "Mentve",
-  "TestEmail": "Teszt Email",
-  "TestEmailSent": "Teszt email kiküldve",
-  "TestEmailFailed": "Teszt email kiküldése sikertelen"
+  "TestEmail": "Teszt e-mail",
+  "TestEmailSent": "Teszt e-mail elküldve",
+  "TestEmailFailed": "Teszt e-mail küldése sikertelen"
 }

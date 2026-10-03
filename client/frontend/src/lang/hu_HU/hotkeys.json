@@ -5,14 +5,14 @@
     "g a": "Fiók",
     "g c": "Panel konfiguráció",
     "g n": "Nodeok",
-    "g s": "Szeverek",
+    "g s": "Szerverek",
     "g t": "Sablonok",
     "g u": "Felhasználók",
     "/": "Globális keresés"
   },
   "Self": {
     "Title": "Fiók",
-    "t 2": "2-Faktoros hítelesítés",
+    "t 2": "2-Faktoros hitelesítés",
     "t a": "Fiók információi",
     "t o": "OAuth",
     "t p": "Jelszó",
@@ -21,59 +21,59 @@
   "ServerList": {
     "Title": "Szerverek",
     "c": "Új szerver létrehozása",
-    "l": "Fókuszáljon a lista első kiszolgálójára"
+    "l": "Fókuszálás a lista első szerverére"
   },
   "ServerView": {
     "Title": "Szerver",
     "t c": "Konzol",
-    "t i": "Sztatisztika",
+    "t i": "Statisztika",
     "t f": "Fájlok",
     "t s": "Beállítások",
     "t u": "Felhasználók",
     "t 6": "SFTP",
-    "t 7": "Api",
+    "t 7": "API",
     "t a": "Admin",
-    "c c": "Parancs input Fókusz",
+    "c c": "Parancsbevitel fókuszálása",
     "c x": "Konzol törlése",
     "r r": "Szerver indítása",
     "r s": "Szerver leállítása",
-    "r k": " Szerver kilövése",
+    "r k": "Szerver kényszerített leállítása",
     "r i": "Szerver telepítése",
     "f a": "Aktuális könyvtár tartalmának archiválása",
     "f c d": "Új könyvtár létrehozása",
     "f c f": "Új fájl létrehozása",
-    "f s a": "Archivum fájlok kiválasztása",
+    "f s a": "Kiválasztott fájlok archiválása",
     "f s d": "Kiválasztott fájlok törlése",
     "f d": "Könyvtár feltöltése",
     "f l": "Fókuszálás a lista első fájljára/mappájára",
-    "f r": "Fájl lista újratöltése",
+    "f r": "Fájllista újratöltése",
     "f u": "Fájlok feltöltése",
-    "a e": "Szerver újradefiniálása",
-    "a r": "Lemezen lévő szerver defináció újratöltése"
+    "a e": "Szerver definíciójának szerkesztése",
+    "a r": "Szerver definíciójának újratöltése a lemezről"
   },
   "NodeList": {
     "Title": "Csomópontok",
-    "c": "Új csomópont létrehozzása",
-    "l": "A lista első csomópontjának fókuszálása"
+    "c": "Új csomópont létrehozása",
+    "l": "Fókuszálás a lista első csomópontjára"
   },
   "UserList": {
     "Title": "Felhasználók",
     "c": "Új felhasználó létrehozása",
-    "l": "Fókuszáljon a lista első felhasználójára"
+    "l": "Fókuszálás a lista első felhasználójára"
   },
   "TemplateList": {
     "Title": "Sablonok",
     "c": "Új sablon létrehozása",
-    "l": "A lista első sablonjának fókuszálása"
+    "l": "Fókuszálás a lista első sablonjára"
   },
   "Template": {
     "Title": "Sablon szerkesztő",
-    "t e": "Környezet védelem",
+    "t e": "Környezet",
     "t g": "Általános",
     "t h": "Hookok",
     "t i": "Telepítés",
     "t j": "JSON",
-    "t r": "Konfiguráció futattása",
+    "t r": "Futtatási konfiguráció",
     "t v": "Változók"
   }
 }

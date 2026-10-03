@@ -14,7 +14,7 @@
   "Port": "Port",
   "Collapse": "Összecsukás",
   "Expand": "Kibontás",
-  "Copy": "Vágólapra másolás",
+  "Copy": "Másolás vágólapra",
   "Copied": "Vágólapra másolva",
   "Back": "Vissza",
   "Next": "Tovább",
@@ -24,10 +24,10 @@
   "Protocol": "Protokol",
   "Add": "Hozzáadás",
   "Apply": "Alkalmazás",
-  "Confirm": "Megerősít",
-  "Condition": "Állapot",
+  "Confirm": "Megerősítés",
+  "Condition": "Feltétel",
   "Discard": "Elvetés",
-  "ConfirmLeave": "Vannak el nem mentett módosításai, el akarja vetni ezeket a módosításokat és elhagyni ezt az oldalt?",
+  "ConfirmLeave": "Vannak el nem mentett módosításaid, el akarod vetni ezeket a módosításokat és elhagyni ezt az oldalt?",
   "theme": {
     "Theme": "Téma",
     "Mode": "Mód",
@@ -38,7 +38,7 @@
       "Auto": "Automatikus"
     },
     "BaseColor": "Alap szín",
-    "ServerTypeDisplay": "Szerver fajta mutatás",
+    "ServerTypeDisplay": "Szervertípus megjelenítése",
     "serverTypeDisplay": {
       "IconBackground": "Ikon + Háttér",
       "Icon": "Ikon",
@@ -53,7 +53,7 @@
     "fontSize": {
       "Default": "Alapértelmezett"
     },
-    "FontFace": "Betűtípus Face",
+    "FontFace": "Betűtípus",
     "fontFace": {
       "Default": "Alapértelmezett",
       "A11y": "Akadálymentesítés optimalizálva"
