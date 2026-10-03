@@ -119,7 +119,7 @@ func (d *Docker) ExecuteAsyncImpl(environment *pufferpanel.Environment, steps pu
 	environment.DisplayToConsole(true, "Starting container\n")
 	err = dockerClient.ContainerStart(ctx, environment.Server.Id(), startOpts)
 	if err != nil {
-		_ = d.connection.Close()
+		d.connection.Close()
 		removeContainer()
 		return err
 	}
