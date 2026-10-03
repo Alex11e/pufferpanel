@@ -19,15 +19,15 @@
   },
   "command": {
     "generic": "Rulează comanda/comenzile",
-    "formatted": "Rulează {command} | Rulează comenzile {n}",
+    "formatted": "Rulează {command} | Rulează {n} comenzi",
     "commands": "Comenzi"
   },
   "alterfile": {
     "generic": "Modifică un fișier",
     "formatted": "Modifică fișierul {target}",
-    "regex": "Treat search string as regular expression",
+    "regex": "Tratează șirul de căutare ca expresie regulată",
     "search": "Căutare",
-    "replace": "Replace matches with"
+    "replace": "Înlocuiește potrivirile cu"
   },
   "move": {
     "generic": "Mută sau redenumește un fișier",
@@ -36,36 +36,36 @@
     "target": "Cale țintă"
   },
   "mkdir": {
-    "generic": "Crează un folder nou",
-    "formatted": "Crează folderul {target}"
+    "generic": "Creează un folder",
+    "formatted": "Creează folderul {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arhivează fișiere",
+    "formatted": "Arhivează {file} în {destination} | Arhivează {n} fișiere în {destination}",
+    "source": "Fișiere de arhivat"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Extrage arhiva",
+    "formatted": "Extrage {source} în {destination}",
+    "destination": "Destinație"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Mesaj consolă",
+    "formatted": "Afișează \"{message}\" în consolă",
+    "message": "Mesaj"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Așteaptă",
+    "formatted": "Așteaptă {duration}",
+    "duration": "Durată",
+    "durationHint": "Unitățile de timp valide sunt ns, us, ms, s, m și h. Mai multe unități pot fi combinate. De exemplu `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Instalați de pe Steam",
+    "generic": "Instalează de pe Steam",
     "formatted": "Instalează Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Branch (lasă gol pentru implicit)",
+    "branchPassword": "Parolă branch (dacă este necesar)"
   },
   "javadl": {
     "generic": "Instalează Java",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Descarcă Minecraft Forge",
     "formatted": "Descarcă Minecraft Forge",
-    "outputVariable": "Output variable"
+    "outputVariable": "Variabilă de ieșire"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Descarcă Minecraft Neoforge",
+    "formatted": "Descarcă Minecraft Neoforge",
+    "outputVariable": "Variabilă de ieșire"
   },
   "spongeforgedl": {
     "generic": "Descarcă Minecraft SpongeForge",
@@ -91,20 +91,20 @@
     "formatted": "Descarcă Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Descarcă proiectul PaperMC",
+    "formatted": "Descarcă {project} în {target}",
+    "project": "Proiect PaperMC",
+    "build": "Număr build"
   },
   "curseforge": {
     "generic": "Descarcă de pe CurseForge",
     "formatted": "Descarcă de pe CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "projectId": "ID proiect",
+    "fileId": "ID fișier",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Instalează Node.js",
+    "formatted": "Instalează Node.js {version}"
   }
 }
