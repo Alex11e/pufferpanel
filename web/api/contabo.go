@@ -49,7 +49,6 @@ func registerContabo(g *gin.RouterGroup) {
 	g.POST("/firewalls/:id/instances/:instanceId", middleware.RequiresPermission(scopes.ScopeAdmin), assignContaboFirewall)
 	g.OPTIONS("/firewalls/:id/instances/:instanceId", response.CreateOptions("POST"))
 	g.DELETE("/firewalls/:id/instances/:instanceId", middleware.RequiresPermission(scopes.ScopeAdmin), unassignContaboFirewall)
-	g.OPTIONS("/firewalls/:id/instances/:instanceId", response.CreateOptions("DELETE"))
 }
 
 var contaboSSHUpgrader = websocket.Upgrader{

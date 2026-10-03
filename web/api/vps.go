@@ -15,9 +15,9 @@ import (
 
 func defaultVpsPortForwards() []models.ServerPortForward {
 	return []models.ServerPortForward{
-		{GuestPort: 22, Protocol: "tcp"},
-		{GuestPort: 80, Protocol: "tcp"},
-		{GuestPort: 443, Protocol: "tcp"},
+		{GuestPort: 22, Protocol: "tcp,udp"},
+		{GuestPort: 80, Protocol: "tcp,udp"},
+		{GuestPort: 443, Protocol: "tcp,udp"},
 		{GuestPort: 25565, Protocol: "tcp,udp"},
 	}
 }
@@ -52,6 +52,10 @@ func qemuPortForwardArgs(allocations []models.Allocation) string {
 			continue
 		}
 		for _, protocol := range strings.Split(allocation.Protocols, ",") {
+			protocol = strings.TrimSpace(protocol)
+			if protocol == "" {
+				continue
+			}
 			args = append(args, fmt.Sprintf("hostfwd=%s::%d-:%d", protocol, allocation.Port, allocation.TargetPort))
 		}
 	}

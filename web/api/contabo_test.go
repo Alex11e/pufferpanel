@@ -16,7 +16,11 @@ func TestRegisterContaboRoutes(t *testing.T) {
 			options[route.Path]++
 		}
 	}
-	for _, path := range []string{"/api/contabo/images", "/api/contabo/firewalls"} {
+	for _, path := range []string{
+		"/api/contabo/images",
+		"/api/contabo/firewalls",
+		"/api/contabo/firewalls/:id/instances/:instanceId",
+	} {
 		if options[path] != 1 {
 			t.Fatalf("expected one OPTIONS handler for %s, got %d", path, options[path])
 		}

@@ -97,7 +97,70 @@ func TestAllocateForwardStoresGuestPortAndProtocol(t *testing.T) {
 		t.Fatalf("unexpected second forwarded allocation: %+v", second)
 	}
 
+	trimmed, err := service.AllocateForward(&node, "vps-one", 80, " tcp, udp ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if trimmed.Protocols != "tcp,udp" {
+		t.Fatalf("expected protocols to be normalized, got %q", trimmed.Protocols)
+	}
+
 	if _, err = service.AllocateForward(&node, "vps-one", 443, "icmp"); err == nil {
 		t.Fatal("expected unsupported protocol to be rejected")
+	}
+}
+
+func TestAllocateRangeRejectsInvalidRanges(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file:allocation-range-invalid?mode=memory&cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = db.AutoMigrate(&models.Node{}, &models.Server{}, &models.Allocation{}); err != nil {
+		t.Fatal(err)
+	}
+
+	service := &Allocation{DB: db}
+	if _, err = service.AllocateRange(models.LocalNode, "empty-range", 1000, 0); err == nil {
+		t.Fatal("expected invalid range to be rejected")
+	}
+	if _, err = service.AllocateRange(models.LocalNode, "reversed-range", 2000, 1999); err == nil {
+		t.Fatal("expected reversed range to be rejected")
+	}
+}
+
+func TestListAllocationsByPurpose(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file:allocation-list-purpose?mode=memory&cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = db.AutoMigrate(&models.Node{}, &models.Server{}, &models.Allocation{}); err != nil {
+		t.Fatal(err)
+	}
+
+	service := &Allocation{DB: db}
+	if _, err = service.AllocateRange(models.LocalNode, "server-one", 1000, 1000); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.AllocateRangeWithPurpose(models.LocalNode, "server-two", 1001, 1001, "vnc"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.AllocateForward(models.LocalNode, "server-three", 22, "tcp"); err != nil {
+		t.Fatal(err)
+	}
+
+	all, err := service.List(models.LocalNode.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(all) != 3 {
+		t.Fatalf("expected all allocations to be listed, got %d", len(all))
+	}
+
+	forwardOnly, err := service.List(models.LocalNode.ID, "forward")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(forwardOnly) != 1 || forwardOnly[0].TargetPort != 22 {
+		t.Fatalf("expected a single forward allocation, got %+v", forwardOnly)
 	}
 }

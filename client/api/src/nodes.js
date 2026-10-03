@@ -16,7 +16,11 @@ export class NodeApi {
     }
   }
 
-  async allocations(id) { const res = await this._api.get(`/api/nodes/${id}/allocations`); return res.data }
+  async allocations(id, purpose = '') {
+    const query = purpose ? `?purpose=${encodeURIComponent(purpose)}` : ''
+    const res = await this._api.get(`/api/nodes/${id}/allocations${query}`)
+    return res.data
+  }
 
   async allocatePort(id, serverId) { const res = await this._api.post(`/api/nodes/${id}/allocations/${serverId}`); return res.data }
 

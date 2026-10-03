@@ -3,6 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	uuid "github.com/gofrs/uuid/v5"
 	"github.com/pufferpanel/pufferpanel/v3"
@@ -13,9 +17,6 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/services"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
 	"github.com/pufferpanel/pufferpanel/v3/web/daemon"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 func registerNodes(g *gin.RouterGroup) {
@@ -42,24 +43,45 @@ func registerNodes(g *gin.RouterGroup) {
 }
 
 func listAllocations(c *gin.Context) {
-	id, ok := validateId(c); if !ok { return }
+	id, ok := validateId(c)
+	if !ok {
+		return
+	}
+	purpose := strings.TrimSpace(c.Query("purpose"))
 	as := &services.Allocation{DB: middleware.GetDatabase(c)}
-	allocations, err := as.List(id)
-	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	allocations, err := as.List(id, purpose)
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
 	c.JSON(http.StatusOK, allocations)
 }
 
 func allocatePort(c *gin.Context) {
-	id, ok := validateId(c); if !ok { return }
+	id, ok := validateId(c)
+	if !ok {
+		return
+	}
 	db := middleware.GetDatabase(c)
 	node, err := (&services.Node{DB: db}).Get(id)
-	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
 	server, err := (&services.Server{DB: db}).Get(c.Param("resourceId"))
-	if response.HandleError(c, err, http.StatusBadRequest) { return }
-	if server.NodeID != node.ID { c.JSON(http.StatusBadRequest, gin.H{"error": "server does not belong to this node"}); return }
+	if response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if server.NodeID != node.ID {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "server does not belong to this node"})
+		return
+	}
 	allocation, err := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
-	if err == services.ErrNoPortAvailable { c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"}); return }
-	if response.HandleError(c, err, http.StatusInternalServerError) { return }
+	if err == services.ErrNoPortAvailable {
+		c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"})
+		return
+	}
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
 	c.JSON(http.StatusCreated, allocation)
 }
 

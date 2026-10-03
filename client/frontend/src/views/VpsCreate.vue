@@ -21,9 +21,9 @@ const kvm = ref(false)
 const vncPassword = ref('')
 const iso = ref('netboot.xyz.iso')
 const portForwards = ref([
-  { id: 'ssh', guestPort: 22, protocol: 'tcp', label: 'SSH' },
-  { id: 'http', guestPort: 80, protocol: 'tcp', label: 'HTTP' },
-  { id: 'https', guestPort: 443, protocol: 'tcp', label: 'HTTPS' },
+  { id: 'ssh', guestPort: 22, protocol: 'tcp,udp', label: 'SSH' },
+  { id: 'http', guestPort: 80, protocol: 'tcp,udp', label: 'HTTP' },
+  { id: 'https', guestPort: 443, protocol: 'tcp,udp', label: 'HTTPS' },
   { id: 'minecraft', guestPort: 25565, protocol: 'tcp,udp', label: 'Minecraft' }
 ])
 let customForwardId = 0
@@ -47,7 +47,7 @@ function errorMessage(error) {
 
 function addPortForward() {
   customForwardId += 1
-  portForwards.value.push({ id: `custom-${customForwardId}`, guestPort: '', protocol: 'tcp', label: '' })
+  portForwards.value.push({ id: `custom-${customForwardId}`, guestPort: '', protocol: 'tcp,udp', label: '' })
 }
 
 function removePortForward(id) {
@@ -138,7 +138,7 @@ async function create() {
       <label>Boot ISO<input v-model="iso" placeholder="üres = lemezről indul"></label>
       <label>VNC jelszó (max. 8 karakter)<input v-model="vncPassword" type="password" maxlength="8" autocomplete="new-password" required></label>
       <h2>Porttovábbítás</h2>
-      <p class="hint">Csak a vendég portját válaszd ki. A panel automatikusan szabad külső portot foglal a node-on.</p>
+      <p class="hint">A portok alapértelmezésben TCP+UDP protokollal nyílnak. A panel automatikusan szabad külső portot foglal a node-on; protokollonként külön is választhatsz.</p>
       <div v-for="forward in portForwards" :key="forward.id" class="forward-row">
         <label>{{ forward.label || 'Egyedi szolgáltatás' }} vendég portja<input v-model.number="forward.guestPort" type="number" min="1" max="65535" required></label>
         <label>Protokoll<select v-model="forward.protocol"><option value="tcp">TCP</option><option value="udp">UDP</option><option value="tcp,udp">TCP + UDP</option></select></label>

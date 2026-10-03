@@ -88,6 +88,14 @@ func TestNormalizeVpsPortForwards(t *testing.T) {
 	}
 }
 
+func TestDefaultVpsPortForwardsUseTCPAndUDP(t *testing.T) {
+	for _, forward := range defaultVpsPortForwards() {
+		if forward.Protocol != "tcp,udp" {
+			t.Errorf("default port %d uses %q instead of tcp,udp", forward.GuestPort, forward.Protocol)
+		}
+	}
+}
+
 func TestQemuPortForwardArgs(t *testing.T) {
 	args := qemuPortForwardArgs([]models.Allocation{
 		{Port: 3001, TargetPort: 22, Protocols: "tcp", Purpose: "forward"},

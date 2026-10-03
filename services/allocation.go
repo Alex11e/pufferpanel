@@ -2,12 +2,14 @@ package services
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/pufferpanel/pufferpanel/v3/models"
 	"gorm.io/gorm"
 )
 
 var ErrNoPortAvailable = errors.New("no free port is available in this node range")
+var ErrInvalidPortRange = errors.New("port range must be between 1 and 65535 and start must be <= end")
 
 type Allocation struct{ DB *gorm.DB }
 
@@ -30,13 +32,17 @@ func (s *Allocation) AllocateForward(node *models.Node, serverID string, targetP
 	if targetPort == 0 {
 		return nil, errors.New("target port must be between 1 and 65535")
 	}
-	if protocols != "tcp" && protocols != "udp" && protocols != "tcp,udp" {
-		return nil, errors.New("protocols must be tcp, udp, or tcp,udp")
+	normalizedProtocols, err := normalizePortProtocols(protocols)
+	if err != nil {
+		return nil, err
 	}
-	return s.allocateRange(node, serverID, node.PortRangeStart, node.PortRangeEnd, "forward", targetPort, protocols)
+	return s.allocateRange(node, serverID, node.PortRangeStart, node.PortRangeEnd, "forward", targetPort, normalizedProtocols)
 }
 
 func (s *Allocation) allocateRange(node *models.Node, serverID string, start, end uint16, purpose string, targetPort uint16, protocols string) (*models.Allocation, error) {
+	if start == 0 || end == 0 || start > end {
+		return nil, ErrInvalidPortRange
+	}
 	for candidate := int(start); candidate <= int(end); candidate++ {
 		port := uint16(candidate)
 		var legacy models.Server
@@ -70,9 +76,16 @@ func (s *Allocation) allocateRange(node *models.Node, serverID string, start, en
 	return nil, ErrNoPortAvailable
 }
 
-func (s *Allocation) List(nodeID uint) ([]models.Allocation, error) {
+func (s *Allocation) List(nodeID uint, purpose ...string) ([]models.Allocation, error) {
 	var allocations []models.Allocation
-	err := s.DB.Where("node_id = ? AND purpose = ''", nodeID).Order("port").Find(&allocations).Error
+	query := s.DB.Where("node_id = ?", nodeID)
+	if len(purpose) > 0 {
+		filter := strings.TrimSpace(purpose[0])
+		if filter != "" {
+			query = query.Where("purpose = ?", filter)
+		}
+	}
+	err := query.Order("port").Find(&allocations).Error
 	return allocations, err
 }
 
@@ -85,4 +98,32 @@ func (s *Allocation) Delete(nodeID, allocationID uint) error {
 		return gorm.ErrRecordNotFound
 	}
 	return nil
+}
+
+func normalizePortProtocols(protocols string) (string, error) {
+	parts := strings.Split(protocols, ",")
+	if len(parts) == 0 {
+		return "", errors.New("protocols must be tcp, udp, or tcp,udp")
+	}
+
+	normalized := make([]string, 0, len(parts))
+	seen := make(map[string]struct{}, len(parts))
+	for _, part := range parts {
+		protocol := strings.ToLower(strings.TrimSpace(part))
+		if protocol == "" {
+			continue
+		}
+		if protocol != "tcp" && protocol != "udp" {
+			return "", errors.New("protocols must be tcp, udp, or tcp,udp")
+		}
+		if _, exists := seen[protocol]; exists {
+			continue
+		}
+		seen[protocol] = struct{}{}
+		normalized = append(normalized, protocol)
+	}
+	if len(normalized) == 0 {
+		return "", errors.New("protocols must be tcp, udp, or tcp,udp")
+	}
+	return strings.Join(normalized, ","), nil
 }
