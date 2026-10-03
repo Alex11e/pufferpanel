@@ -1,11 +1,11 @@
 {
-  "Node": "Knotenpunkt",
-  "Nodes": "Knotenpunkte",
-  "Edit": "Knotenpunkt bearbeiten",
-  "Add": "Knotenpunkt hinzufügen",
+  "Node": "Knoten",
+  "Nodes": "Knoten",
+  "Edit": "Knoten bearbeiten",
+  "Add": "Knoten hinzufügen",
   "Create": "Knoten erstellen",
-  "Update": "Knotenpunkt aktualisieren",
-  "Delete": "Knotenpunkt entfernen",
+  "Update": "Knoten aktualisieren",
+  "Delete": "Knoten löschen",
   "ConfirmDelete": "Soll der Knoten {name} wirklich gelöscht werden?",
   "Created": "Knoten erstellt",
   "Updated": "Knoten aktualisiert",
@@ -35,16 +35,16 @@
   "PrivateHost": "Privater Host",
   "PrivatePort": "Privater Port",
   "SftpPort": "SFTP-Port",
-  "WithPrivateAddress": "Benutzen Sie einen anderen Host/Port für die Server zu Server Verbindung",
-  "WithPrivateAddressHint": "Diese Addresse wird für die Verbindung zwischen dem Hauptserver und den Knotenpunkten genutzt. Nützlich falls sich beide in dem selben Netzwerk befinden.",
-  "LocalNodeEdit": "Der lokale Knoten hat keine Einstellungen die bearbeitet werden können.\n\nUm den angezeigten Host der auf diesem Knoten gehosteten Servern zu ändern, passe die Master-Url des Panels in den Panel-Einstellungen an",
+  "WithPrivateAddress": "Benutze einen anderen Host/Port für die Server-zu-Server-Verbindung",
+  "WithPrivateAddressHint": "Diese separate Adresse wird verwendet, wenn der Hauptknoten mit dem neuen Knoten kommunizieren muss. Nützlich zum Beispiel, wenn sich die Knoten im selben Netzwerk hinter NAT befinden.",
+  "LocalNodeEdit": "Der lokale Knoten hat keine Einstellungen, die bearbeitet werden können.\n\nUm den angezeigten Host der auf diesem Knoten gehosteten Server zu ändern, passe die Master-URL des Panels in den Panel-Einstellungen an",
   "Deploy": "Knoten bereitstellen",
   "deploy": {
-    "Step1": "## Schritt 1\n\nInstalliere PufferPanel auf dem neuen Server, [weitere Informationen finden Sie in der Dokumentation](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Schritt 2\n\nStoppe den PufferPanel Dienst auf dem neuen Server, wenn er während der Installation gestartet wurde, indem du den Befehl `sudo systemctl stop pufferpanel` ausführst",
-    "Step3": "## Schritt 3\n\nErsetze den Inhalt der PufferPanel Konfigurationsdatei auf dem neuen Server mit dem untenstehenden Code\n\nDie Konfigurationsdatei ist normalerweise hier `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Schritt 4\n\nFühre den Befehl `sudo systemctl enable --now pufferpanel` auf dem neuen Server aus, um den PufferPanel Dienst zu aktivieren und (neu) zu starten",
+    "Step1": "## Schritt 1\n\nInstalliere PufferPanel auf dem neuen Server, [weitere Informationen findest du in der Dokumentation](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Schritt 2\n\nStoppe den PufferPanel-Dienst auf dem neuen Server, wenn er während der Installation gestartet wurde, indem du den Befehl `sudo systemctl stop pufferpanel` ausführst",
+    "Step3": "## Schritt 3\n\nErsetze den Inhalt der PufferPanel-Konfigurationsdatei auf dem neuen Server mit dem unten stehenden Code\n\nDie Konfigurationsdatei ist normalerweise hier `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Schritt 4\n\nFühre den Befehl `sudo systemctl enable --now pufferpanel` auf dem neuen Server aus, um den PufferPanel-Dienst zu aktivieren und (neu) zu starten",
     "Step5": "### Der Knoten ist jetzt eingerichtet und betriebsbereit"
   },
-  "DeploymentInstruction": "Um den Knoten bereitzustellen, installieren Sie PufferPanel auf dem neuen Server und platzieren Sie die Konfigurationsdatei in `/etc/pufferpanel/`<br/>Starten Sie PufferPanel anschließend auf dem neuen Server neu."
+  "DeploymentInstruction": "Um den Knoten bereitzustellen, installiere PufferPanel auf dem neuen Server und platziere die Konfigurationsdatei in `/etc/pufferpanel/`<br/>Starte PufferPanel anschließend auf dem neuen Server neu."
 }

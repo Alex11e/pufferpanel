@@ -9,17 +9,17 @@
     "formatted": "In Datei {target} schreiben"
   },
   "resolveforgeversion": {
-    "generic": "Löse Minecraft Forge Version auf",
-    "formatted": "Löse Minecraft Forge Version auf"
+    "generic": "Minecraft Forge Version auflösen",
+    "formatted": "Minecraft Forge Version auflösen"
   },
   "download": {
     "generic": "Datei(en) herunterladen",
-    "formatted": "{file} Herunterladen | {n} Dateien Herunterladen",
+    "formatted": "{file} herunterladen | {n} Dateien herunterladen",
     "files": "Dateien"
   },
   "command": {
     "generic": "Befehl(e) ausführen",
-    "formatted": "{command} Ausführen | {n} Befehle Ausführen",
+    "formatted": "{command} ausführen | {n} Befehle ausführen",
     "commands": "Befehle"
   },
   "alterfile": {
@@ -27,7 +27,7 @@
     "formatted": "Datei {target} bearbeiten",
     "regex": "Such-String als regulären Ausdruck behandeln",
     "search": "Suchen",
-    "replace": "Ergebnisse ersetzen durch"
+    "replace": "Treffer ersetzen durch"
   },
   "move": {
     "generic": "Datei verschieben oder umbenennen",
@@ -40,13 +40,13 @@
     "formatted": "Ordner {target} erstellen"
   },
   "archive": {
-    "generic": "Archivdateien",
-    "formatted": "",
+    "generic": "Dateien archivieren",
+    "formatted": "{file} nach {destination} archivieren | {n} Dateien nach {destination} archivieren",
     "source": "Zu archivierende Dateien"
   },
   "extract": {
     "generic": "Archiv extrahieren",
-    "formatted": "Entpacke {source} in {destination}",
+    "formatted": "Entpacke {source} nach {destination}",
     "destination": "Ziel"
   },
   "console": {
@@ -55,17 +55,17 @@
     "message": "Nachricht"
   },
   "sleep": {
-    "generic": "Warte",
+    "generic": "Warten",
     "formatted": "Warte auf {duration}",
     "duration": "Dauer",
-    "durationHint": "Gültige Zeiteinheiten sind ns, uns, ms, s, m und h. Mehrere Einheiten können kombiniert werden. Zum Beispiel `1m45s`"
+    "durationHint": "Gültige Zeiteinheiten sind ns, us, ms, s, m und h. Mehrere Einheiten können kombiniert werden. Zum Beispiel `1m45s`"
   },
   "steamgamedl": {
     "generic": "Von Steam installieren",
     "formatted": "Steam App ID {appId} installieren",
     "appId": "Steam App ID",
     "branch": "Zweig (für Standardeinstellung leer lassen)",
-    "branchPassword": "Zweig (falls erforderlich)"
+    "branchPassword": "Zweig-Passwort (falls erforderlich)"
   },
   "javadl": {
     "generic": "Java installieren",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Minecraft Forge herunterladen",
     "formatted": "Minecraft Forge herunterladen",
-    "outputVariable": "Ausgangsvariablen"
+    "outputVariable": "Ausgangsvariable"
   },
   "neoforgedl": {
-    "generic": "Download von Minecraft Neoforge",
-    "formatted": "Download von Minecraft Neoforge",
-    "outputVariable": "Ausgangsvariablen"
+    "generic": "Minecraft Neoforge herunterladen",
+    "formatted": "Minecraft Neoforge herunterladen",
+    "outputVariable": "Ausgangsvariable"
   },
   "spongeforgedl": {
     "generic": "Minecraft SpongeForge herunterladen",
@@ -92,19 +92,19 @@
   },
   "paperdl": {
     "generic": "PaperMC-Projekt herunterladen",
-    "formatted": "Lade {project} zu {target} herunter\n",
+    "formatted": "Lade {project} nach {target} herunter",
     "project": "PaperMC-Projekt",
-    "build": "Systemversionsnummer"
+    "build": "Build-Nummer"
   },
   "curseforge": {
     "generic": "Von CurseForge herunterladen",
     "formatted": "Von CurseForge herunterladen",
-    "projectId": "Projektnummer",
-    "fileId": "Dateinummer",
+    "projectId": "Projekt-ID",
+    "fileId": "Datei-ID",
     "java": "Java"
   },
   "nodejsdl": {
     "generic": "Node.js installieren",
-    "formatted": "Installiere Node.js {version}"
+    "formatted": "Node.js {version} installieren"
   }
 }

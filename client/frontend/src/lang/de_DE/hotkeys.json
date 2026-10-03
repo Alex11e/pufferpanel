@@ -3,7 +3,7 @@
   "Global": {
     "Title": "Global",
     "g a": "Zum Profil wechseln",
-    "g c": "Zur Panel-Kofiguration wechseln",
+    "g c": "Zur Panel-Konfiguration wechseln",
     "g n": "Zu den Nodes wechseln",
     "g s": "Zu den Servern wechseln",
     "g t": "Zu den Vorlagen wechseln",
@@ -31,7 +31,7 @@
     "t s": "Zum Einstellungs-Tab wechseln",
     "t u": "Zum Benutzer-Tab wechseln",
     "t 6": "Zum SFTP-Tab wechseln",
-    "t 7": "Zum Api-Tab wechseln",
+    "t 7": "Zum API-Tab wechseln",
     "t a": "Zum Admin-Tab wechseln",
     "c c": "Fokussiere Befehlseingabe",
     "c x": "Konsole leeren",
@@ -48,8 +48,8 @@
     "f l": "Erste Datei/Ordner in der Liste fokussieren",
     "f r": "Dateiliste neu laden",
     "f u": "Dateien hochladen",
-    "a e": "Server Definition bearbeiten",
-    "a r": "Server Definition von der Festplatte neu laden"
+    "a e": "Server-Definition bearbeiten",
+    "a r": "Server-Definition von der Festplatte neu laden"
   },
   "NodeList": {
     "Title": "Knoten",
@@ -59,20 +59,20 @@
   "UserList": {
     "Title": "Benutzer",
     "c": "Neuen Nutzer erstellen",
-    "l": "Ersten Nutzer in der Liste fokusieren"
+    "l": "Ersten Nutzer in der Liste fokussieren"
   },
   "TemplateList": {
     "Title": "Vorlagen",
-    "c": "Neues Template erstellen",
-    "l": "Erstes Template in der Liste fokussieren"
+    "c": "Neue Vorlage erstellen",
+    "l": "Erste Vorlage in der Liste fokussieren"
   },
   "Template": {
-    "Title": "Vorlagen Editor",
-    "t e": "Gehe zum Environment Tab",
-    "t g": "Gehe zur Hauptseite",
-    "t h": "Gehe zum Hooks Tab",
+    "Title": "Vorlagen-Editor",
+    "t e": "Zum Environment-Tab wechseln",
+    "t g": "Zur Hauptseite wechseln",
+    "t h": "Zum Hooks-Tab wechseln",
     "t i": "Zum Installations-Tab wechseln",
-    "t j": "Gehe zum JSON Tab",
+    "t j": "Zum JSON-Tab wechseln",
     "t r": "Zum Konfigurations-Tab wechseln",
     "t v": "Zum Variablen-Tab wechseln"
   }

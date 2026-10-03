@@ -7,7 +7,7 @@
     "Restore": "Wiederherstellen",
     "RestoreStarted": "Wiederherstellung gestartet",
     "RestorePrompt": "Vom Backup wiederherstellen",
-    "RestorePromptBody": "Möchten Sie wirklich dieses Backup Wiederherstellen? \n Dies löscht alle existierenden Daten, daher wird dringend empfohlen, zuerst ein Backup zu erstellen.",
+    "RestorePromptBody": "Möchten Sie wirklich dieses Backup wiederherstellen? \n Dies löscht alle existierenden Daten, daher wird dringend empfohlen, zuerst ein Backup zu erstellen.",
     "Download": "Herunterladen",
     "Delete": "Löschen",
     "Deleted": "Backup erfolgreich gelöscht",
