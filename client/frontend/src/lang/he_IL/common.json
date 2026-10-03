@@ -26,7 +26,7 @@
   "Apply": "החל",
   "Confirm": "אישור",
   "Condition": "תנאי",
-  "Discard": "למחוק",
+  "Discard": "התעלם",
   "ConfirmLeave": "יש לך שינויים לא שמורים, האם אתה רוצה למחוק את השינויים האלו ולעזוב את העמוד הזה?",
   "theme": {
     "Theme": "ערכת נושא",
@@ -38,9 +38,9 @@
       "Auto": "אוטומטי"
     },
     "BaseColor": "צבע בסיס",
-    "ServerTypeDisplay": "Server Type Display",
+    "ServerTypeDisplay": "תצוגת סוג שרת",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "סמל + רקע",
       "Icon": "סמל",
       "None": "כלום"
     },
@@ -53,7 +53,7 @@
     "fontSize": {
       "Default": "ברירת מחדל"
     },
-    "FontFace": "Font Face",
+    "FontFace": "סוג גופן",
     "fontFace": {
       "Default": "ברירת מחדל",
       "A11y": "נגישות מותאמת"
