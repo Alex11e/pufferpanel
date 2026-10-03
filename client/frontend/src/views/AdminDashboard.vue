@@ -25,6 +25,9 @@ const expiryServer = ref('')
 const expiryDate = ref('')
 const backupLimit = ref(0)
 const update = ref(null)
+const updateReleases = ref([])
+const selectedUpdateVersion = ref('latest')
+const releaseListError = ref('')
 const system = ref(null)
 const updateApplying = ref(false)
 const updateActionError = ref('')
@@ -44,11 +47,24 @@ function formatUptime(seconds) {
 const updateChecking = ref(false)
 const updateFailed = ref(false)
 
-async function checkUpdate(refresh = false) {
+async function loadUpdateReleases(refresh = false) {
+  releaseListError.value = ''
+  try {
+    const res = await api.get('/api/admin/update/releases', refresh ? { refresh: true } : {})
+    updateReleases.value = res.data || []
+  } catch (error) {
+    releaseListError.value = updateErrorMessage(error)
+  }
+}
+
+async function checkUpdate(refresh = false, version = selectedUpdateVersion.value) {
   updateChecking.value = true
   updateFailed.value = false
   try {
-    const res = await api.get('/api/admin/update', refresh ? { refresh: true } : {}, {}, { unhandledErrors: [502] })
+    const query = {}
+    if (refresh) query.refresh = true
+    if (version && version !== 'latest') query.version = version
+    const res = await api.get('/api/admin/update', query, {}, { unhandledErrors: [502] })
     if (res) update.value = res.data
     else updateFailed.value = true
     return Boolean(res)
@@ -56,6 +72,21 @@ async function checkUpdate(refresh = false) {
     updateFailed.value = true
     return false
   } finally { updateChecking.value = false }
+}
+
+function selectUpdateVersion() {
+  checkUpdate(true, selectedUpdateVersion.value)
+}
+
+function refreshUpdates() {
+  checkUpdate(true)
+  loadUpdateReleases(true)
+}
+
+function formatAssetSize(size) {
+  if (!size) return 'Ismeretlen méret'
+  if (size < 1024 * 1024) return `${Math.ceil(size / 1024)} KB`
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`
 }
 
 async function pollUpdate() {
@@ -76,7 +107,7 @@ function applyUpdate() {
       updateActionError.value = ''
       updateApplying.value = true
       try {
-        await api.post('/api/admin/update/apply')
+        await api.post('/api/admin/update/apply', { version: update.value.latest })
         await checkUpdate()
         if (update.value?.running) updatePoll = setTimeout(pollUpdate, 2000)
       } catch (applyError) {
@@ -154,6 +185,7 @@ async function load() {
     adminServers.value = serversResponse.servers || []
     await loadExpiring()
     checkUpdate()
+    loadUpdateReleases()
     loadSystem()
   } catch {
     error.value = 'Az admin adatok betöltése nem sikerült. Próbáld meg újra.'
@@ -234,14 +266,19 @@ onMounted(load)
       <section class="update-card" :class="{ available: update && update.updateAvailable }">
         <div class="update-head">
           <h2>Panel frissítések</h2>
-          <btn :disabled="updateChecking" @click="checkUpdate(true)"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
+          <select v-model="selectedUpdateVersion" :disabled="updateChecking" aria-label="Frissítési verzió" @change="selectUpdateVersion">
+            <option value="latest">Legújabb stabil</option>
+            <option v-for="release in updateReleases" :key="release.tag" :value="release.tag">{{ release.tag }}{{ release.prerelease ? ' · előzetes' : '' }}</option>
+          </select>
+          <btn :disabled="updateChecking" @click="refreshUpdates"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
         </div>
+        <p v-if="releaseListError" class="error" role="alert">Verziólista: {{ releaseListError }}</p>
         <p v-if="updateActionError" class="error" role="alert">{{ updateActionError }}</p>
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
         <div v-else-if="!update" class="empty">Ellenőrzés...</div>
         <template v-else>
           <p v-if="system" class="hint">{{ system.os }}/{{ system.arch }} · {{ system.goVersion }} · adatbázis: {{ system.database }} · fut: {{ formatUptime(system.uptimeSeconds) }}</p>
-          <p>Telepített verzió: <strong>{{ update.current }}</strong> · Legújabb: <strong>{{ update.latest }}</strong></p>
+          <p>Telepített verzió: <strong>{{ update.current }}</strong> · Kiválasztott: <strong>{{ update.latest }}</strong></p>
           <p v-if="update.updateAvailable" class="update-new">Új verzió érhető el.</p>
           <p v-else class="empty">A panel naprakész (vagy a verzió nem összehasonlítható).</p>
           <pre v-if="update.updateAvailable && update.notes" class="update-notes">{{ update.notes }}</pre>
@@ -249,6 +286,12 @@ onMounted(load)
             <a v-if="update.url" :href="update.url" target="_blank" rel="noopener noreferrer"><btn>Változások</btn></a>
             <btn v-if="update.canApply" color="primary" :disabled="update.running || updateApplying" @click="applyUpdate"><icon :name="update.running || updateApplying ? 'loading' : 'download'" :spin="update.running || updateApplying" /> {{ update.running || updateApplying ? 'Frissítés folyamatban' : 'Frissítés indítása' }}</btn>
             <small v-else>Az egykattintásos frissítéshez állítsd be a <code>panel.update.command</code> értéket a config fájlban.</small>
+          </div>
+          <div v-if="update.assets?.length" class="release-assets">
+            <h3>Letölthető fájlok</h3>
+            <a v-for="asset in update.assets" :key="asset.url" :href="asset.url" target="_blank" rel="noopener noreferrer" class="release-asset">
+              <icon name="download" /><span>{{ asset.name }}</span><small>{{ formatAssetSize(asset.size) }}</small>
+            </a>
           </div>
           <small v-if="update.lastResult">Utolsó frissítés: {{ update.lastResult }}</small>
         </template>
@@ -330,9 +373,15 @@ onMounted(load)
 .metric:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, .22); }
 .metric strong { color: var(--color-primary); }
 section { border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
-.update-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.update-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .update-card.available { border-color: var(--color-primary); }
+.update-head select { flex: 1 1 200px; min-width: 180px; max-width: 100%; padding: 8px 10px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 5px; }
 .update-new { color: var(--color-primary); font-weight: 600; }
 .update-notes { max-height: 180px; overflow: auto; white-space: pre-wrap; padding: 10px; border-radius: 6px; background: var(--color-background); font-size: .85rem; }
+.release-assets { display: grid; gap: 8px; margin-top: 14px; }
+.release-assets h3 { margin: 0; }
+.release-asset { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text); background: var(--color-background); border: 1px solid var(--color-background); border-radius: 6px; }
+.release-asset span { flex: 1; overflow-wrap: anywhere; }
+.release-asset small { white-space: nowrap; }
 @media (max-width: 700px) { .heading { flex-direction: column; align-items: flex-start; } .announcement-form { grid-template-columns: 1fr; } }
 </style>

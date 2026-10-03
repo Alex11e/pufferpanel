@@ -21,3 +21,26 @@ func TestIsNewerVersion(t *testing.T) {
 		}
 	}
 }
+
+func TestNormalizeUpdateTag(t *testing.T) {
+	cases := []struct {
+		input string
+		want  string
+		valid bool
+	}{
+		{input: "", want: "", valid: true},
+		{input: "latest", want: "", valid: true},
+		{input: "3.1", want: "v3.1", valid: true},
+		{input: "v4.0.0", want: "v4.0.0", valid: true},
+		{input: "3.1.0-rc.1", want: "v3.1.0-rc.1", valid: true},
+		{input: "v3/1", valid: false},
+		{input: "https://example.com", valid: false},
+	}
+
+	for _, test := range cases {
+		got, err := normalizeUpdateTag(test.input)
+		if (err == nil) != test.valid || got != test.want {
+			t.Errorf("normalizeUpdateTag(%q) = %q, %v; want %q, valid=%t", test.input, got, err, test.want, test.valid)
+		}
+	}
+}

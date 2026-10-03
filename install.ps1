@@ -46,9 +46,17 @@ function New-PanelUser {
 Write-Host '1) PufferPanel eltávolítása'
 Write-Host '2) PufferPanel telepítése vagy frissítése'
 Write-Host '3) Felhasználó létrehozása'
+Write-Host '4) Frissítés GitHub-verzió alapján (update.bat)'
 $InstallAction = Read-Host 'Választás'
 if ($InstallAction -eq '1') { Remove-PanelFiles; exit 0 }
 if ($InstallAction -eq '3') { New-PanelUser; exit 0 }
+if ($InstallAction -eq '4') {
+    $Updater = Join-Path $Root 'update.bat'
+    if (-not (Test-Path -LiteralPath $Updater)) { throw 'Az update.bat nem található.' }
+    & $Updater
+    if ($LASTEXITCODE -ne 0) { throw 'A verziófrissítés sikertelen.' }
+    exit 0
+}
 if ($InstallAction -ne '2') { throw 'Érvénytelen választás.' }
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {

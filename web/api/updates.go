@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -24,23 +26,57 @@ import (
 )
 
 var updateRepoPattern = regexp.MustCompile(`^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$`)
+var updateTagPattern = regexp.MustCompile(`^v?\d+\.\d+(\.\d+)?(-[0-9A-Za-z.-]+)?$`)
+
+type updateAsset struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+	Size int64  `json:"size"`
+}
+
+type githubRelease struct {
+	Tag         string `json:"tag_name"`
+	Name        string `json:"name"`
+	URL         string `json:"html_url"`
+	Body        string `json:"body"`
+	PublishedAt string `json:"published_at"`
+	Prerelease  bool   `json:"prerelease"`
+	Assets      []struct {
+		Name string `json:"name"`
+		URL  string `json:"browser_download_url"`
+		Size int64  `json:"size"`
+	} `json:"assets"`
+}
+
+type updateRelease struct {
+	Tag         string        `json:"tag"`
+	Name        string        `json:"name"`
+	URL         string        `json:"url"`
+	PublishedAt string        `json:"publishedAt"`
+	Prerelease  bool          `json:"prerelease"`
+	Assets      []updateAsset `json:"assets"`
+}
 
 type updateInfo struct {
-	Current         string `json:"current"`
-	Latest          string `json:"latest"`
-	URL             string `json:"url"`
-	Notes           string `json:"notes"`
-	PublishedAt     string `json:"publishedAt"`
-	UpdateAvailable bool   `json:"updateAvailable"`
-	CanApply        bool   `json:"canApply"`
-	Running         bool   `json:"running"`
-	LastResult      string `json:"lastResult,omitempty"`
+	Current         string        `json:"current"`
+	Latest          string        `json:"latest"`
+	URL             string        `json:"url"`
+	Notes           string        `json:"notes"`
+	PublishedAt     string        `json:"publishedAt"`
+	UpdateAvailable bool          `json:"updateAvailable"`
+	CanApply        bool          `json:"canApply"`
+	Running         bool          `json:"running"`
+	LastResult      string        `json:"lastResult,omitempty"`
+	Assets          []updateAsset `json:"assets"`
 }
 
 var updateState struct {
 	sync.Mutex
 	cached     *updateInfo
+	cachedTag  string
 	fetchedAt  time.Time
+	releases   []updateRelease
+	releasesAt time.Time
 	running    bool
 	lastResult string
 }
@@ -49,8 +85,10 @@ func registerUpdates(g *gin.RouterGroup) {
 	g.GET("/system", middleware.RequiresPermission(scopes.ScopeAdmin), getSystemInfo)
 	g.OPTIONS("/system", response.CreateOptions("GET"))
 	g.GET("/update", middleware.RequiresPermission(scopes.ScopeAdmin), getUpdateInfo)
+	g.GET("/update/releases", middleware.RequiresPermission(scopes.ScopeAdmin), getUpdateReleases)
 	g.POST("/update/apply", middleware.RequiresPermission(scopes.ScopeAdmin), applyUpdate)
 	g.OPTIONS("/update", response.CreateOptions("GET"))
+	g.OPTIONS("/update/releases", response.CreateOptions("GET"))
 	g.OPTIONS("/update/apply", response.CreateOptions("POST"))
 }
 
@@ -71,7 +109,12 @@ func getSystemInfo(c *gin.Context) {
 
 func getUpdateInfo(c *gin.Context) {
 	refresh := c.Query("refresh") == "true"
-	info, err := fetchUpdateInfo(c.Request.Context(), refresh)
+	tag, err := normalizeUpdateTag(c.Query("version"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": err.Error()}})
+		return
+	}
+	info, err := fetchUpdateInfo(c.Request.Context(), refresh, tag)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{"error": "could not check for updates"})
 		return
@@ -79,17 +122,92 @@ func getUpdateInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, info)
 }
 
-func fetchUpdateInfo(ctx context.Context, force bool) (*updateInfo, error) {
+func normalizeUpdateTag(tag string) (string, error) {
+	tag = strings.TrimSpace(tag)
+	if tag == "" || strings.EqualFold(tag, "latest") {
+		return "", nil
+	}
+	if !updateTagPattern.MatchString(tag) {
+		return "", fmt.Errorf("invalid release version")
+	}
+	if !strings.HasPrefix(tag, "v") {
+		tag = "v" + tag
+	}
+	return tag, nil
+}
+
+func getUpdateReleases(c *gin.Context) {
+	force := c.Query("refresh") == "true"
+	updateState.Lock()
+	if !force && updateState.releases != nil && time.Since(updateState.releasesAt) < time.Hour {
+		versions := append([]updateRelease(nil), updateState.releases...)
+		updateState.Unlock()
+		c.JSON(http.StatusOK, versions)
+		return
+	}
+	updateState.Unlock()
+
+	repo := config.UpdateRepo.Value()
+	if !updateRepoPattern.MatchString(repo) {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "invalid update repository"}})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+	defer cancel()
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.github.com/repos/"+repo+"/releases?per_page=30", nil)
+	if response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	request.Header.Set("Accept", "application/vnd.github+json")
+	request.Header.Set("User-Agent", "PufferPanel/"+pufferpanel.Version)
+	result, err := http.DefaultClient.Do(request)
+	if response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	defer func() { _ = result.Body.Close() }()
+	if result.StatusCode != http.StatusOK {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": fmt.Sprintf("release lookup returned HTTP %d", result.StatusCode)}})
+		return
+	}
+
+	var releases []githubRelease
+	if err = json.NewDecoder(io.LimitReader(result.Body, 4<<20)).Decode(&releases); response.HandleError(c, err, http.StatusBadGateway) {
+		return
+	}
+	versions := make([]updateRelease, 0, len(releases))
+	for _, release := range releases {
+		if _, err = normalizeUpdateTag(release.Tag); err != nil {
+			continue
+		}
+		versions = append(versions, toUpdateRelease(release))
+	}
+	updateState.Lock()
+	updateState.releases = versions
+	updateState.releasesAt = time.Now()
+	updateState.Unlock()
+	c.JSON(http.StatusOK, versions)
+}
+
+func fetchUpdateInfo(ctx context.Context, force bool, requestedTag string) (*updateInfo, error) {
 	updateState.Lock()
 	defer updateState.Unlock()
-	if updateState.cached == nil || force || time.Since(updateState.fetchedAt) > time.Hour {
+	cacheTag := requestedTag
+	if cacheTag == "" {
+		cacheTag = "latest"
+	}
+	if updateState.cached == nil || updateState.cachedTag != cacheTag || force || time.Since(updateState.fetchedAt) > time.Hour {
 		repo := config.UpdateRepo.Value()
 		if !updateRepoPattern.MatchString(repo) {
 			return nil, fmt.Errorf("invalid update repository")
 		}
 		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.github.com/repos/"+repo+"/releases/latest", nil)
+		endpoint := "/releases/latest"
+		if requestedTag != "" {
+			endpoint = "/releases/tags/" + url.PathEscape(requestedTag)
+		}
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.github.com/repos/"+repo+endpoint, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -103,13 +221,11 @@ func fetchUpdateInfo(ctx context.Context, force bool) (*updateInfo, error) {
 		if res.StatusCode != http.StatusOK {
 			return nil, fmt.Errorf("release lookup returned HTTP %d", res.StatusCode)
 		}
-		var release struct {
-			Tag         string `json:"tag_name"`
-			URL         string `json:"html_url"`
-			Body        string `json:"body"`
-			PublishedAt string `json:"published_at"`
+		var release githubRelease
+		if err = json.NewDecoder(io.LimitReader(res.Body, 4<<20)).Decode(&release); err != nil {
+			return nil, err
 		}
-		if err = json.NewDecoder(io.LimitReader(res.Body, 1<<20)).Decode(&release); err != nil {
+		if _, err = normalizeUpdateTag(release.Tag); err != nil {
 			return nil, err
 		}
 		notes := release.Body
@@ -117,11 +233,9 @@ func fetchUpdateInfo(ctx context.Context, force bool) (*updateInfo, error) {
 			notes = notes[:4000]
 		}
 		// Only link to https URLs so the UI never renders a javascript: link.
-		url := release.URL
-		if !strings.HasPrefix(url, "https://") {
-			url = ""
-		}
-		updateState.cached = &updateInfo{Latest: release.Tag, URL: url, Notes: notes, PublishedAt: release.PublishedAt}
+		option := toUpdateRelease(release)
+		updateState.cached = &updateInfo{Latest: release.Tag, URL: option.URL, Notes: notes, PublishedAt: release.PublishedAt, Assets: option.Assets}
+		updateState.cachedTag = cacheTag
 		updateState.fetchedAt = time.Now()
 	}
 	info := *updateState.cached
@@ -133,11 +247,48 @@ func fetchUpdateInfo(ctx context.Context, force bool) (*updateInfo, error) {
 	return &info, nil
 }
 
+func toUpdateRelease(release githubRelease) updateRelease {
+	option := updateRelease{Tag: release.Tag, Name: release.Name, URL: release.URL, PublishedAt: release.PublishedAt, Prerelease: release.Prerelease}
+	if !strings.HasPrefix(option.URL, "https://") {
+		option.URL = ""
+	}
+	for _, asset := range release.Assets {
+		if !strings.HasPrefix(asset.URL, "https://") {
+			continue
+		}
+		option.Assets = append(option.Assets, updateAsset{Name: asset.Name, URL: asset.URL, Size: asset.Size})
+	}
+	return option
+}
+
 // applyUpdate runs the operator-configured command; nothing from the request is executed.
 func applyUpdate(c *gin.Context) {
 	command := config.UpdateCommand.Value()
 	if command == "" {
 		c.JSON(http.StatusConflict, gin.H{"error": "no update command is configured"})
+		return
+	}
+	var request struct {
+		Version string `json:"version"`
+	}
+	if c.Request.Body != nil {
+		if err := json.NewDecoder(c.Request.Body).Decode(&request); err != nil && !errors.Is(err, io.EOF) {
+			response.HandleError(c, err, http.StatusBadRequest)
+			return
+		}
+	}
+	tag, err := normalizeUpdateTag(request.Version)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": err.Error()}})
+		return
+	}
+	info, err := fetchUpdateInfo(c.Request.Context(), false, tag)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "could not validate selected release"}})
+		return
+	}
+	if !info.UpdateAvailable {
+		c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "selected release is not newer than the installed version"}})
 		return
 	}
 	updateState.Lock()
@@ -159,6 +310,7 @@ func applyUpdate(c *gin.Context) {
 		} else {
 			cmd = exec.CommandContext(ctx, "sh", "-c", command)
 		}
+		cmd.Env = append(os.Environ(), "PANEL_UPDATE_VERSION="+info.Latest)
 		out, err := cmd.CombinedOutput()
 		result := "ok"
 		if err != nil {

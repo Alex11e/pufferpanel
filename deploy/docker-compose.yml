@@ -16,7 +16,13 @@ services:
       - "8080:8080"
       - "5657:5657"
     volumes:
-      - ../data/config:/etc/pufferpanel
-      - ../data/data:/var/lib/pufferpanel
-      - ../data/logs:/var/log/pufferpanel
+      - type: bind
+        source: ${PANEL_CONFIG_DIR:-../data/config}
+        target: /etc/pufferpanel
+      - type: bind
+        source: ${PANEL_DATA_DIR:-../data/data}
+        target: /var/lib/pufferpanel
+      - type: bind
+        source: ${PANEL_LOGS_DIR:-../data/logs}
+        target: /var/log/pufferpanel
       - /var/run/docker.sock:/var/run/docker.sock
