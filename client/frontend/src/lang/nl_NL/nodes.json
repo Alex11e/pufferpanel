@@ -1,50 +1,50 @@
 {
   "Node": "Node",
   "Nodes": "Nodes",
-  "Edit": "Node Bewerken",
-  "Add": "Node Toevoegen",
-  "Create": "Create Node",
-  "Update": "Node Bijwerken",
-  "Delete": "Node Verwijderen",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "Edit": "Node bewerken",
+  "Add": "Node toevoegen",
+  "Create": "Node aanmaken",
+  "Update": "Node bijwerken",
+  "Delete": "Node verwijderen",
+  "ConfirmDelete": "Wil je de node {name} echt verwijderen?",
+  "Created": "Node aangemaakt",
+  "Updated": "Node bijgewerkt",
+  "Deleted": "Node verwijderd",
+  "Reachable": "Deze node is correct ingesteld en actief",
+  "Unreachable": "Deze node is niet correct ingesteld of momenteel niet beschikbaar",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Besturingssysteem",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU-architectuur",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker beschikbaar",
+      "false": "Docker niet beschikbaar"
     },
-    "envs": "Available Environments"
+    "envs": "Beschikbare omgevingen"
   },
-  "PublicHost": "Openbare Host",
+  "PublicHost": "Openbare host",
   "PublicPort": "Openbare poort",
   "PrivateHost": "Privé host",
   "PrivatePort": "Privé poort",
-  "SftpPort": "SFTP Poort",
-  "WithPrivateAddress": "Gebruik een andere host/poort voor server communicatie",
-  "WithPrivateAddressHint": "Dit aparte adres wordt gebruikt wanneer het hoofdknooppunt met het nieuwe knooppunt moet praten. Nuttig als bijvoorbeeld de knooppunten in hetzelfde netwerk achter de NAVO zitten.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "SftpPort": "SFTP-poort",
+  "WithPrivateAddress": "Gebruik een andere host/poort voor servercommunicatie",
+  "WithPrivateAddressHint": "Dit aparte adres wordt gebruikt wanneer het hoofdknooppunt met het nieuwe knooppunt moet communiceren. Nuttig als bijvoorbeeld de knooppunten in hetzelfde netwerk achter NAT zitten.",
+  "LocalNodeEdit": "De lokale node heeft geen bewerkbare instellingen\n\nOm de host te wijzigen die wordt weergegeven bij servers op deze node, pas je de master-URL van het paneel aan in de paneelinstellingen",
+  "Deploy": "Node uitrollen",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Stap 1\n\nInstalleer PufferPanel op de nieuwe server, [zie de documentatie voor details](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Stap 2\n\nStop de PufferPanel-service op de nieuwe server als deze tijdens de installatie is gestart door `sudo systemctl stop pufferpanel` uit te voeren",
+    "Step3": "## Stap 3\n\nVervang de inhoud van het PufferPanel-configuratiebestand op de nieuwe server met de onderstaande code\n\nHet configuratiebestand bevindt zich meestal op `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Stap 4\n\nSchakel de PufferPanel-service in en (her)start deze op de nieuwe server door `sudo systemctl enable --now pufferpanel` uit te voeren",
+    "Step5": "### Je nieuwe node is nu ingesteld en klaar voor gebruik"
   },
-  "DeploymentInstruction": "Op deze node te deployen, installeer PufferPanel op de nieuwe server en plaats het config bestand in `/etc/pufferpanel`<br/>Herstart PufferPanel op de nieuwe server daarna."
+  "DeploymentInstruction": "Om deze node uit te rollen, installeer PufferPanel op de nieuwe server en plaats het configuratiebestand in `/etc/pufferpanel/`<br/>Herstart PufferPanel daarna op de nieuwe server."
 }

@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Voer deze stap alleen uit als aan deze voorwaarde is voldaan",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Minecraft downloaden",
+    "formatted": "Minecraft downloaden"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Naar bestand schrijven",
+    "formatted": "Naar bestand {target} schrijven"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Minecraft Forge-versie bepalen",
+    "formatted": "Minecraft Forge-versie bepalen"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Bestand(en) downloaden",
+    "formatted": "{file} downloaden | {n} bestanden downloaden",
+    "files": "Bestanden"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Opdracht(en) uitvoeren",
+    "formatted": "{command} uitvoeren | {n} opdrachten uitvoeren",
+    "commands": "Opdrachten"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Een bestand aanpassen",
+    "formatted": "Bestand {target} aanpassen",
+    "regex": "Zoekstring als reguliere expressie behandelen",
+    "search": "Zoeken",
+    "replace": "Overeenkomsten vervangen door"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Een bestand verplaatsen of hernoemen",
+    "formatted": "Bestand {source} naar {target} verplaatsen",
+    "source": "Bronpad",
+    "target": "Doelpad"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Een map aanmaken",
+    "formatted": "Map {target} aanmaken"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Bestanden archiveren",
+    "formatted": "{file} naar {destination} archiveren | {n} bestanden naar {destination} archiveren",
+    "source": "Te archiveren bestanden"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Archief uitpakken",
+    "formatted": "{source} naar {destination} uitpakken",
+    "destination": "Bestemming"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Consolebericht",
+    "formatted": "\"{message}\" naar console afdrukken",
+    "message": "Bericht"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Wachten",
+    "formatted": "{duration} wachten",
+    "duration": "Duur",
+    "durationHint": "Geldige tijdseenheden zijn ns, us, ms, s, m en h. Meerdere eenheden kunnen worden gecombineerd. Bijvoorbeeld `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Installeren vanaf Steam",
+    "formatted": "Steam App ID {appId} installeren",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Branch (laat leeg voor standaard)",
+    "branchPassword": "Branch-wachtwoord (indien nodig)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Java installeren",
+    "formatted": "Java {version} installeren"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Forge downloaden",
+    "formatted": "Minecraft Forge downloaden",
+    "outputVariable": "Uitvoervariabele"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Neoforge downloaden",
+    "formatted": "Minecraft Neoforge downloaden",
+    "outputVariable": "Uitvoervariabele"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Minecraft SpongeForge downloaden",
+    "formatted": "Minecraft SpongeForge downloaden",
+    "releaseType": "Releasetype"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Minecraft Fabric downloaden",
+    "formatted": "Minecraft Fabric downloaden"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "PaperMC-project downloaden",
+    "formatted": "{project} naar {target} downloaden",
+    "project": "PaperMC-project",
+    "build": "Buildnummer"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Downloaden van CurseForge",
+    "formatted": "Downloaden van CurseForge",
+    "projectId": "Project-ID",
+    "fileId": "Bestands-ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Node.js installeren",
+    "formatted": "Node.js {version} installeren"
   }
 }

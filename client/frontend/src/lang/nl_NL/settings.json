@@ -1,16 +1,16 @@
 {
   "Settings": "Instellingen",
-  "PanelSettings": "Panel instellingen",
-  "SavePanelSettings": "Save Panel Settings",
-  "EmailSettings": "Email instellingen",
-  "SaveEmailSettings": "Save Email Settings",
-  "MasterUrl": "Hoofd URL",
-  "MasterUrlHint": "De basis URL waar het paneel onder kan worden bereikt in het formaat http://localhost:8080",
-  "CompanyName": "Organisatienaam",
-  "DefaultTheme": "Standaard Thema",
+  "PanelSettings": "Paneelinstellingen",
+  "SavePanelSettings": "Paneelinstellingen opslaan",
+  "EmailSettings": "E-mailinstellingen",
+  "SaveEmailSettings": "E-mailinstellingen opslaan",
+  "MasterUrl": "Hoofd-URL",
+  "MasterUrlHint": "De basis-URL waaronder het paneel bereikbaar is, in het formaat http://localhost:8080",
+  "CompanyName": "Bedrijfsnaam",
+  "DefaultTheme": "Standaardthema",
   "RegistrationEnabled": "Sta gebruikers toe om zich te registreren",
-  "RegistrationEnabledHint": "Self registered users can't do anything until given permissions\n\nDisabling this only prevents direct registration, invitation to a server and the Users page are not affected",
-  "EmailProvider": "E-Mail Provider",
+  "RegistrationEnabledHint": "Zelfgeregistreerde gebruikers kunnen niets doen totdat hen machtigingen zijn gegeven\n\nHet uitschakelen hiervan voorkomt alleen directe registratie; uitnodigingen voor een server en de gebruikerspagina worden niet beïnvloed",
+  "EmailProvider": "E-mailprovider",
   "emailProviders": {
     "none": "Geen",
     "smtp": "SMTP",
@@ -18,15 +18,15 @@
     "mailjet": "Mailjet"
   },
   "email": {
-    "from": "Sender Address",
-    "domain": "Domain",
-    "key": "API Key",
+    "from": "Afzenderadres",
+    "domain": "Domein",
+    "key": "API-sleutel",
     "host": "Host",
-    "username": "Username",
-    "password": "Password"
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord"
   },
-  "Saved": "Saved",
-  "TestEmail": "Test Email",
-  "TestEmailSent": "Test email sent",
-  "TestEmailFailed": "Test email failed to send"
+  "Saved": "Opgeslagen",
+  "TestEmail": "Test-e-mail",
+  "TestEmailSent": "Test-e-mail verzonden",
+  "TestEmailFailed": "Test-e-mail kon niet worden verzonden"
 }
