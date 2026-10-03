@@ -14,6 +14,7 @@ const toast = inject('toast')
 const router = useRouter()
 
 const engine = ref('mariadb')
+const botLanguage = ref('node')
 const template = ref(null)
 const loading = ref(true)
 const loadError = ref('')
@@ -37,7 +38,7 @@ const isPma = computed(() => props.kind === 'db' && engine.value === 'phpmyadmin
 
 const isDb = computed(() => props.kind === 'db')
 const isBot = computed(() => props.kind === 'discordbot')
-const templateKind = computed(() => (isBot.value ? 'discordbot' : isDb.value ? engine.value : 'web'))
+const templateKind = computed(() => (isBot.value ? (botLanguage.value === 'python' ? 'discordbot-python' : 'discordbot') : isDb.value ? engine.value : 'web'))
 const versions = computed(() => (template.value?.data?.[isDb.value ? 'version' : 'php_version']?.options || []).map(o => o.value))
 const identifier = /^[A-Za-z0-9_]{1,32}$/
 const botToken = ref('')
@@ -92,6 +93,10 @@ async function loadSetup() {
 onMounted(loadSetup)
 
 watch(engine, () => {
+  if (!loading.value) loadTemplate()
+})
+
+watch(botLanguage, () => {
   if (!loading.value) loadTemplate()
 })
 
@@ -161,6 +166,9 @@ async function create() {
         <select v-model="engine"><option value="mariadb">MariaDB (MySQL-kompatibilis)</option><option value="postgres">PostgreSQL</option><option value="phpmyadmin">phpMyAdmin (webes MariaDB/MySQL kezelő)</option></select>
       </label>
       <template v-if="isBot">
+        <label>Programozási nyelv
+          <select v-model="botLanguage"><option value="node">Node.js</option><option value="python">Python</option></select>
+        </label>
         <label>Discord bot token<input v-model="botToken" type="password" autocomplete="new-password" required></label>
         <p class="hint">A token privát szerveradatként tárolódik, és DISCORD_TOKEN környezeti változóként jut el a bothoz. Fájlokat a Fájlok vagy SFTP felületen tölthetsz fel.</p>
       </template>

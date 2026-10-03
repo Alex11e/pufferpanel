@@ -111,7 +111,7 @@ export default (api) => [
     path: '/hosting/discord-bot',
     component: () => import('@/views/VpsList.vue'),
     name: 'DiscordBotList',
-    props: { type: 'discordbot', title: 'Discord bot', hint: 'Discord botok Node.js futtatókörnyezettel.', createRoute: 'DiscordBotCreate', empty: 'Még nincs Discord bot.' },
+    props: { type: 'discordbot', title: 'Discord bot', hint: 'Discord botok Node.js vagy Python futtatókörnyezettel.', createRoute: 'DiscordBotCreate', empty: 'Még nincs Discord bot.' },
     meta: {
       tkey: 'Discord bot',
       permission: true,

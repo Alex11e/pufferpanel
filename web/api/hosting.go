@@ -49,7 +49,9 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 	case "web":
 		return webHostingTemplate()
 	case "discordbot":
-		return discordBotTemplate()
+		return discordBotTemplate("node")
+	case "discordbot-python":
+		return discordBotTemplate("python")
 	case "mariadb":
 		return databaseTemplate("mariadb", "MariaDB", "mariadb", 3306, "/var/lib/mysql", "mariadbd", 15,
 			[]string{"11.8", "11.4", "10.11"}, map[string]string{
@@ -73,37 +75,60 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 	return nil
 }
 
-func discordBotTemplate() *pufferpanel.Server {
+func discordBotTemplate(language string) *pufferpanel.Server {
 	token := hostingVar("string", "", "Discord bot token", "Kept private and provided to the bot as DISCORD_TOKEN.", true, false)
 	token.Internal = true
+	image := "node:22-alpine"
+	root := "/home/node/app"
+	display := "Discord bot (Node.js)"
+	identifier := "discord-bot"
+	installation := []pufferpanel.ConditionalMetadataType{
+		{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+			"target": "package.json",
+			"text":   "{\n  \"name\": \"pufferpanel-discord-bot\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"main\": \"index.js\",\n  \"scripts\": { \"start\": \"node index.js\" },\n  \"dependencies\": { \"discord.js\": \"^14\" }\n}\n",
+		}}},
+		{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+			"target": "index.js",
+			"text":   "const { Client, Events, GatewayIntentBits } = require('discord.js');\n\nconst token = process.env.DISCORD_TOKEN;\nif (!token) throw new Error('DISCORD_TOKEN is not configured');\n\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once(Events.ClientReady, readyClient => {\n  console.log(`Logged in as ${readyClient.user.tag}`);\n});\nclient.login(token);\n\nprocess.on('SIGTERM', () => { client.destroy(); process.exit(0); });\n",
+		}}},
+	}
+	command := `sh -c "npm install --omit=dev && node index.js"`
+	if language == "python" {
+		image = "python:3.12-alpine"
+		root = "/home/bot/app"
+		display = "Discord bot (Python)"
+		identifier = "discord-bot-python"
+		installation = []pufferpanel.ConditionalMetadataType{
+			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+				"target": "requirements.txt",
+				"text":   "discord.py>=2,<3\n",
+			}}},
+			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
+				"target": "main.py",
+				"text":   "import os\nimport discord\n\ntoken = os.environ.get(\"DISCORD_TOKEN\")\nif not token:\n    raise RuntimeError(\"DISCORD_TOKEN is not configured\")\n\nintents = discord.Intents.default()\nclient = discord.Client(intents=intents)\n\n@client.event\nasync def on_ready():\n    print(f\"Logged in as {client.user}\")\n\nclient.run(token)\n",
+			}}},
+		}
+		command = "sh -c \"pip install --no-cache-dir -r requirements.txt && python main.py\""
+	}
 	docker := pufferpanel.MetadataType{Type: "docker", Metadata: map[string]interface{}{
-		"image":         "node:22-alpine",
-		"containerRoot": "/home/node/app",
+		"image":         image,
+		"containerRoot": root,
 		"networkName":   "bridge",
 	}}
 	return &pufferpanel.Server{
 		Type:       pufferpanel.Type{Type: discordBotType},
-		Identifier: "discord-bot",
-		Display:    "Discord bot (Node.js)",
+		Identifier: identifier,
+		Display:    display,
 		Variables: map[string]pufferpanel.Variable{
 			"token": token,
 		},
 		Environment:           docker,
 		SupportedEnvironments: []pufferpanel.MetadataType{docker},
-		Installation: []pufferpanel.ConditionalMetadataType{
-			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
-				"target": "package.json",
-				"text":   "{\n  \"name\": \"pufferpanel-discord-bot\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"main\": \"index.js\",\n  \"scripts\": { \"start\": \"node index.js\" },\n  \"dependencies\": { \"discord.js\": \"^14\" }\n}\n",
-			}}},
-			{MetadataType: pufferpanel.MetadataType{Type: "writefile", Metadata: map[string]interface{}{
-				"target": "index.js",
-				"text":   "const { Client, Events, GatewayIntentBits } = require('discord.js');\n\nconst token = process.env.DISCORD_TOKEN;\nif (!token) throw new Error('DISCORD_TOKEN is not configured');\n\nconst client = new Client({ intents: [GatewayIntentBits.Guilds] });\nclient.once(Events.ClientReady, readyClient => {\n  console.log(`Logged in as ${readyClient.user.tag}`);\n});\nclient.login(token);\n\nprocess.on('SIGTERM', () => { client.destroy(); process.exit(0); });\n",
-			}}},
-		},
+		Installation:          installation,
 		Execution: pufferpanel.Execution{
-			Command:          `sh -c "npm install --omit=dev && node index.js"`,
+			Command:          command,
 			StopCode:         15,
-			WorkingDirectory: "/home/node/app",
+			WorkingDirectory: root,
 			EnvironmentVariables: map[string]string{
 				"DISCORD_TOKEN": "${token}",
 			},
