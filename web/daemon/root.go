@@ -2,6 +2,10 @@ package daemon
 
 import (
 	"context"
+	"net/http"
+	"runtime"
+	"time"
+
 	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
 	"github.com/pufferpanel/pufferpanel/v3"
@@ -9,9 +13,6 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/response"
 	"github.com/pufferpanel/pufferpanel/v3/servers"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
-	"net/http"
-	"runtime"
-	"time"
 )
 
 func RegisterDaemonRoutes(e *gin.RouterGroup) {

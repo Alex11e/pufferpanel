@@ -3,7 +3,6 @@ package utils
 import (
 	"strings"
 
-	"github.com/buildkite/shellwords"
 	"github.com/spf13/cast"
 )
 
@@ -14,7 +13,39 @@ var PlainReplace = func(str string, key string, value any) string {
 }
 
 var ShellReplace = func(str string, key string, value any) string {
-	return PlainReplace(str, key, shellwords.Quote(cast.ToString(value)))
+	valueString := cast.ToString(value)
+	if valueString == "" || strings.ContainsAny(valueString, " \t\r\n\"'\\$`><|&;()") {
+		return strings.ReplaceAll(str, key, shellQuote(valueString))
+	}
+	return PlainReplace(str, key, valueString)
+}
+
+func shellQuote(value string) string {
+	if value == "" {
+		return "\"\""
+	}
+
+	var builder strings.Builder
+	builder.WriteByte('"')
+	for _, ch := range value {
+		switch ch {
+		case '\\':
+			builder.WriteString("\\\\")
+		case '"':
+			builder.WriteString("\\\"")
+		case '$':
+			builder.WriteString("\\$")
+		case '`':
+			builder.WriteString("\\`")
+		case '>', '<', '|', '&', ';', '(', ')':
+			builder.WriteByte('\\')
+			builder.WriteRune(ch)
+		default:
+			builder.WriteRune(ch)
+		}
+	}
+	builder.WriteByte('"')
+	return builder.String()
 }
 
 func ReplaceTokens(msg string, mapping map[string]any, function StringReplaceFunc) string {
@@ -46,7 +77,41 @@ func ReplaceTokensInMap(msg map[string]string, mapping map[string]any) map[strin
 }
 
 func SplitArguments(source string) (cmd string, arguments []string) {
-	parts, _ := shellwords.Split(source)
+	if source == "" {
+		return "", []string{}
+	}
+
+	var parts []string
+	var current strings.Builder
+	quoteMode := false
+	for i := 0; i < len(source); i++ {
+		switch source[i] {
+		case '\\':
+			if quoteMode && i+1 < len(source) && (source[i+1] == '\\' || source[i+1] == '"') {
+				current.WriteByte(source[i+1])
+				i++
+				continue
+			}
+			current.WriteByte(source[i])
+		case '"':
+			quoteMode = !quoteMode
+		case ' ', '\t', '\r', '\n':
+			if quoteMode {
+				current.WriteByte(source[i])
+				continue
+			}
+			if current.Len() > 0 {
+				parts = append(parts, current.String())
+				current.Reset()
+			}
+		default:
+			current.WriteByte(source[i])
+		}
+	}
+
+	if current.Len() > 0 {
+		parts = append(parts, current.String())
+	}
 
 	if len(parts) == 0 {
 		return "", []string{}
