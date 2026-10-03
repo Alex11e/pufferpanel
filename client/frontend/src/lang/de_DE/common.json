@@ -38,7 +38,7 @@
       "Auto": "Auto"
     },
     "BaseColor": "Standardfarbe",
-    "ServerTypeDisplay": "Servertyp Anzeige",
+    "ServerTypeDisplay": "Servertyp-Anzeige",
     "serverTypeDisplay": {
       "IconBackground": "Symbol + Hintergrund",
       "Icon": "Icon",

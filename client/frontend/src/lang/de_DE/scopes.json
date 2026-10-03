@@ -4,7 +4,7 @@
     "login": "Einloggen",
     "self-edit": "Eigenen Account bearbeiten",
     "self-clients": "Eigene OAuth2-Clients verwalten",
-    "settings-edit": "Panel Einstellungen bearbeiten",
+    "settings-edit": "Panel-Einstellungen bearbeiten",
     "server-create": "Neue Server erstellen",
     "nodes-view": "Knoten anzeigen",
     "nodes-create": "Neue Knoten erstellen",
@@ -30,7 +30,7 @@
     "server-data-edit": "Kann Servereinstellungen ändern",
     "server-data-edit-admin": "Kann Servereinstellungen ändern, die nur für Administratoren gelten",
     "server-flags-view": "Kann Autostart-Einstellungen sehen",
-    "server-flags-edit": "Kann Autostarteinstellungen ändern",
+    "server-flags-edit": "Kann Autostart-Einstellungen ändern",
     "server-name-edit": "Kann den Servernamen ändern",
     "server-users-view": "Kann diese Benutzerliste anzeigen",
     "server-users-create": "Kann neue Benutzer zu einem Server hinzufügen",
@@ -54,8 +54,8 @@
   },
   "hint": {
     "admin": "Erteilt alle Berechtigungen",
-    "login": "Erlaubt dem Benutzer sich einzuloggen",
-    "self-edit": "Erlaubt es dem Nutzer sein Passwort zu ändern, seine E-Mail zu ändern und sein Konto zu verwalten",
+    "login": "Erlaubt dem Benutzer, sich einzuloggen",
+    "self-edit": "Erlaubt es dem Nutzer, sein Passwort zu ändern, seine E-Mail zu aktualisieren und 2FA für sein Konto zu verwalten",
     "settings-edit": "Ermöglicht das Bearbeiten von globalen Panel-Einstellungen wie Master-URL, E-Mail-Integration usw."
   },
   "ServersEdit": "Server bearbeiten",
@@ -76,10 +76,10 @@
   "EditServerAdmin": "Servereinstellungen bearbeiten",
   "ViewNodes": "Knoten anzeigen",
   "EditNodes": "Knoten bearbeiten",
-  "DeployNodes": "Neue Knoten aufsetzen",
+  "DeployNodes": "Knoten bereitstellen",
   "ViewTemplates": "Vorlagen anzeigen",
   "EditTemplates": "Vorlagen bearbeiten",
   "ViewUsers": "Alle Benutzer anzeigen",
   "EditUsers": "Andere Benutzer bearbeiten",
-  "PanelSettings": "Bedienfeldeinstellungen ändern"
+  "PanelSettings": "Panel-Einstellungen ändern"
 }
