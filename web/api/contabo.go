@@ -38,14 +38,12 @@ func registerContabo(g *gin.RouterGroup) {
 	g.OPTIONS("/instances/:id/firewall-addon", response.CreateOptions("POST"))
 
 	g.GET("/images", middleware.RequiresPermission(scopes.ScopeAdmin), getContaboImages)
-	g.OPTIONS("/images", response.CreateOptions("GET"))
 	g.POST("/images", middleware.RequiresPermission(scopes.ScopeAdmin), createContaboImage)
-	g.OPTIONS("/images", response.CreateOptions("POST"))
+	g.OPTIONS("/images", response.CreateOptions("GET", "POST"))
 
 	g.GET("/firewalls", middleware.RequiresPermission(scopes.ScopeAdmin), getContaboFirewalls)
-	g.OPTIONS("/firewalls", response.CreateOptions("GET"))
 	g.POST("/firewalls", middleware.RequiresPermission(scopes.ScopeAdmin), createContaboFirewall)
-	g.OPTIONS("/firewalls", response.CreateOptions("POST"))
+	g.OPTIONS("/firewalls", response.CreateOptions("GET", "POST"))
 	g.PUT("/firewalls/:id/rules", middleware.RequiresPermission(scopes.ScopeAdmin), updateContaboFirewallRules)
 	g.OPTIONS("/firewalls/:id/rules", response.CreateOptions("PUT"))
 	g.POST("/firewalls/:id/instances/:instanceId", middleware.RequiresPermission(scopes.ScopeAdmin), assignContaboFirewall)

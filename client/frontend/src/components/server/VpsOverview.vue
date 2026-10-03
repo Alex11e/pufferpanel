@@ -113,8 +113,9 @@ onUnmounted(() => clearInterval(timer))
     <p v-if="dataError" class="error" role="alert">A VPS beállításai nem tölthetők be: {{ dataError }}</p>
     <section v-if="vars" class="connection">
       <h3>VNC kapcsolat</h3>
-      <p v-if="noVncPort() > 0">noVNC port: <a :href="`http://${server.node?.publicHost}:${noVncPort()}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">{{ server.node?.publicHost }}:{{ noVncPort() }}</a></p>
-      <p>VNC port: <code>{{ server.node?.publicHost }}:{{ vncPort() }}</code></p>
+      <p>Nyilvános IP: <code>{{ server.node?.publicHost || 'Nincs beállítva' }}</code></p>
+      <p v-if="noVncPort() > 0">noVNC port: <code>{{ noVncPort() }}</code> · <a :href="`http://${server.node?.publicHost}:${noVncPort()}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">noVNC megnyitása</a></p>
+      <p>VNC port: <code>{{ vncPort() }}</code></p>
       <h3>Automatikusan kiosztott portok</h3>
       <ul>
         <li v-for="allocation in forwardedPorts()" :key="allocation.id">
