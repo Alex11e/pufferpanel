@@ -3,6 +3,9 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
+      args:
+        version: ${PANEL_VERSION:-devel}
+        sha: ${PANEL_SHA:-devel}
     image: pufferpanel-custom:latest
     container_name: pufferpanel
     restart: unless-stopped

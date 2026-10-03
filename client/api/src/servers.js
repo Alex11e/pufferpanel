@@ -364,6 +364,7 @@ class Server {
     this.expiresAt = serverData.server.expiresAt || null
     this.backupLimit = serverData.server.backupLimit || 0
     this.type = serverData.server.type
+    this.icon = serverData.server.icon || ''
     this._scopes = serverData.permissions.scopes
     this._api = api
     this._openSocket()
@@ -488,6 +489,8 @@ class Server {
     await this._api.server.updateMetadata(this.id, metadata)
     this.notes = metadata.notes
     this.tags = metadata.tags
+    if (metadata.icon !== undefined) this.icon = metadata.icon
+    this.emit('metadataUpdated', metadata)
   }
 
   async getQuery() {

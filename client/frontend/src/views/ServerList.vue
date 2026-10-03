@@ -6,6 +6,7 @@ import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
 import Btn from '@/components/ui/Btn.vue'
 import TextField from '@/components/ui/TextField.vue'
+import { serverIconName } from '@/utils/serverIcon'
 
 const api = inject('api')
 const toast = inject('toast')
@@ -203,16 +204,16 @@ async function copyAddress(server) {
       <btn v-for="tag in tags" :key="tag" :color="selectedTag === tag ? 'primary' : undefined" @click="selectedTag = selectedTag === tag ? '' : tag">{{ tag }}</btn>
     </div>
     <div v-hotkey="'l'" class="list" @hotkey="focusList()">
-      <div v-for="server in visibleServers" :key="server.id" :class="['list-item', 'server-wrapper', `server-wrapper-${(server.icon || 'none')}`]">
+      <div v-for="server in visibleServers" :key="server.id" :class="['list-item', 'server-wrapper', `server-wrapper-${server.type || 'none'}`]">
         <btn class="favorite" variant="icon" :tooltip="t('servers.ToggleFavorite')" @click="toggleFavorite(server.id)"><icon :name="favorites.includes(server.id) ? 'star' : 'star-outline'" /></btn>
         <div class="folder-picker" @click.stop><select :value="folderForServer(server.id)" aria-label="Szerver mappája" @change="setServerFolder(server.id, $event)"><option value="">Nincs mappa</option><option v-for="folder in folders" :key="folder.id" :value="folder.id">{{ folder.name }}</option></select></div>
         <btn class="copy-address" variant="icon" tooltip="Csatlakozási cím másolása" @click="copyAddress(server)"><icon name="content-copy" /></btn>
         <router-link :ref="setFirstEntry" :to="{ name: 'ServerView', params: { id: server.id } }">
           <div
-            :class="['server', `server-${(server.icon || 'none')}`]"
+            class="server server-custom-icon"
             :data-online="server.online"
           >
-            <span class="title" :title="server.name">{{server.name}}</span>
+            <div class="server-title"><icon class="configured-icon" :name="serverIconName(server)" /><span class="title" :title="server.name">{{ server.name }}</span></div>
             <span class="type">{{server.type}}</span>
             <span class="subline">{{getServerAddress(server)}} @ {{server.node.name}}</span>
             <span v-if="server.expiresAt" class="subline" :style="expiryStyle(server.expiresAt)">{{ new Date(server.expiresAt) < new Date() ? 'Lejárt' : 'Lejárat' }}: {{ new Date(server.expiresAt).toLocaleDateString() }}</span>
@@ -248,6 +249,9 @@ async function copyAddress(server) {
 .tag-filter, .folder-tools, .status-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
 .folder-tools input, .folder-tools select, .folder-picker select { background:var(--color-background-secondary); color:var(--color-text); border:1px solid var(--color-background-secondary); border-radius:5px; padding:8px; }
 .server-wrapper { position: relative; }
+.server-title { display: flex; align-items: center; gap: .55rem; min-width: 0; padding-right: 12rem; }
+.server-title .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.configured-icon { flex: 0 0 auto; font-size: 1.35rem; }
 .favorite { position: absolute; top: 8px; right: 8px; z-index: 2; }
 .folder-picker { position:absolute; right:46px; top:9px; z-index:2; max-width:140px; }
 .folder-picker select { max-width:140px; padding:4px; font-size:.8rem; }

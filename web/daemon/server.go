@@ -560,12 +560,25 @@ func getServerData(c *gin.Context) {
 
 	var replacement = make(map[string]pufferpanel.Variable)
 	for k, v := range data {
-		if v.UserEditable {
+		if v.UserEditable || isPublicHostingInfoVariable(server.Type.Type, k) {
 			replacement[k] = v
 		}
 	}
 
 	c.JSON(http.StatusOK, &pufferpanel.ServerData{Variables: replacement, Groups: server.Groups})
+}
+
+func isPublicHostingInfoVariable(serverType, name string) bool {
+	switch serverType {
+	case "webhosting":
+		return name == "ip" || name == "port" || name == "php_version"
+	case "dbhosting":
+		switch name {
+		case "ip", "port", "engine", "version", "db_name", "db_user", "pma_host", "pma_port":
+			return true
+		}
+	}
+	return false
 }
 
 // @Summary Get server definition

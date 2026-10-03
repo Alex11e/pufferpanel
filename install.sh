@@ -66,6 +66,14 @@ if [ ! -f "$ROOT/data/config/config.json" ]; then
   cp "$ROOT/config.docker.json" "$ROOT/data/config/config.json"
 fi
 
+PANEL_VERSION=devel
+PANEL_SHA=devel
+if command -v git >/dev/null 2>&1 && git -C "$ROOT" rev-parse --verify HEAD >/dev/null 2>&1; then
+  PANEL_VERSION=$(git -C "$ROOT" describe --tags --always 2>/dev/null || printf devel)
+  PANEL_SHA=$(git -C "$ROOT" rev-parse HEAD)
+fi
+export PANEL_VERSION PANEL_SHA
+
 if ! docker compose -f "$COMPOSE" up -d --build --wait --wait-timeout 120; then
   echo "A panel nem indult el. Az alábbi napló segít megtalálni a hibát:" >&2
   docker compose -f "$COMPOSE" ps >&2 || true

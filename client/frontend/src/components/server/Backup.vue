@@ -19,6 +19,8 @@ const backups = ref(null)
 const backupName = ref("")
 const backupRunning = ref(false)
 const loading = ref(false)
+const backupError = ref('')
+const serverStatus = ref('unknown')
 const automaticEnabled = ref(false)
 const automaticRetention = ref(24)
 const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
@@ -26,8 +28,17 @@ const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.crea
 onMounted(async () => {
   automaticEnabled.value = props.server.autoBackupEnabled
   automaticRetention.value = props.server.autoBackupRetention || 24
-  await loadBackups()
+  await Promise.all([loadBackups(), loadServerStatus()])
 })
+
+async function loadServerStatus() {
+  if (!props.server.hasScope('server.status')) return
+  try {
+    serverStatus.value = await props.server.getStatus()
+  } catch {
+    serverStatus.value = 'unknown'
+  }
+}
 
 async function saveAutomaticBackup() {
   await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value))
@@ -35,7 +46,18 @@ async function saveAutomaticBackup() {
 }
 
 async function loadBackups() {
-  backups.value = await props.server.getBackups()
+  try {
+    backups.value = await props.server.getBackups()
+    backupError.value = ''
+  } catch (failure) {
+    backups.value = []
+    backupError.value = errorMessage(failure)
+  }
+}
+
+function errorMessage(failure) {
+  if (failure?.code === 'ErrBackupServerRunning' || failure?.msg === 'cannot backup server, is running') return t('backup.ServerMustBeStopped')
+  return failure?.msg || failure?.message || t('backup.CreateFailed')
 }
 
 function isBackingUp() {
@@ -51,11 +73,20 @@ function limitReached() {
 }
 
 async function save() {
+  if (!backupName.value.trim()) return
   try {
     backupRunning.value = true
-    await props.server.createBackup(backupName.value)
+    backupError.value = ''
+    await loadServerStatus()
+    if (serverStatus.value === 'online' || serverStatus.value === 'installing') {
+      backupError.value = t('backup.ServerMustBeStopped')
+      return
+    }
+    await props.server.createBackup(backupName.value.trim())
     toast.success(t('backup.BackupStarted'))
     await loadBackups()
+  } catch (failure) {
+    backupError.value = errorMessage(failure)
   }
   finally {
     backupRunning.value = false
@@ -151,7 +182,9 @@ const intl = new Intl.DateTimeFormat(
     <h2 v-text="t('backup.Backup')" />
     <div v-if="server.hasScope('server.backup.create')">
       <text-field v-model="backupName" :label="t('backup.Name')" />
-      <btn color="primary" :disabled="isBackingUp() || isLoading() || limitReached()" @click="save()">
+      <p v-if="serverStatus === 'online' || serverStatus === 'installing'" class="hint" v-text="t('backup.ServerMustBeStopped')" />
+      <p v-if="backupError" class="error" role="alert">{{ backupError }}</p>
+      <btn color="primary" :disabled="!backupName.trim() || isBackingUp() || isLoading() || limitReached() || serverStatus === 'online' || serverStatus === 'installing'" @click="save()">
         <icon v-if="!isBackingUp()" name="plus" />
         <icon v-else name="loading" spin /> {{ t('backup.Create') }}
       </btn>
@@ -171,6 +204,8 @@ const intl = new Intl.DateTimeFormat(
     </div>
     <div class="backup-list">
       <loader v-if="isLoading()" />
+      <p v-else-if="backupError && !backups.length" class="error" role="alert">{{ backupError }}</p>
+      <p v-else-if="!backups.length" class="empty" v-text="t('backup.NoBackups')" />
       <!-- eslint-disable-next-line vue/no-template-shadow -->
       <div v-for="backup in sortedBackups" v-else :key="backup.id" tabindex="0" class="backup">
         <icon class="file-icon" name="file" />

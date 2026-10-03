@@ -267,8 +267,8 @@ onMounted(load)
         <div class="update-head">
           <h2>Panel frissítések</h2>
           <select v-model="selectedUpdateVersion" :disabled="updateChecking" aria-label="Frissítési verzió" @change="selectUpdateVersion">
-            <option value="latest">Legújabb stabil</option>
-            <option v-for="release in updateReleases" :key="release.tag" :value="release.tag">{{ release.tag }}{{ release.prerelease ? ' · előzetes' : '' }}</option>
+            <option value="latest">Legfrissebb commit</option>
+            <option v-for="release in updateReleases" :key="release.tag" :value="release.tag">{{ release.name || release.tag }}{{ release.prerelease ? ' · előzetes' : '' }}</option>
           </select>
           <btn :disabled="updateChecking" @click="refreshUpdates"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
         </div>

@@ -685,16 +685,14 @@ func (p *Server) StartBackup() (string, error) {
 	backupFileName := backupId.String() + ".tar.gz"
 
 	go func(file string, d chan bool) {
-		defer func() {
-			d <- true
-		}()
-		sourceFiles := []string{filepath.Join(p.GetFileServer().Prefix())}
-
-		err = files.Compress(p.GetFileServer(), p.backupServer, file, sourceFiles)
-		if err != nil {
-			p.Log(logging.Error, "Error creating backup file: %s", err)
+		success := false
+		defer func() { d <- success }()
+		if compressErr := files.Compress(p.GetFileServer(), p.backupServer, file, []string{"."}); compressErr != nil {
+			p.Log(logging.Error, "Error creating backup file: %s", compressErr)
 			p.RunningEnvironment.DisplayToConsole(true, "Failed to create backup file")
+			return
 		}
+		success = true
 	}(backupFileName, c)
 
 	return backupFileName, nil

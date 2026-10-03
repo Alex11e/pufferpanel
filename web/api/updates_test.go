@@ -33,6 +33,7 @@ func TestNormalizeUpdateTag(t *testing.T) {
 		{input: "3.1", want: "v3.1", valid: true},
 		{input: "v4.0.0", want: "v4.0.0", valid: true},
 		{input: "3.1.0-rc.1", want: "v3.1.0-rc.1", valid: true},
+		{input: "commit:0123456789abcdef0123456789abcdef01234567", want: "commit:0123456789abcdef0123456789abcdef01234567", valid: true},
 		{input: "v3/1", valid: false},
 		{input: "https://example.com", valid: false},
 	}
@@ -42,5 +43,15 @@ func TestNormalizeUpdateTag(t *testing.T) {
 		if (err == nil) != test.valid || got != test.want {
 			t.Errorf("normalizeUpdateTag(%q) = %q, %v; want %q, valid=%t", test.input, got, err, test.want, test.valid)
 		}
+	}
+}
+
+func TestSameCommit(t *testing.T) {
+	full := "0123456789abcdef0123456789abcdef01234567"
+	if !sameCommit(full[:7], full) {
+		t.Fatal("expected abbreviated and full hashes of the same commit to match")
+	}
+	if sameCommit("unknown", full) {
+		t.Fatal("unknown build hash must not match a commit")
 	}
 }

@@ -6,6 +6,16 @@
   "Tags": "Tags",
   "TagsHint": "Separate tags with commas, for example: production, minecraft",
   "Notes": "Admin notes",
+  "ServerIcon": "Server icon",
+  "serverIcons": {
+    "server": "Generic server",
+    "web": "Web hosting",
+    "database": "Database",
+    "robot": "Bot",
+    "minecraft": "Minecraft",
+    "gamepad-variant": "Game",
+    "cloud": "Cloud"
+  },
   "MetadataSaved": "Server metadata saved",
   "TotalServers": "total servers",
   "Favorites": "favorites",

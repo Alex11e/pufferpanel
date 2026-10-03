@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import Overlay from '@/components/ui/Overlay.vue'
 import TextField from '@/components/ui/TextField.vue'
+import { serverIconName } from '@/utils/serverIcon'
 import Status from './Status.vue'
 import Controls from './Controls.vue'
 
@@ -15,6 +16,12 @@ const props = defineProps({
 const { t } = useI18n()
 const edit = ref(false)
 const name = ref(props.server.name)
+const iconName = ref(serverIconName(props.server))
+const stopListening = props.server.on('metadataUpdated', () => {
+  iconName.value = serverIconName(props.server)
+})
+
+onUnmounted(stopListening)
 
 async function updateName() {
   await props.server.updateName(name.value)
@@ -25,6 +32,7 @@ async function updateName() {
 <template>
   <h1 class="server-header">
     <Status :server="server" />
+    <icon class="server-configured-icon" :name="iconName" />
     <span class="name">
       {{ server.name }}
     </span>
@@ -37,3 +45,7 @@ async function updateName() {
     <btn color="primary" @click="updateName()"><icon name="save" />{{ t('common.Save') }}</btn>
   </overlay>
 </template>
+
+<style scoped>
+.server-configured-icon { flex: 0 0 auto; }
+</style>

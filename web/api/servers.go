@@ -1297,7 +1297,7 @@ func createBackup(c *gin.Context) {
 	db := middleware.GetDatabase(c)
 	ns := &services.Node{DB: db}
 	bs := &services.Backup{DB: db}
-	name := c.Query("name")
+	name := strings.TrimSpace(c.Query("name"))
 	node := &server.Node
 
 	if name == "" {
@@ -1323,13 +1323,19 @@ func createBackup(c *gin.Context) {
 
 	callResponse, err := ns.CallNode(node, c.Request.Method, resolvedPath, c.Request.Body, c.Request.Header)
 	defer utils.CloseResponse(callResponse)
+	if callResponse == nil || callResponse.StatusCode == 0 {
+		if err == nil {
+			err = errors.New("node returned no response while creating backup")
+		}
+		response.HandleError(c, err, http.StatusBadGateway)
+		return
+	}
 	if response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}
 
-	if callResponse.StatusCode == http.StatusBadRequest { //If its a local node, the err will not be set, have to check the status code
+	if callResponse.StatusCode < http.StatusOK || callResponse.StatusCode >= http.StatusMultipleChoices {
 		newHeaders := cleanHttpReturnErrors(callResponse.Header)
-
 		c.DataFromReader(callResponse.StatusCode, callResponse.ContentLength, callResponse.Header.Get("Content-Type"), callResponse.Body, newHeaders)
 		c.Abort()
 		return
@@ -1353,22 +1359,38 @@ func createBackup(c *gin.Context) {
 func updateServerMetadata(c *gin.Context) {
 	server := getServerFromGin(c)
 	var metadata struct {
-		Notes string `json:"notes"`
-		Tags  string `json:"tags"`
+		Notes string  `json:"notes"`
+		Tags  string  `json:"tags"`
+		Icon  *string `json:"icon"`
 	}
 	if err := c.ShouldBindJSON(&metadata); response.HandleError(c, err, http.StatusBadRequest) {
 		return
 	}
-	if len(metadata.Notes) > 2000 || len(metadata.Tags) > 255 {
+	if len(metadata.Notes) > 2000 || len(metadata.Tags) > 255 || metadata.Icon != nil && !validServerIcon(*metadata.Icon) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	server.Notes = metadata.Notes
 	server.Tags = metadata.Tags
+	if metadata.Icon != nil {
+		server.Icon = strings.TrimSpace(*metadata.Icon)
+	}
 	if err := (&services.Server{DB: middleware.GetDatabase(c)}).Update(server); response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}
 	c.Status(http.StatusNoContent)
+}
+
+func validServerIcon(icon string) bool {
+	if len(icon) > 64 {
+		return false
+	}
+	for _, character := range icon {
+		if !(character >= 'a' && character <= 'z') && !(character >= 'A' && character <= 'Z') && !(character >= '0' && character <= '9') && character != '-' {
+			return false
+		}
+	}
+	return true
 }
 
 func updateAutomaticBackup(c *gin.Context) {

@@ -6,6 +6,16 @@
   "Tags": "Címkék",
   "TagsHint": "Vesszővel válaszd el a címkéket, például: éles, minecraft",
   "Notes": "Admin jegyzetek",
+  "ServerIcon": "Szerver ikon",
+  "serverIcons": {
+    "server": "Általános szerver",
+    "web": "Webtárhely",
+    "database": "Adatbázis",
+    "robot": "Bot",
+    "minecraft": "Minecraft",
+    "gamepad-variant": "Játék",
+    "cloud": "Felhő"
+  },
   "MetadataSaved": "Szerver metaadatai elmentve",
   "TotalServers": "összes szerver",
   "Favorites": "kedvenc",

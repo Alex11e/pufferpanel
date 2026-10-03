@@ -2,6 +2,7 @@
 import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import Btn from '@/components/ui/Btn.vue'
+import { serverIconName } from '@/utils/serverIcon'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
 
@@ -128,7 +129,7 @@ onUnmounted(() => clearInterval(interval))
     <div v-else-if="!visibleVps.length && !loadError" class="empty">Nincs a keresésnek megfelelő találat.</div>
     <div v-for="vps in visibleVps" v-else :key="vps.id" class="vps-card">
       <div class="vps-info">
-        <router-link :to="{ name: 'ServerView', params: { id: vps.id } }"><strong>{{ vps.name }}</strong></router-link>
+        <router-link class="vps-name" :to="{ name: 'ServerView', params: { id: vps.id } }"><icon :name="serverIconName(vps)" /><strong>{{ vps.name }}</strong></router-link>
         <small>{{ vps.node?.name }} · <span :class="['status', vps.status]">{{ statusLabels[vps.status] || 'Ismeretlen' }}</span></small>
       </div>
       <div class="vps-actions">
@@ -153,6 +154,7 @@ onUnmounted(() => clearInterval(interval))
 .error { color: var(--color-error); }
 .vps-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 16px; margin-bottom: 12px; border-radius: 8px; background: var(--color-background-secondary); border: 1px solid var(--color-background); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
 .vps-info { display: flex; flex-direction: column; gap: 4px; }
+.vps-name { display: inline-flex; align-items: center; gap: .55rem; }
 .vps-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .status.online { color: var(--color-success); }
 .status.offline { color: var(--color-text-secondary); }

@@ -28,6 +28,9 @@ import (
 
 var updateRepoPattern = regexp.MustCompile(`^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$`)
 var updateTagPattern = regexp.MustCompile(`^v?\d+\.\d+(\.\d+)?(-[0-9A-Za-z.-]+)?$`)
+var updateCommitPattern = regexp.MustCompile(`^commit:([0-9a-fA-F]{7,40})$`)
+var updateFullCommitPattern = regexp.MustCompile(`^[0-9a-fA-F]{40}$`)
+var updateHexPattern = regexp.MustCompile(`^[0-9a-f]+$`)
 
 type updateAsset struct {
 	Name string `json:"name"`
@@ -49,6 +52,17 @@ type githubRelease struct {
 	} `json:"assets"`
 }
 
+type githubCommit struct {
+	SHA    string `json:"sha"`
+	URL    string `json:"html_url"`
+	Commit struct {
+		Message   string `json:"message"`
+		Committer struct {
+			Date string `json:"date"`
+		} `json:"committer"`
+	} `json:"commit"`
+}
+
 type updateRelease struct {
 	Tag         string        `json:"tag"`
 	Name        string        `json:"name"`
@@ -60,6 +74,7 @@ type updateRelease struct {
 
 type updateInfo struct {
 	Current         string        `json:"current"`
+	CurrentHash     string        `json:"currentHash"`
 	Latest          string        `json:"latest"`
 	URL             string        `json:"url"`
 	Notes           string        `json:"notes"`
@@ -73,13 +88,15 @@ type updateInfo struct {
 
 var updateState struct {
 	sync.Mutex
-	cached     *updateInfo
-	cachedTag  string
-	fetchedAt  time.Time
-	releases   []updateRelease
-	releasesAt time.Time
-	running    bool
-	lastResult string
+	cached       *updateInfo
+	cachedTag    string
+	cachedRepo   string
+	fetchedAt    time.Time
+	releases     []updateRelease
+	releasesRepo string
+	releasesAt   time.Time
+	running      bool
+	lastResult   string
 }
 
 func registerUpdates(g *gin.RouterGroup) {
@@ -128,6 +145,9 @@ func normalizeUpdateTag(tag string) (string, error) {
 	if tag == "" || strings.EqualFold(tag, "latest") {
 		return "", nil
 	}
+	if updateCommitPattern.MatchString(tag) {
+		return "commit:" + strings.ToLower(strings.TrimPrefix(strings.ToLower(tag), "commit:")), nil
+	}
 	if !updateTagPattern.MatchString(tag) {
 		return "", fmt.Errorf("invalid release version")
 	}
@@ -139,8 +159,9 @@ func normalizeUpdateTag(tag string) (string, error) {
 
 func getUpdateReleases(c *gin.Context) {
 	force := c.Query("refresh") == "true"
+	repo := config.UpdateRepo.Value()
 	updateState.Lock()
-	if !force && updateState.releases != nil && time.Since(updateState.releasesAt) < time.Hour {
+	if !force && updateState.releases != nil && updateState.releasesRepo == repo && time.Since(updateState.releasesAt) < time.Hour {
 		versions := append([]updateRelease(nil), updateState.releases...)
 		updateState.Unlock()
 		c.JSON(http.StatusOK, versions)
@@ -148,7 +169,6 @@ func getUpdateReleases(c *gin.Context) {
 	}
 	updateState.Unlock()
 
-	repo := config.UpdateRepo.Value()
 	if !updateRepoPattern.MatchString(repo) {
 		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "invalid update repository"}})
 		return
@@ -183,8 +203,20 @@ func getUpdateReleases(c *gin.Context) {
 		}
 		versions = append(versions, toUpdateRelease(release))
 	}
+	commits, err := fetchGitHubCommits(c.Request.Context(), repo, "", 1)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": gin.H{"msg": "could not check repository commits"}})
+		return
+	}
+	for _, commit := range commits {
+		if !updateFullCommitPattern.MatchString(commit.SHA) {
+			continue
+		}
+		versions = append(versions, toCommitUpdateRelease(commit))
+	}
 	updateState.Lock()
 	updateState.releases = versions
+	updateState.releasesRepo = repo
 	updateState.releasesAt = time.Now()
 	updateState.Unlock()
 	c.JSON(http.StatusOK, versions)
@@ -193,14 +225,49 @@ func getUpdateReleases(c *gin.Context) {
 func fetchUpdateInfo(ctx context.Context, force bool, requestedTag string) (*updateInfo, error) {
 	updateState.Lock()
 	defer updateState.Unlock()
+	repo := config.UpdateRepo.Value()
 	cacheTag := requestedTag
 	if cacheTag == "" {
 		cacheTag = "latest"
 	}
-	if updateState.cached == nil || updateState.cachedTag != cacheTag || force || time.Since(updateState.fetchedAt) > time.Hour {
-		repo := config.UpdateRepo.Value()
+	if updateState.cached == nil || updateState.cachedTag != cacheTag || updateState.cachedRepo != repo || force || time.Since(updateState.fetchedAt) > time.Hour {
 		if !updateRepoPattern.MatchString(repo) {
 			return nil, fmt.Errorf("invalid update repository")
+		}
+		if requestedTag == "" || updateCommitPattern.MatchString(requestedTag) {
+			sha := strings.TrimPrefix(requestedTag, "commit:")
+			commits, err := fetchGitHubCommits(ctx, repo, sha, 1)
+			if err != nil || len(commits) == 0 {
+				if err == nil {
+					err = fmt.Errorf("repository has no commits")
+				}
+				return nil, err
+			}
+			commit := commits[0]
+			if !updateFullCommitPattern.MatchString(commit.SHA) {
+				return nil, fmt.Errorf("GitHub returned an invalid commit hash")
+			}
+			currentHash := strings.ToLower(strings.TrimSpace(pufferpanel.Hash))
+			updateState.cached = &updateInfo{
+				Latest:      "commit:" + strings.ToLower(commit.SHA),
+				URL:         commit.URL,
+				Notes:       commit.Commit.Message,
+				PublishedAt: commit.Commit.Committer.Date,
+			}
+			if len(updateState.cached.Notes) > 4000 {
+				updateState.cached.Notes = updateState.cached.Notes[:4000]
+			}
+			updateState.cachedTag = cacheTag
+			updateState.cachedRepo = repo
+			updateState.fetchedAt = time.Now()
+			info := *updateState.cached
+			info.Current = pufferpanel.Version
+			info.CurrentHash = currentHash
+			info.UpdateAvailable = !sameCommit(currentHash, commit.SHA)
+			info.CanApply = config.UpdateCommand.Value() != ""
+			info.Running = updateState.running
+			info.LastResult = updateState.lastResult
+			return &info, nil
 		}
 		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
@@ -237,10 +304,12 @@ func fetchUpdateInfo(ctx context.Context, force bool, requestedTag string) (*upd
 		option := toUpdateRelease(release)
 		updateState.cached = &updateInfo{Latest: release.Tag, URL: option.URL, Notes: notes, PublishedAt: release.PublishedAt, Assets: option.Assets}
 		updateState.cachedTag = cacheTag
+		updateState.cachedRepo = repo
 		updateState.fetchedAt = time.Now()
 	}
 	info := *updateState.cached
 	info.Current = pufferpanel.Version
+	info.CurrentHash = pufferpanel.Hash
 	info.UpdateAvailable = isNewerVersion(info.Latest, info.Current)
 	info.CanApply = config.UpdateCommand.Value() != ""
 	info.Running = updateState.running
@@ -260,6 +329,84 @@ func toUpdateRelease(release githubRelease) updateRelease {
 		option.Assets = append(option.Assets, updateAsset{Name: asset.Name, URL: asset.URL, Size: asset.Size})
 	}
 	return option
+}
+
+func fetchGitHubCommits(ctx context.Context, repo, sha string, limit int) ([]githubCommit, error) {
+	if !updateRepoPattern.MatchString(repo) {
+		return nil, fmt.Errorf("invalid update repository")
+	}
+	if limit < 1 || limit > 100 {
+		limit = 1
+	}
+	endpoint := "https://api.github.com/repos/" + repo + "/commits"
+	if sha != "" {
+		endpoint += "/" + url.PathEscape(sha)
+	} else {
+		endpoint += "?per_page=" + strconv.Itoa(limit)
+	}
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Accept", "application/vnd.github+json")
+	request.Header.Set("User-Agent", "PufferPanel/"+pufferpanel.Version)
+	result, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = result.Body.Close() }()
+	if result.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("commit lookup returned HTTP %d", result.StatusCode)
+	}
+	if sha != "" {
+		var commit githubCommit
+		if err = json.NewDecoder(io.LimitReader(result.Body, 1<<20)).Decode(&commit); err != nil {
+			return nil, err
+		}
+		return []githubCommit{commit}, nil
+	}
+	var commits []githubCommit
+	if err = json.NewDecoder(io.LimitReader(result.Body, 4<<20)).Decode(&commits); err != nil {
+		return nil, err
+	}
+	return commits, nil
+}
+
+func toCommitUpdateRelease(commit githubCommit) updateRelease {
+	sha := strings.ToLower(commit.SHA)
+	shortSHA := sha
+	if len(shortSHA) > 7 {
+		shortSHA = shortSHA[:7]
+	}
+	message := strings.TrimSpace(strings.SplitN(commit.Commit.Message, "\n", 2)[0])
+	name := "Commit " + shortSHA
+	if message != "" {
+		name += " · " + message
+	}
+	link := commit.URL
+	if !strings.HasPrefix(link, "https://github.com/") {
+		link = ""
+	}
+	return updateRelease{
+		Tag:         "commit:" + sha,
+		Name:        name,
+		URL:         link,
+		PublishedAt: commit.Commit.Committer.Date,
+	}
+}
+
+func sameCommit(current, target string) bool {
+	current = strings.TrimPrefix(strings.ToLower(strings.TrimSpace(current)), "commit:")
+	target = strings.TrimPrefix(strings.ToLower(strings.TrimSpace(target)), "commit:")
+	if len(current) < 7 || len(target) < 7 || !updateHexPattern.MatchString(current) || !updateHexPattern.MatchString(target) {
+		return false
+	}
+	if len(current) > len(target) {
+		current, target = target, current
+	}
+	return strings.HasPrefix(target, current)
 }
 
 // applyUpdate runs the operator-configured command; nothing from the request is executed.
@@ -311,7 +458,7 @@ func applyUpdate(c *gin.Context) {
 		} else {
 			cmd = exec.CommandContext(ctx, "sh", "-c", command)
 		}
-		cmd.Env = append(os.Environ(), "PANEL_UPDATE_VERSION="+info.Latest)
+		cmd.Env = append(os.Environ(), "PANEL_UPDATE_VERSION="+info.Latest, "PANEL_UPDATE_REPO="+config.UpdateRepo.Value())
 		out, err := cmd.CombinedOutput()
 		result := "ok"
 		if err != nil {

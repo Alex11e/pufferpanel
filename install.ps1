@@ -77,6 +77,18 @@ if (-not (Test-Path $Config)) {
     Copy-Item (Join-Path $Root 'config.docker.json') $Config
 }
 
+$env:PANEL_VERSION = 'devel'
+$env:PANEL_SHA = 'devel'
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    $GitVersion = & git -C $Root describe --tags --always 2>$null
+    $GitVersionExit = $LASTEXITCODE
+    $GitHash = & git -C $Root rev-parse HEAD 2>$null
+    if ($GitVersionExit -eq 0 -and $LASTEXITCODE -eq 0) {
+        $env:PANEL_VERSION = [string]$GitVersion
+        $env:PANEL_SHA = [string]$GitHash
+    }
+}
+
 & docker compose -f $Compose up -d --build --wait --wait-timeout 120
 if ($LASTEXITCODE -ne 0) {
     & docker compose -f $Compose ps

@@ -10,6 +10,7 @@ import Overlay from '@/components/ui/Overlay.vue'
 import Tab from '@/components/ui/Tab.vue'
 import Tabs from '@/components/ui/Tabs.vue'
 import TextField from '@/components/ui/TextField.vue'
+import { serverIconName, serverIconOptions } from '@/utils/serverIcon'
 
 import Variables from '@/components/template/Variables.vue'
 import Install from '@/components/template/Install.vue'
@@ -33,6 +34,7 @@ const serverJson = ref(null)
 const deleting = ref(false)
 const notes = ref('')
 const tags = ref('')
+const serverIcon = ref(serverIconName(props.server))
 
 function editDefinition() {
   edit.value = JSON.stringify(def.value, undefined, 4)
@@ -85,7 +87,7 @@ onMounted(async () => {
 })
 
 async function saveMetadata() {
-  await props.server.updateMetadata({ notes: notes.value, tags: tags.value })
+  await props.server.updateMetadata({ notes: notes.value, tags: tags.value, icon: serverIcon.value })
   toast.success(t('servers.MetadataSaved'))
 }
 </script>
@@ -95,6 +97,10 @@ async function saveMetadata() {
     <h2 v-text="t('servers.Admin')" />
     <btn v-if="server.hasScope('server.definition.view')" v-hotkey="'a e'" variant="text" @click="editDefinition()"><icon name="edit" />{{ t('servers.EditDefinition') }}</btn>
     <div v-if="server.hasScope('server.name.edit')" class="server-metadata">
+      <label class="icon-setting">
+        <span v-text="t('servers.ServerIcon')" />
+        <span class="icon-picker"><icon :name="serverIcon" /><select v-model="serverIcon"><option v-for="option in serverIconOptions" :key="option" :value="option">{{ t(`servers.serverIcons.${option}`) }}</option></select></span>
+      </label>
       <text-field v-model="tags" :label="t('servers.Tags')" :hint="t('servers.TagsHint')" />
       <text-field v-model="notes" :label="t('servers.Notes')" />
       <btn color="primary" @click="saveMetadata()"><icon name="save" />{{ t('common.Save') }}</btn>
@@ -134,3 +140,10 @@ async function saveMetadata() {
     </overlay>
   </div>
 </template>
+
+<style scoped>
+.icon-setting { display: grid; gap: .35rem; max-width: 24rem; color: var(--color-text-secondary); }
+.icon-picker { display: flex; align-items: center; gap: .6rem; }
+.icon-picker > .icon { flex: 0 0 auto; font-size: 1.3rem; }
+.icon-picker select { width: 100%; min-width: 0; padding: .55rem; border: 1px solid var(--color-background); border-radius: .3rem; background: var(--color-background-secondary); color: var(--color-text); }
+</style>
