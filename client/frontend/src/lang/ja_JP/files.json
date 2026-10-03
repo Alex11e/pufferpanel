@@ -4,8 +4,8 @@
   "CreateFolder": "フォルダを作成",
   "ArchiveCurrent": "現在のフォルダをアーカイブする",
   "UploadFile": "ファイルをアップロード",
-  "UploadFolder": "フォルダーをアップロード",
-  "Archive": "アーカイブ",
+  "UploadFolder": "フォルダをアップロード",
+  "Archive": "アーカイブする",
   "Extract": "展開",
   "Download": "ダウンロード",
   "Delete": "削除",
@@ -18,7 +18,7 @@
   "CurrentlyUploading": "ファイル {current}/{total} をアップロードしています",
   "Current": "現在",
   "Total": "合計",
-  "OpenLargeFile": "このファイルは、ブラウザのサイズのためにパフォーマンスの問題を引き起こす可能性があります。開きますか?",
+  "OpenLargeFile": "このファイルは、サイズのためにブラウザのパフォーマンスの問題を引き起こす可能性があります。開きますか？",
   "OpenAnyways": "とにかく開く",
   "Saved": "ファイルを保存しました",
   "Select": "ファイルを選択",
@@ -27,6 +27,6 @@
   "ArchiveSelected": "選択したファイルをアーカイブ",
   "ArchiveSelectedName": "アーカイブ名",
   "DeselectAll": "選択を全て解除",
-  "DeleteSelected": "1 つのファイルを削除| {n} ファイルを削除",
-  "ConfirmDeleteSelected": "本当にこのファイルを削除しますか? | これらの {n} ファイルを削除してもよろしいですか？"
+  "DeleteSelected": "1 つのファイルを削除 | {n} 個のファイルを削除",
+  "ConfirmDeleteSelected": "本当にこのファイルを削除しますか？ | これらの {n} 個のファイルを削除してもよろしいですか？"
 }
