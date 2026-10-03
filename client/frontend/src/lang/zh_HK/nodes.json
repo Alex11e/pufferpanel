@@ -3,48 +3,48 @@
   "Nodes": "節點",
   "Edit": "編輯節點",
   "Add": "新增節點",
-  "Create": "Create Node",
+  "Create": "建立節點",
   "Update": "更新節點",
   "Delete": "刪除節點",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "您真的要刪除節點 {name} 嗎？",
+  "Created": "節點已建立",
+  "Updated": "節點已更新",
+  "Deleted": "節點已刪除",
+  "Reachable": "此節點已正確設定並正在運行",
+  "Unreachable": "此節點設定不正確或目前無法使用",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "作業系統",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU 架構",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker 可用",
+      "false": "Docker 不可用"
     },
-    "envs": "Available Environments"
+    "envs": "可用環境"
   },
   "PublicHost": "公用主機",
   "PublicPort": "公用連接埠",
   "PrivateHost": "私用主機",
   "PrivatePort": "私用連接埠",
-  "SftpPort": "SFTP連接埠",
-  "WithPrivateAddress": "Use a different host/port for server to server communication",
-  "WithPrivateAddressHint": "This separate address is used when the main node needs to talk to the new node. Useful for example when the nodes are in the same network behind NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "SftpPort": "SFTP 連接埠",
+  "WithPrivateAddress": "使用不同的主機/連接埠進行伺服器對伺服器通訊",
+  "WithPrivateAddressHint": "當主節點需要與新節點通訊時，會使用此獨立位址。例如當節點位於同一網路且位於 NAT 後方時非常有用。",
+  "LocalNodeEdit": "本機節點沒有任何可編輯的設定\n\n若要變更此節點上所託管伺服器顯示的主機，請在面板設定中調整面板的主 URL",
+  "Deploy": "部署節點",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## 步驟 1\n\n在新伺服器上安裝 PufferPanel，[查看文件了解詳情](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## 步驟 2\n\n如果 PufferPanel 服務是在安裝期間啟動的，請透過執行 `sudo systemctl stop pufferpanel` 停止新伺服器上的 PufferPanel 服務",
+    "Step3": "## 步驟 3\n\n將新伺服器上 PufferPanel 設定檔的內容替換為以下程式碼\n\n設定檔通常位於 `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## 步驟 4\n\n透過執行 `sudo systemctl enable --now pufferpanel` 啟用並（重新）啟動新伺服器上的 PufferPanel 服務",
+    "Step5": "### 您的新節點現已設定完成並可使用"
   },
-  "DeploymentInstruction": "要部署該節點，請在新伺服器上安裝PufferPanel，然後將配置文件放在`/ etc / pufferpanel /`目錄中<br/>然後在新伺服器上重新啟動PufferPanel。"
+  "DeploymentInstruction": "要部署該節點，請在新伺服器上安裝 PufferPanel，然後將設定檔放在 `/etc/pufferpanel/` 目錄中<br/>然後在新伺服器上重新啟動 PufferPanel。"
 }

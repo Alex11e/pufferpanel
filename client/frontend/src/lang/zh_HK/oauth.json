@@ -1,13 +1,13 @@
 {
-  "Credentials": "OAuth2 Client Credentials",
-  "ClientId": "Client ID",
-  "ClientSecret": "Client Secret",
-  "NewClientWarning": "Note down the client secret, after closing this dialog it will never be shown again. Losing or forgetting it will render this client completely unusable.",
-  "Create": "Create new OAuth2 Client",
-  "UnnamedClient": "Unnamed OAuth2 Client",
-  "Docs": "Find API documentation here",
-  "Clients": "OAuth2 Clients",
-  "Delete": "Delete {clientName}?",
-  "ConfirmDelete": "I am aware of the effects that deleting this OAuth2 client will have and wish to proceed.",
-  "AccountDescription": "The OAuth2 Clients listed here inherit all of your accounts permissions"
+  "Credentials": "OAuth2 用戶端憑證",
+  "ClientId": "用戶端 ID",
+  "ClientSecret": "用戶端密鑰",
+  "NewClientWarning": "請記下用戶端密鑰，關閉此對話方塊後將永遠不會再次顯示。遺失或忘記它將導致此用戶端完全無法使用。",
+  "Create": "建立新的 OAuth2 用戶端",
+  "UnnamedClient": "未命名的 OAuth2 用戶端",
+  "Docs": "在此處尋找 API 文件",
+  "Clients": "OAuth2 用戶端",
+  "Delete": "刪除 {clientName}？",
+  "ConfirmDelete": "我了解刪除此 OAuth2 用戶端將會產生的影響，並希望繼續進行。",
+  "AccountDescription": "此處列出的 OAuth2 用戶端將繼承您帳戶的所有權限"
 }
