@@ -1,50 +1,50 @@
 {
   "Node": "Node",
-  "Nodes": "Nodes",
-  "Edit": "-> Edit",
+  "Nodes": "Node",
+  "Edit": "Edit Node",
   "Add": "Tambah Node",
-  "Create": "Create Node",
+  "Create": "Buat Node",
   "Update": "Perbarui node",
   "Delete": "Hapus node",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Apakah Anda benar-benar ingin menghapus node {name}?",
+  "Created": "Node Dibuat",
+  "Updated": "Node Diperbarui",
+  "Deleted": "Node Dihapus",
+  "Reachable": "Node ini telah dikonfigurasi dengan benar dan berjalan",
+  "Unreachable": "Node ini entah tidak dikonfigurasi dengan benar atau saat ini tidak tersedia",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "Sistem Operasi",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "Arsitektur CPU",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker tersedia",
+      "false": "Docker tidak tersedia"
     },
-    "envs": "Available Environments"
+    "envs": "Lingkungan yang Tersedia"
   },
   "PublicHost": "Host publik",
   "PublicPort": "Port Publik",
   "PrivateHost": "Host pribadi",
   "PrivatePort": "Port pribadi",
   "SftpPort": "Port SFTP",
-  "WithPrivateAddress": "Use a different host/port for server to server communication",
-  "WithPrivateAddressHint": "This separate address is used when the main node needs to talk to the new node. Useful for example when the nodes are in the same network behind NAT.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "WithPrivateAddress": "Gunakan host/port berbeda untuk komunikasi server ke server",
+  "WithPrivateAddressHint": "Alamat terpisah ini digunakan ketika node utama perlu berkomunikasi dengan node baru. Berguna misalnya ketika node berada di jaringan yang sama di belakang NAT.",
+  "LocalNodeEdit": "Node lokal tidak memiliki pengaturan yang dapat diedit\n\nUntuk mengubah host yang ditampilkan dengan server yang dihosting pada node ini, sesuaikan URL master panel di pengaturan panel",
+  "Deploy": "Terapkan Node",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Langkah 1\n\nPasang PufferPanel pada server baru, [lihat dokumentasi untuk detailnya](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Langkah 2\n\nHentikan layanan PufferPanel pada server baru jika dimulai selama pemasangan dengan menjalankan `sudo systemctl stop pufferpanel`",
+    "Step3": "## Langkah 3\n\nGanti isi file konfigurasi PufferPanel pada server baru dengan kode di bawah ini\n\nFile konfigurasi biasanya ditemukan di `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
+    "Step4": "## Langkah 4\n\nAktifkan dan (mulai ulang) layanan PufferPanel pada server baru dengan menjalankan `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Node baru Anda sekarang telah dikonfigurasi dan siap digunakan"
   },
-  "DeploymentInstruction": "Untuk menjalankan node, install PufferPanel di server baru dan taruh file configurasi di `/etc/pufferpanel/`<br/> Lalu restart server baru di PufferPanel"
+  "DeploymentInstruction": "Untuk menerapkan node, pasang PufferPanel pada server baru dan letakkan file konfigurasi di `/etc/pufferpanel/`<br/>Setelah itu, mulai ulang PufferPanel pada server baru."
 }
