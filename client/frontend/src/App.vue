@@ -270,6 +270,8 @@ function handleConfirm(title, ok, cancel) {
 </template>
 
 <style lang="scss">
+@use './themes/default/modern';
+
 .panel-announcement { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:0 0 16px; padding:13px 16px; border-left:4px solid var(--color-primary); border-radius:7px; background:var(--color-background-secondary); }
 .panel-announcement strong, .panel-announcement span { display:block; }
 .panel-announcement span { margin-top:3px; white-space:pre-wrap; color:var(--color-text-secondary); }

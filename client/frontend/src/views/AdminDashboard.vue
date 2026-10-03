@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
@@ -26,6 +26,10 @@ const expiryDate = ref('')
 const backupLimit = ref(0)
 const update = ref(null)
 const system = ref(null)
+const updateApplying = ref(false)
+const updateActionError = ref('')
+let updatePoll = null
+let updatePageActive = true
 
 async function loadSystem() {
   system.value = (await api.get('/api/admin/system')).data
@@ -47,17 +51,47 @@ async function checkUpdate(refresh = false) {
     const res = await api.get('/api/admin/update', refresh ? { refresh: true } : {}, {}, { unhandledErrors: [502] })
     if (res) update.value = res.data
     else updateFailed.value = true
+    return Boolean(res)
+  } catch {
+    updateFailed.value = true
+    return false
   } finally { updateChecking.value = false }
+}
+
+async function pollUpdate() {
+  const checked = await checkUpdate()
+  if (updatePageActive && checked && update.value?.running) {
+    updatePoll = setTimeout(pollUpdate, 2000)
+  }
+}
+
+function updateErrorMessage(error) {
+  const detail = error?.msg || error?.message || error?.response?.error?.msg || error?.response?.error
+  return typeof detail === 'string' ? detail : 'A frissítés nem indítható el.'
 }
 
 function applyUpdate() {
   events.emit('confirm', `Frissítés indítása: ${update.value.current} → ${update.value.latest}. A panel a művelet során újraindulhat. Folytatod?`, {
     text: 'Frissítés', icon: 'apply', color: 'primary', action: async () => {
-      await api.post('/api/admin/update/apply')
-      await checkUpdate()
+      updateActionError.value = ''
+      updateApplying.value = true
+      try {
+        await api.post('/api/admin/update/apply')
+        await checkUpdate()
+        if (update.value?.running) updatePoll = setTimeout(pollUpdate, 2000)
+      } catch (applyError) {
+        updateActionError.value = updateErrorMessage(applyError)
+      } finally {
+        updateApplying.value = false
+      }
     }
   })
 }
+
+onUnmounted(() => {
+  updatePageActive = false
+  clearTimeout(updatePoll)
+})
 
 async function loadLimits() {
   backupLimit.value = 0
@@ -202,6 +236,7 @@ onMounted(load)
           <h2>Panel frissítések</h2>
           <btn :disabled="updateChecking" @click="checkUpdate(true)"><icon :name="updateChecking ? 'loading' : 'reload'" :spin="updateChecking" /> Keresés</btn>
         </div>
+        <p v-if="updateActionError" class="error" role="alert">{{ updateActionError }}</p>
         <div v-if="updateFailed" class="empty">A frissítések ellenőrzése nem sikerült (nincs internet vagy a GitHub nem elérhető).</div>
         <div v-else-if="!update" class="empty">Ellenőrzés...</div>
         <template v-else>
@@ -212,7 +247,7 @@ onMounted(load)
           <pre v-if="update.updateAvailable && update.notes" class="update-notes">{{ update.notes }}</pre>
           <div v-if="update.updateAvailable" class="quick-links">
             <a v-if="update.url" :href="update.url" target="_blank" rel="noopener noreferrer"><btn>Változások</btn></a>
-            <btn v-if="update.canApply" color="primary" :disabled="update.running" @click="applyUpdate"><icon :name="update.running ? 'loading' : 'download'" :spin="update.running" /> {{ update.running ? 'Frissítés folyamatban' : 'Frissítés indítása' }}</btn>
+            <btn v-if="update.canApply" color="primary" :disabled="update.running || updateApplying" @click="applyUpdate"><icon :name="update.running || updateApplying ? 'loading' : 'download'" :spin="update.running || updateApplying" /> {{ update.running || updateApplying ? 'Frissítés folyamatban' : 'Frissítés indítása' }}</btn>
             <small v-else>Az egykattintásos frissítéshez állítsd be a <code>panel.update.command</code> értéket a config fájlban.</small>
           </div>
           <small v-if="update.lastResult">Utolsó frissítés: {{ update.lastResult }}</small>
