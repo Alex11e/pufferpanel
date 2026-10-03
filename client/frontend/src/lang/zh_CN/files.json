@@ -14,8 +14,8 @@
   "UploadFailed": "加载文件时出错",
   "UploadProgress": "上传进度",
   "PreparingUpload": "正在准备上传",
-  "CreatingFolders": "正在批量新建文件夹",
-  "CurrentlyUploading": "正在上传第{current}个文件，共{total}个",
+  "CreatingFolders": "正在新建文件夹",
+  "CurrentlyUploading": "正在上传第 {current} 个文件，共 {total} 个",
   "Current": "当前",
   "Total": "共计",
   "OpenLargeFile": "此文件可能会因为其大小而给您的浏览器造成性能问题，您仍然想要打开它吗？",
@@ -28,5 +28,5 @@
   "ArchiveSelectedName": "压缩包名称",
   "DeselectAll": "取消全选",
   "DeleteSelected": "删除 1 个文件 | 删除 {n} 个文件",
-  "ConfirmDeleteSelected": "真的要删除该文件吗？ | 真的要删除这 {n} 个文件吗？"
+  "ConfirmDeleteSelected": "您真的要删除该文件吗？ | 您真的要删除这 {n} 个文件吗？"
 }

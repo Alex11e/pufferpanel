@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "仅当满足此条件时才执行此步骤",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "下载 Minecraft",
+    "formatted": "下载 Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "写入文件",
+    "formatted": "写入文件 {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "解析 Minecraft Forge 版本",
+    "formatted": "解析 Minecraft Forge 版本"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "下载文件",
+    "formatted": "下载 {file} | 下载 {n} 个文件",
+    "files": "文件"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "运行命令",
+    "formatted": "运行 {command} | 运行 {n} 个命令",
+    "commands": "命令"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "修改文件",
+    "formatted": "修改文件 {target}",
+    "regex": "将搜索字符串视为正则表达式",
+    "search": "搜索",
+    "replace": "将匹配项替换为"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "移动或重命名文件",
+    "formatted": "将文件 {source} 移动到 {target}",
+    "source": "源路径",
+    "target": "目标路径"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "创建目录",
+    "formatted": "创建目录 {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "压缩文件",
+    "formatted": "将 {file} 压缩到 {destination} | 将 {n} 个文件压缩到 {destination}",
+    "source": "要压缩的文件"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "解压文件",
+    "formatted": "将 {source} 解压到 {destination}",
+    "destination": "目标位置"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "控制台消息",
+    "formatted": "将 \"{message}\" 输出到控制台",
+    "message": "消息"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "等待",
+    "formatted": "等待 {duration}",
+    "duration": "持续时间",
+    "durationHint": "有效的时间单位有 ns、us、ms、s、m 和 h。可以组合多个单位。例如 `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "从 Steam 安装",
+    "formatted": "安装 Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "分支（留空则为默认值）",
+    "branchPassword": "分支密码（如需要）"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "安装 Java",
+    "formatted": "安装 Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "下载 Minecraft Forge",
+    "formatted": "下载 Minecraft Forge",
+    "outputVariable": "输出变量"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "下载 Minecraft Neoforge",
+    "formatted": "下载 Minecraft Neoforge",
+    "outputVariable": "输出变量"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "下载 Minecraft SpongeForge",
+    "formatted": "下载 Minecraft SpongeForge",
+    "releaseType": "发布类型"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "下载 Minecraft Fabric",
+    "formatted": "下载 Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "下载 PaperMC 项目",
+    "formatted": "将 {project} 下载到 {target}",
+    "project": "PaperMC 项目",
+    "build": "构建版本号"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "从 CurseForge 下载",
+    "formatted": "从 CurseForge 下载",
+    "projectId": "项目 ID",
+    "fileId": "文件 ID",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "安装 Node.js",
+    "formatted": "安装 Node.js {version}"
   }
 }
