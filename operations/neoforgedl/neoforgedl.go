@@ -15,6 +15,8 @@ import (
 const InstallerUrl = "https://maven.neoforged.net/releases/net/neoforged/neoforge/${version}/neoforge-${version}-installer.jar"
 const MetadataUrl = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml"
 
+var metadataURL = MetadataUrl
+
 type NeoforgeDL struct {
 	Version          string
 	Filename         string
@@ -52,7 +54,11 @@ func (op NeoforgeDL) Run(args pufferpanel.RunOperatorArgs) pufferpanel.Operation
 }
 
 func getLatestForMCVersion(minecraftVersion string) (string, error) {
-	response, err := pufferpanel.HttpGet(MetadataUrl)
+	return getLatestForMCVersionFromURL(minecraftVersion, metadataURL)
+}
+
+func getLatestForMCVersionFromURL(minecraftVersion string, requestURL string) (string, error) {
+	response, err := pufferpanel.HttpGet(requestURL)
 	defer utils.CloseResponse(response)
 	if err != nil {
 		return "", err
@@ -63,19 +69,11 @@ func getLatestForMCVersion(minecraftVersion string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	versionPrefixes := []string{minecraftVersion, strings.TrimPrefix(minecraftVersion, "1.")}
 
 	var topVersion *version.Version
 
 	for _, v := range metadata.Versions {
-		matched := false
-		for _, prefix := range versionPrefixes {
-			if strings.HasPrefix(v, prefix) {
-				matched = true
-				break
-			}
-		}
-		if !matched {
+		if !matchesMinecraftVersion(v, minecraftVersion) {
 			continue
 		}
 
@@ -96,6 +94,24 @@ func getLatestForMCVersion(minecraftVersion string) (string, error) {
 	}
 
 	return topVersion.Original(), nil
+}
+
+func matchesMinecraftVersion(versionCandidate string, minecraftVersion string) bool {
+	candidatePrefixes := []string{minecraftVersion}
+	if strings.HasPrefix(minecraftVersion, "1.") {
+		candidatePrefixes = append(candidatePrefixes, strings.TrimPrefix(minecraftVersion, "1."))
+	}
+
+	for _, prefix := range candidatePrefixes {
+		if prefix == "" {
+			continue
+		}
+		if strings.HasPrefix(versionCandidate, prefix) || strings.HasPrefix(versionCandidate, "1."+prefix) {
+			return true
+		}
+	}
+
+	return false
 }
 
 type Metadata struct {

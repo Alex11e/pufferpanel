@@ -1,6 +1,10 @@
 package neoforgedl
 
-import "testing"
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
 func Test_getLatestForMCVersion(t *testing.T) {
 	type args struct {
@@ -26,7 +30,22 @@ func Test_getLatestForMCVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getLatestForMCVersion(tt.args.minecraftVersion)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/xml")
+				_, _ = w.Write([]byte(`
+					<metadata>
+						<versioning>
+							<versions>
+								<version>1.20.4-47.1.98</version>
+								<version>1.20.4-47.1.100</version>
+								<version>1.20.5-47.1.0</version>
+							</versions>
+						</versioning>
+					</metadata>`))
+			}))
+			defer server.Close()
+
+			got, err := getLatestForMCVersionFromURL(tt.args.minecraftVersion, server.URL)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getLatestForMCVersion() error = %v, wantErr %v", err, tt.wantErr)
 				return
