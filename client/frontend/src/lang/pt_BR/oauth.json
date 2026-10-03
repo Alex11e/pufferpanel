@@ -7,7 +7,7 @@
   "UnnamedClient": "Cliente OAuth2 sem nome",
   "Docs": "Encontre a documentação da API aqui",
   "Clients": "Clientes OAuth2",
-  "Delete": "Excluir cliente OAuth2",
-  "ConfirmDelete": "Você realmente deseja excluir o cliente OAuth2 {name}? Você não poderá recriá-lo com as mesmas credenciais!",
-  "AccountDescription": "Os clientes OAuth2 listados aqui herdam todas as permissões de suas contas"
+  "Delete": "Excluir {clientName}?",
+  "ConfirmDelete": "Você realmente deseja excluir o cliente OAuth2 {clientName}? Você não poderá recriá-lo com as mesmas credenciais!",
+  "AccountDescription": "Os clientes OAuth2 listados aqui herdam todas as permissões das suas contas"
 }

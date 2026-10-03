@@ -42,21 +42,21 @@
     "server-install": "Instalar o servidor",
     "server-files-view": "Ver ficheiros",
     "server-files-edit": "Editar ficheiros",
-    "server-sftp": "Aceder aos ficheiros via STFP",
+    "server-sftp": "Aceder aos ficheiros via SFTP",
     "server-console": "Ver a consola",
     "server-console-send": "Enviar comandos para a consola",
     "server-stats": "Ver o uso de recursos",
     "server-status": "Ver o estado atual do servidor",
     "server-backup-view": "Ver e transferir cópias de segurança",
     "server-backup-create": "Criar uma cópia de segurança",
-    "server-backup-restore": "Restaurar o servidor a partir da cópia de segurança",
+    "server-backup-restore": "Restaurar o servidor a partir de uma cópia de segurança",
     "server-backup-delete": "Apagar uma cópia de segurança"
   },
   "hint": {
     "admin": "Conceder todas as permissões",
     "login": "Permite que o utilizador inicie sessão",
     "self-edit": "Permite ao utilizador alterar a sua palavra-passe, atualizar o seu e-mail e gerir a 2FA da sua conta",
-    "settings-edit": "Allows editing global panel settings like master url, email integration etc"
+    "settings-edit": "Permite editar as definições globais do painel, como o URL principal, integração de e-mail, etc."
   },
   "ServersEdit": "Editar o servidor",
   "ServersInstall": "Instalar o servidor",
@@ -69,7 +69,7 @@
   "ServersFilesGet": "Ver e transferir ficheiros no gestor de ficheiros",
   "ServersFilesPut": "Editar e carregar ficheiros no gestor de ficheiros",
   "ServersEditUsers": "Editar o acesso dos utilizadores neste servidor",
-  "Admin": "Administrador (todas as permissões)",
+  "Admin": "Administrador (concede todas as permissões possíveis)",
   "ViewServers": "Ver servidores",
   "CreateServers": "Criar novos servidores",
   "DeleteServers": "Apagar servidores",

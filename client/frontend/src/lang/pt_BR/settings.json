@@ -1,15 +1,15 @@
 {
   "Settings": "Configurações",
-  "PanelSettings": "Painel de Configuração",
-  "SavePanelSettings": "Alterar configurações do painel",
-  "EmailSettings": "Configurações de email",
-  "SaveEmailSettings": "Alterar configurações do painel",
+  "PanelSettings": "Configurações do Painel",
+  "SavePanelSettings": "Salvar configurações do painel",
+  "EmailSettings": "Configurações de e-mail",
+  "SaveEmailSettings": "Salvar configurações de e-mail",
   "MasterUrl": "URL principal",
-  "MasterUrlHint": "A URL principal do painel não pode ser alcançada no formato http://localhost:8080",
+  "MasterUrlHint": "A URL base pela qual o painel pode ser acessado, no formato http://localhost:8080",
   "CompanyName": "Nome da empresa",
-  "DefaultTheme": "Tema Padrão",
+  "DefaultTheme": "Tema padrão",
   "RegistrationEnabled": "Permitir que os usuários se registrem",
-  "RegistrationEnabledHint": "Usuários registrados sozinhos não podem fazer nada até que determinadas permissões\n\nDesabilitar isso apenas impede o registro direto, convite para um servidor e a página de usuários não são afetados",
+  "RegistrationEnabledHint": "Usuários que se registram sozinhos não podem fazer nada até que lhes sejam dadas permissões\n\nDesabilitar isso apenas impede o registro direto, convite para um servidor e a página de usuários não são afetados",
   "EmailProvider": "Provedor de e-mail",
   "emailProviders": {
     "none": "Nenhum",
@@ -22,11 +22,11 @@
     "domain": "Domínio",
     "key": "Chave de API",
     "host": "Host",
-    "username": "Nome do usuário",
+    "username": "Nome de usuário",
     "password": "Senha"
   },
   "Saved": "Salvo",
-  "TestEmail": "E-mail de Teste",
+  "TestEmail": "E-mail de teste",
   "TestEmailSent": "E-mail de teste enviado",
   "TestEmailFailed": "Falha ao enviar e-mail de teste"
 }

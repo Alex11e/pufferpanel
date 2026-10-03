@@ -1,71 +1,71 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Executa este passo apenas se esta condição for cumprida",
   "mojangdl": {
     "generic": "Transferir o Minecraft",
     "formatted": "Transferir o Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Escrever no ficheiro",
+    "formatted": "Escrever no ficheiro {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Resolver a versão do Minecraft Forge",
+    "formatted": "Resolver a versão do Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
+    "generic": "Transferir ficheiro(s)",
+    "formatted": "Transferir {file} | Transferir {n} ficheiros",
     "files": "Ficheiros"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Executar comando(s)",
+    "formatted": "Executar {command} | Executar {n} comandos",
+    "commands": "Comandos"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Modificar um ficheiro",
+    "formatted": "Modificar o ficheiro {target}",
+    "regex": "Tratar a string de pesquisa como expressão regular",
+    "search": "Pesquisar",
+    "replace": "Substituir correspondências por"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Mover ou renomear um ficheiro",
+    "formatted": "Mover o ficheiro {source} para {target}",
+    "source": "Caminho de origem",
+    "target": "Caminho de destino"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Criar um diretório",
+    "formatted": "Criar o diretório {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Comprimir ficheiros",
+    "formatted": "Comprimir {file} para {destination} | Comprimir {n} ficheiros para {destination}",
+    "source": "Ficheiros a comprimir"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Extrair arquivo",
+    "formatted": "Extrair {source} para {destination}",
+    "destination": "Destino"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Mensagem da consola",
+    "formatted": "Imprimir \"{message}\" na consola",
+    "message": "Mensagem"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Aguardar",
+    "formatted": "Aguardar {duration}",
+    "duration": "Duração",
+    "durationHint": "As unidades de tempo válidas são ns, us, ms, s, m e h. Várias unidades podem ser combinadas. Por exemplo `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
+    "generic": "Instalar a partir do Steam",
     "formatted": "Instalar ID da app do Steam {appId}",
     "appId": "ID da app do Steam",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Ramo (deixar em branco para predefinição)",
+    "branchPassword": "Palavra-passe do ramo (se necessário)"
   },
   "javadl": {
     "generic": "Instalar o Java",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Transferir o Minecraft Forge",
     "formatted": "Transferir o Minecraft Forge",
-    "outputVariable": "Output variable"
+    "outputVariable": "Variável de saída"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Transferir o Minecraft Neoforge",
+    "formatted": "Transferir o Minecraft Neoforge",
+    "outputVariable": "Variável de saída"
   },
   "spongeforgedl": {
     "generic": "Transferir o Minecraft SpongeForge",
@@ -91,20 +91,20 @@
     "formatted": "Transferir o Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Transferir o projeto PaperMC",
+    "formatted": "Transferir {project} para {target}",
+    "project": "Projeto PaperMC",
+    "build": "Número da build"
   },
   "curseforge": {
     "generic": "Transferir do CurseForge",
     "formatted": "Transferir do CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "projectId": "ID do projeto",
+    "fileId": "ID do ficheiro",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Instalar o Node.js",
+    "formatted": "Instalar o Node.js {version}"
   }
 }
