@@ -38,6 +38,21 @@ export class ServerApi {
     return 'offline'
   }
 
+  async allocations(id) {
+    const res = await this._api.get(`/api/servers/${id}/allocations`)
+    return res.data
+  }
+
+  async allocatePort(id, request = {}) {
+    const res = await this._api.post(`/api/servers/${id}/allocations`, request)
+    return res.data
+  }
+
+  async releasePort(id, allocationId) {
+    await this._api.delete(`/api/servers/${id}/allocations/${allocationId}`)
+    return true
+  }
+
   async getStats(id) {
     const res = await this._api.get(`/api/servers/${id}/stats`)
     return res.data

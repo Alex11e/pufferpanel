@@ -421,3 +421,31 @@ func TestLoadFromFolder(t *testing.T) {
 		return
 	}
 }
+
+func TestMigrateLegacyServerDirectoryToTypeFolder(t *testing.T) {
+	root := t.TempDir()
+	legacyPath := filepath.Join(root, "server-one")
+	if err := os.Mkdir(legacyPath, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(legacyPath, "server.jar"), []byte("data"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	typePath := serverDataDirectory(root, "minecraft-java", "server-one")
+	if err := migrateServerDirectory(legacyPath, typePath); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(typePath, "server.jar")); err != nil {
+		t.Fatalf("expected server data under the type folder: %v", err)
+	}
+	if _, err := os.Stat(legacyPath); !os.IsNotExist(err) {
+		t.Fatalf("expected legacy folder to be moved, got stat error %v", err)
+	}
+}
+
+func TestServerTypeDirectoryPreventsPathTraversal(t *testing.T) {
+	if got := serverTypeDirectory("../../outside"); got != "generic" {
+		t.Fatalf("expected unsafe server type to use generic folder, got %q", got)
+	}
+}

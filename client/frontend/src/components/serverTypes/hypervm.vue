@@ -19,6 +19,7 @@ const Files = load(() => import('../server/Files.vue'))
 const Settings = load(() => import('../server/Settings.vue'))
 const Users = load(() => import('../server/Users.vue'))
 const Sftp = load(() => import('../server/Sftp.vue'))
+const Network = load(() => import('../server/Network.vue'))
 const Backup = load(() => import('../server/Backup.vue'))
 const Admin = load(() => import('../server/Admin.vue'))
 const Activity = load(() => import('../server/Activity.vue'))
@@ -98,6 +99,9 @@ onUnmounted(() => {
       </tab>
       <tab v-if="server.hasScope('server.files.view')" id="files" title="Fájlok és ISO-k" icon="files" hotkey="t f">
         <files :server="server" />
+      </tab>
+      <tab v-if="server.hasScope('server.view')" id="network" :title="t('servers.Network')" icon="server" hotkey="t n">
+        <Network :server="server" />
       </tab>
       <tab
         v-if="server.hasScope('server.data.view') || server.hasScope('server.flags.view')"

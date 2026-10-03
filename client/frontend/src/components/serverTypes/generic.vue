@@ -43,6 +43,10 @@ const Sftp = defineAsyncComponent({
   loader: () => import('../server/Sftp.vue'),
   loadingComponent: Loader
 })
+const Network = defineAsyncComponent({
+  loader: () => import('../server/Network.vue'),
+  loadingComponent: Loader
+})
 const Backup = defineAsyncComponent({
   loader: () => import('../server/Backup.vue'),
   loadingComponent: Loader
@@ -149,6 +153,9 @@ onUnmounted(() => {
         hotkey="t p"
       >
         <plugins :server="server" />
+      </tab>
+      <tab v-if="server.hasScope('server.view')" id="network" :title="t('servers.Network')" icon="server" hotkey="t n">
+        <Network :server="server" />
       </tab>
       <tab
         v-if="server.hasScope('server.data.view') || server.hasScope('server.flags.view')"

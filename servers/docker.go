@@ -370,9 +370,9 @@ func (d *Docker) createContainer(environment *pufferpanel.Environment, data puff
 
 	var dir string
 	if containerMountSource != "" {
-		dir = filepath.Join(containerMountSource, "servers", environment.Server.Id())
+		dir = serverDataDirectory(filepath.Join(containerMountSource, "servers"), environment.Server.Get().Type.Type, environment.Server.Id())
 	} else {
-		dir = filepath.Join(environment.Server.GetFileServer().Prefix(), environment.Server.Id())
+		dir = environment.Server.GetFileServer().Prefix()
 	}
 
 	//convert root dir to a full path, so we can bind it

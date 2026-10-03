@@ -38,6 +38,11 @@ func registerServers(g *gin.RouterGroup) {
 	g.Handle("PUT", "/:serverId", middleware.RequiresPermission(scopes.ScopeServerCreate), middleware.HasTransaction, createServer)
 	g.Handle("DELETE", "/:serverId", middleware.RequiresPermission(scopes.ScopeServerDelete), middleware.ResolveServerPanel, middleware.HasTransaction, deleteServer)
 	g.Handle("OPTIONS", "/:serverId", response.CreateOptions("PUT", "GET", "POST", "DELETE"))
+	g.GET("/:serverId/allocations", middleware.RequiresPermission(scopes.ScopeServerView), middleware.ResolveServerPanel, getServerAllocations)
+	g.POST("/:serverId/allocations", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.ResolveServerPanel, middleware.HasTransaction, allocateServerPort)
+	g.DELETE("/:serverId/allocations/:allocationId", middleware.RequiresPermission(scopes.ScopeNodesEdit), middleware.ResolveServerPanel, middleware.HasTransaction, releaseServerPort)
+	g.OPTIONS("/:serverId/allocations", response.CreateOptions("GET", "POST"))
+	g.OPTIONS("/:serverId/allocations/:allocationId", response.CreateOptions("DELETE"))
 
 	g.Handle("PUT", "/:serverId/name/:name", middleware.RequiresPermission(scopes.ScopeServerEditName), middleware.ResolveServerPanel, middleware.HasTransaction, renameServer)
 	g.Handle("OPTIONS", "/:serverId/name", response.CreateOptions("PUT"))
@@ -307,6 +312,130 @@ func getServer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, d)
+}
+
+func getServerAllocations(c *gin.Context) {
+	server := getServerFromGin(c)
+	var allocations []models.Allocation
+	err := middleware.GetDatabase(c).
+		Where("node_id = ? AND server_identifier = ?", server.Node.ID, server.Identifier).
+		Order("port").Find(&allocations).Error
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	c.JSON(http.StatusOK, allocations)
+}
+
+func allocateServerPort(c *gin.Context) {
+	server := getServerFromGin(c)
+	db := middleware.GetDatabase(c)
+	request := struct {
+		Port       uint16 `json:"port"`
+		TargetPort uint16 `json:"targetPort"`
+		Protocols  string `json:"protocols"`
+	}{}
+	if c.Request.ContentLength > 0 {
+		if err := c.ShouldBindJSON(&request); response.HandleError(c, err, http.StatusBadRequest) {
+			return
+		}
+	}
+	allocationService := &services.Allocation{DB: db}
+	var allocation *models.Allocation
+	var err error
+	if server.Type == vpsType {
+		if request.TargetPort == 0 {
+			response.HandleError(c, errors.New("a VPS guest port is required"), http.StatusBadRequest)
+			return
+		}
+		allocation, err = allocationService.AllocateForward(&server.Node, server.Identifier, request.TargetPort, request.Protocols)
+	} else if request.TargetPort != 0 {
+		response.HandleError(c, errors.New("guest port forwarding is only supported for VPS servers"), http.StatusBadRequest)
+		return
+	} else if request.Port != 0 {
+		if request.Port < server.Node.PortRangeStart || request.Port > server.Node.PortRangeEnd {
+			response.HandleError(c, errors.New("port must be within the node allocation range"), http.StatusBadRequest)
+			return
+		}
+		allocation, err = allocationService.AllocateRange(&server.Node, server.Identifier, request.Port, request.Port)
+	} else {
+		allocation, err = allocationService.AllocateNext(&server.Node, server.Identifier)
+	}
+	if errors.Is(err, services.ErrNoPortAvailable) {
+		c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"})
+		return
+	}
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if server.Type == vpsType && !syncVpsPortForwards(c, server, db, nil) {
+		return
+	}
+	c.JSON(http.StatusCreated, allocation)
+}
+
+func releaseServerPort(c *gin.Context) {
+	server := getServerFromGin(c)
+	allocationID, err := strconv.ParseUint(c.Param("allocationId"), 10, 32)
+	if response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	db := middleware.GetDatabase(c)
+	var allocation models.Allocation
+	err = db.Where("id = ? AND node_id = ? AND server_identifier = ?", allocationID, server.Node.ID, server.Identifier).
+		First(&allocation).Error
+	if response.HandleError(c, err, http.StatusNotFound) {
+		return
+	}
+	if allocation.Port == server.Port {
+		c.JSON(http.StatusConflict, gin.H{"error": "the primary server port cannot be released"})
+		return
+	}
+	if server.Type == vpsType && allocation.Purpose == "vnc" {
+		c.JSON(http.StatusConflict, gin.H{"error": "the VNC port is managed by the VPS"})
+		return
+	}
+	if server.Type == vpsType && allocation.Purpose == "forward" {
+		if !syncVpsPortForwards(c, server, db, &allocation) {
+			return
+		}
+	}
+	if err = (&services.Allocation{DB: db}).Delete(server.Node.ID, uint(allocationID)); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
+func syncVpsPortForwards(c *gin.Context, server *models.Server, db *gorm.DB, excluded *models.Allocation) bool {
+	var allocations []models.Allocation
+	query := db.Where("node_id = ? AND server_identifier = ? AND purpose = ?", server.Node.ID, server.Identifier, "forward")
+	if excluded != nil {
+		query = query.Where("id <> ?", excluded.ID)
+	}
+	if err := query.Order("port").Find(&allocations).Error; response.HandleError(c, err, http.StatusInternalServerError) {
+		return false
+	}
+	body, err := json.Marshal(map[string]string{"forward_ports": qemuPortForwardArgs(allocations)})
+	if response.HandleError(c, err, http.StatusInternalServerError) {
+		return false
+	}
+	headers := http.Header{"Content-Type": []string{"application/json"}}
+	remoteResponse, err := (&services.Node{DB: db}).CallNode(&server.Node, http.MethodPut, "/daemon/server/"+server.Identifier+"/data", io.NopCloser(bytes.NewReader(body)), headers)
+	defer utils.CloseResponse(remoteResponse)
+	if remoteResponse == nil || remoteResponse.StatusCode == 0 {
+		if err == nil {
+			err = errors.New("node returned no response while updating VPS port forwards")
+		}
+		response.HandleError(c, err, http.StatusBadGateway)
+		return false
+	}
+	if response.HandleError(c, err, http.StatusBadGateway) {
+		return false
+	}
+	if remoteResponse.StatusCode < http.StatusOK || remoteResponse.StatusCode >= http.StatusMultipleChoices {
+		response.HandleError(c, errors.New("could not update VPS port forwards on the node"), http.StatusBadGateway)
+		return false
+	}
+	return true
 }
 
 // @Summary Create server

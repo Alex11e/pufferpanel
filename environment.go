@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -165,8 +166,16 @@ func (e *Environment) Update() error {
 }
 
 func (e *Environment) Delete() (err error) {
-	err = files.ServerFS.RemoveAll(e.Server.Id())
-	return
+	serverRoot := files.ServerFS.Prefix()
+	serverDirectory := e.Server.GetFileServer().Prefix()
+	relativeDirectory, err := filepath.Rel(serverRoot, serverDirectory)
+	if err != nil {
+		return err
+	}
+	if relativeDirectory == "." || relativeDirectory == ".." || strings.HasPrefix(relativeDirectory, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("server directory is outside the configured server root")
+	}
+	return files.ServerFS.RemoveAll(relativeDirectory)
 }
 
 func (e *Environment) Create() error {

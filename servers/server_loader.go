@@ -77,6 +77,9 @@ func LoadFromData(id string, source []byte) (*Server, error) {
 	}
 
 	data.Identifier = id
+	if err = migrateLegacyServerDirectory(data); err != nil {
+		return nil, err
+	}
 
 	environmentType := data.Environment.Type
 
@@ -122,7 +125,7 @@ func Create(program *Server) (server *Server, err error) {
 	defer func() {
 		if err != nil {
 			//revert since we have an error
-			_ = os.Remove(filepath.Join(config.ServersFolder.Value(), program.Id()))
+			_ = os.RemoveAll(program.GetRootDirectory())
 			_ = os.Remove(filepath.Join(config.ServersFolder.Value(), program.Id()+".json"))
 			if program.RunningEnvironment != nil {
 				_ = program.RunningEnvironment.Delete()
@@ -131,7 +134,12 @@ func Create(program *Server) (server *Server, err error) {
 		}
 	}()
 
-	err = os.Mkdir(filepath.Join(config.ServersFolder.Value(), program.Id()), 0755)
+	root := program.GetRootDirectory()
+	err = os.MkdirAll(filepath.Dir(root), 0755)
+	if err != nil {
+		return
+	}
+	err = os.Mkdir(root, 0755)
 	if err != nil {
 		logging.Error.Printf("Error writing server: %s", err)
 		return
@@ -155,6 +163,42 @@ func Create(program *Server) (server *Server, err error) {
 
 	allServers = append(allServers, server)
 	return
+}
+
+func serverTypeDirectory(serverType string) string {
+	if serverType == "" || serverType == "." || serverType == ".." || strings.ContainsAny(serverType, `/\\`) {
+		return "generic"
+	}
+	return serverType
+}
+
+func serverDataDirectory(root, serverType, serverID string) string {
+	return filepath.Join(root, serverTypeDirectory(serverType), serverID)
+}
+
+func migrateLegacyServerDirectory(server *Server) error {
+	legacyPath := filepath.Join(files.ServerFS.Prefix(), server.Id())
+	return migrateServerDirectory(legacyPath, server.GetRootDirectory())
+}
+
+func migrateServerDirectory(legacyPath, typeDirectoryPath string) error {
+	if legacyPath == typeDirectoryPath {
+		return nil
+	}
+	if _, err := os.Stat(typeDirectoryPath); err == nil {
+		return nil
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	if _, err := os.Stat(legacyPath); errors.Is(err, os.ErrNotExist) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(typeDirectoryPath), 0755); err != nil {
+		return err
+	}
+	return os.Rename(legacyPath, typeDirectoryPath)
 }
 
 func Delete(id string) (err error) {

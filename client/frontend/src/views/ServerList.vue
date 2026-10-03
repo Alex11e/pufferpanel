@@ -18,6 +18,7 @@ const allServersLoaded = ref(false)
 const loaderRef = ref(null)
 const firstEntry = ref(null)
 const loadError = ref('')
+const folderError = ref('')
 const search = ref('')
 const selectedTag = ref('')
 const selectedFolder = ref('')
@@ -35,9 +36,29 @@ const visibleServers = computed(() => servers.value.filter(server => {
   return (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
 }).sort((a, b) => Number(favorites.value.includes(b.id)) - Number(favorites.value.includes(a.id)) || a.name.localeCompare(b.name)))
 
-function addServers(newServers) {
+async function addServers(newServers) {
   newServers.map(server => servers.value.push(server))
+  await assignDefaultFolders(newServers)
   refreshServerStatus()
+}
+
+async function assignDefaultFolders(newServers) {
+  for (const server of newServers) {
+    const folderName = String(server.type || 'generic').slice(0, 60)
+    let folder = folders.value.find(item => item.name === folderName)
+    try {
+      if (!folder) {
+        const response = await api.post('/api/folders', { name: folderName, color: '#4f7cff' })
+        folder = response.data
+        folders.value.push(folder)
+      }
+      if (folders.value.some(item => item.serverIds.includes(server.id))) continue
+      await api.put(`/api/folders/${folder.id}/servers/${server.id}`)
+      folder.serverIds.push(server.id)
+    } catch (error) {
+      folderError.value = error.message || String(error)
+    }
+  }
 }
 
 async function refreshServerStatus() {
@@ -65,7 +86,7 @@ async function loadPage(page = 1) {
   loadingPage = true
   try {
     const data = await api.server.list(page)
-    addServers(data.servers)
+    await addServers(data.servers)
     lastPage = data.paging.page
     allServersLoaded.value = data.paging.page * data.paging.pageSize >= (data.paging.total || 0)
   } catch (error) {
@@ -84,9 +105,9 @@ function onScroll() {
 
 onMounted(() => {
   interval = setInterval(refreshServerStatus, 30 * 1000)
-  nextTick(() => {
+  nextTick(async () => {
+    await loadFolders()
     loadPage()
-    loadFolders()
     if (api.auth.hasScope('admin')) api.server.getRecentActivity().then(records => { recentActivity.value = records })
     window.addEventListener('scroll', onScroll)
   })
@@ -163,6 +184,7 @@ async function copyAddress(server) {
   <div class="serverlist">
     <h1 v-text="t('servers.Servers')" />
     <p v-if="loadError" class="load-error" role="alert">{{ loadError }}</p>
+    <p v-if="folderError" class="load-error" role="alert">{{ folderError }}</p>
     <div class="server-dashboard">
       <div class="metric"><span>{{ summary.total }}</span>{{ t('servers.TotalServers') }}</div>
       <div class="metric online"><span>{{ summary.online }}</span>{{ t('common.Online') }}</div>

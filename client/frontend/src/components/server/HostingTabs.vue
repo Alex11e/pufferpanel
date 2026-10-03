@@ -17,6 +17,7 @@ const Files = load(() => import('./Files.vue'))
 const Settings = load(() => import('./Settings.vue'))
 const Users = load(() => import('./Users.vue'))
 const Sftp = load(() => import('./Sftp.vue'))
+const Network = load(() => import('./Network.vue'))
 const Backup = load(() => import('./Backup.vue'))
 const Admin = load(() => import('./Admin.vue'))
 const Activity = load(() => import('./Activity.vue'))
@@ -66,6 +67,9 @@ onUnmounted(() => {
       </tab>
       <tab v-if="server.hasScope('server.files.view')" id="files" :title="t('servers.Files')" icon="files" hotkey="t f">
         <files :server="server" />
+      </tab>
+      <tab v-if="server.hasScope('server.view')" id="network" :title="t('servers.Network')" icon="server" hotkey="t n">
+        <Network :server="server" />
       </tab>
       <tab v-if="server.hasScope('server.data.view') || server.hasScope('server.flags.view')" id="settings" :title="t('servers.Settings')" icon="settings" hotkey="t s">
         <settings :server="server" />

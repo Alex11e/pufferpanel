@@ -877,7 +877,7 @@ func (p *Server) SkipAutoRestart() {
 }
 
 func (p *Server) GetRootDirectory() string {
-	return filepath.Join(files.ServerFS.Prefix(), p.Id())
+	return serverDataDirectory(files.ServerFS.Prefix(), p.Type.Type, p.Id())
 }
 
 func (p *Server) Get() pufferpanel.Server {
