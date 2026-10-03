@@ -3,63 +3,63 @@
   "Language": "Γλώσσα",
   "Online": "Σε σύνδεση",
   "Offline": "Εκτός σύνδεσης",
-  "Installing": "Installing",
+  "Installing": "Εγκατάσταση",
   "Unknown": "Άγνωστο",
   "Loading": "Φόρτωση...",
-  "Description": "Description",
+  "Description": "Περιγραφή",
   "Save": "Αποθήκευση",
   "Cancel": "Ακύρωση",
-  "Close": "Close",
+  "Close": "Κλείσιμο",
   "Host": "Διακομιστής",
   "Port": "Θύρα",
   "Collapse": "Σύμπτυξη",
-  "Expand": "Expand",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Expand": "Ανάπτυξη",
+  "Copy": "Αντιγραφή στο πρόχειρο",
+  "Copied": "Αντιγράφηκε στο πρόχειρο",
+  "Back": "Πίσω",
   "Next": "Επόμενο",
   "Details": "Λεπτομέρειες",
   "ErrorDetails": "Λεπτομέρειες Σφάλματος",
   "HelpTranslate": "Βοηθήστε μας να μεταφράσουμε το PufferPanel",
   "Protocol": "Πρωτόκολλο",
   "Add": "Προσθήκη",
-  "Apply": "Apply",
-  "Confirm": "Confirm",
-  "Condition": "Condition",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Apply": "Εφαρμογή",
+  "Confirm": "Επιβεβαίωση",
+  "Condition": "Συνθήκη",
+  "Discard": "Απόρριψη",
+  "ConfirmLeave": "Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να απορρίψετε αυτές τις αλλαγές και να φύγετε από αυτή τη σελίδα;",
   "theme": {
-    "Theme": "Theme",
-    "Mode": "Mode",
+    "Theme": "Θέμα",
+    "Mode": "Λειτουργία",
     "mode": {
-      "Light": "Light",
-      "Dark": "Dark",
-      "DarkHighContrast": "Dark (High Contrast)",
-      "Auto": "Auto"
+      "Light": "Φωτεινό",
+      "Dark": "Σκοτεινό",
+      "DarkHighContrast": "Σκοτεινό (Υψηλή Αντίθεση)",
+      "Auto": "Αυτόματο"
     },
-    "BaseColor": "Base Color",
-    "ServerTypeDisplay": "Server Type Display",
+    "BaseColor": "Βασικό Χρώμα",
+    "ServerTypeDisplay": "Εμφάνιση Τύπου Διακομιστή",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
-      "Icon": "Icon",
-      "None": "None"
+      "IconBackground": "Εικονίδιο + Φόντο",
+      "Icon": "Εικονίδιο",
+      "None": "Κανένα"
     },
-    "ListType": "List Type",
+    "ListType": "Τύπος Λίστας",
     "listType": {
-      "Grid": "Grid",
-      "List": "List"
+      "Grid": "Πλέγμα",
+      "List": "Λίστα"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Μέγεθος Γραμματοσειράς",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Προεπιλογή"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Τύπος Γραμματοσειράς",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Προεπιλογή",
+      "A11y": "Βελτιστοποιημένη προσβασιμότητα"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Δεν βρέθηκαν αποτελέσματα",
+  "Yes": "Ναι",
+  "No": "Όχι"
 }

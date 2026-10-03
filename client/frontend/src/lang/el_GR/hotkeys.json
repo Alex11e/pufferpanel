@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Συντομεύσεις πληκτρολογίου",
   "Global": {
-    "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "Title": "Καθολικές",
+    "g a": "Μετάβαση στον Λογαριασμό",
+    "g c": "Μετάβαση στη Διαμόρφωση Πίνακα",
+    "g n": "Μετάβαση στους Κόμβους",
+    "g s": "Μετάβαση στους Διακομιστές",
+    "g t": "Μετάβαση στα Πρότυπα",
+    "g u": "Μετάβαση στους Χρήστες",
+    "/": "Καθολική αναζήτηση"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Λογαριασμός",
+    "t 2": "Μετάβαση στην καρτέλα Επαλήθευσης 2 Παραγόντων",
+    "t a": "Μετάβαση στην καρτέλα Στοιχείων Λογαριασμού",
+    "t o": "Μετάβαση στην καρτέλα OAuth",
+    "t p": "Μετάβαση στην καρτέλα Κωδικού Πρόσβασης",
+    "t s": "Μετάβαση στην καρτέλα Προτιμήσεων"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Διακομιστές",
+    "c": "Δημιουργία νέου διακομιστή",
+    "l": "Εστίαση στον πρώτο διακομιστή στη λίστα"
   },
   "ServerView": {
-    "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "Title": "Διακομιστής",
+    "t c": "Μετάβαση στην καρτέλα Κονσόλας",
+    "t i": "Μετάβαση στην καρτέλα Στατιστικών",
+    "t f": "Μετάβαση στην καρτέλα Αρχείων",
+    "t s": "Μετάβαση στην καρτέλα Ρυθμίσεων",
+    "t u": "Μετάβαση στην καρτέλα Χρηστών",
+    "t 6": "Μετάβαση στην καρτέλα SFTP",
+    "t 7": "Μετάβαση στην καρτέλα API",
+    "t a": "Μετάβαση στην καρτέλα Διαχείρισης",
+    "c c": "Εστίαση στην Εισαγωγή Εντολών",
+    "c x": "Εκκαθάριση Κονσόλας",
+    "r r": "Εκκίνηση Διακομιστή",
+    "r s": "Διακοπή Διακομιστή",
+    "r k": "Τερματισμός Διακομιστή",
+    "r i": "Εγκατάσταση Διακομιστή",
+    "f a": "Αρχειοθέτηση τρέχοντος καταλόγου",
+    "f c d": "Δημιουργία νέου καταλόγου",
+    "f c f": "Δημιουργία νέου αρχείου",
+    "f s a": "Αρχειοθέτηση επιλεγμένων αρχείων",
+    "f s d": "Διαγραφή επιλεγμένων αρχείων",
+    "f d": "Μεταφόρτωση καταλόγου",
+    "f l": "Εστίαση στο πρώτο αρχείο/φάκελο στη λίστα",
+    "f r": "Επαναφόρτωση λίστας αρχείων",
+    "f u": "Μεταφόρτωση αρχείων",
+    "a e": "Επεξεργασία Ορισμού Διακομιστή",
+    "a r": "Επαναφόρτωση Ορισμού Διακομιστή από τον δίσκο"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Κόμβοι",
+    "c": "Δημιουργία νέου κόμβου",
+    "l": "Εστίαση στον πρώτο κόμβο στη λίστα"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Χρήστες",
+    "c": "Δημιουργία νέου χρήστη",
+    "l": "Εστίαση στον πρώτο χρήστη στη λίστα"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Πρότυπα",
+    "c": "Δημιουργία νέου προτύπου",
+    "l": "Εστίαση στο πρώτο πρότυπο στη λίστα"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Επεξεργαστής Προτύπων",
+    "t e": "Μετάβαση στην καρτέλα Περιβάλλοντος",
+    "t g": "Μετάβαση στην καρτέλα Γενικών",
+    "t h": "Μετάβαση στην καρτέλα Hooks",
+    "t i": "Μετάβαση στην καρτέλα Εγκατάστασης",
+    "t j": "Μετάβαση στην καρτέλα JSON",
+    "t r": "Μετάβαση στην καρτέλα Διαμόρφωσης Εκτέλεσης",
+    "t v": "Μετάβαση στην καρτέλα Μεταβλητών"
   }
 }
