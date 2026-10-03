@@ -1,9 +1,10 @@
 package config
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"path/filepath"
 )
 
 var LogsFolder = asString("logs", "logs")
@@ -35,6 +36,10 @@ var CompanyName = asString("panel.settings.companyName", "PufferPanel")
 var DefaultTheme = asString("panel.settings.defaultTheme", "PufferPanel")
 var ThemeSettings = asString("panel.settings.themeSettings", "{}")
 var MasterUrl = asString("panel.settings.masterUrl", "http://localhost:8080")
+var LocalNodePortRangeStart = asInt("panel.localNode.portRangeStart", 1000)
+var LocalNodePortRangeEnd = asInt("panel.localNode.portRangeEnd", 8000)
+var LocalNodeFirewallEnabled = asBool("panel.localNode.firewallEnabled", false)
+var LocalNodeSubdomainBase = asString("panel.localNode.subdomainBase", "")
 var SessionKey = asString("panel.sessionKey", "")
 var RegistrationEnabled = asBool("panel.registrationEnabled", true)
 var PrivateKey = asString("panel.token", "")
@@ -155,6 +160,14 @@ func as[T ValueType](key string, def T) entry[T] {
 	//viper.SetDefault(key, def)
 	defaults[key] = def
 	return entry[T]{key: key}
+}
+
+func SaveLocalNodeSettings(portRangeStart, portRangeEnd uint16, firewallEnabled bool, subdomainBase string) error {
+	viper.Set(LocalNodePortRangeStart.Key(), portRangeStart)
+	viper.Set(LocalNodePortRangeEnd.Key(), portRangeEnd)
+	viper.Set(LocalNodeFirewallEnabled.Key(), firewallEnabled)
+	viper.Set(LocalNodeSubdomainBase.Key(), subdomainBase)
+	return viper.WriteConfig()
 }
 
 func (se entry[T]) get() interface{} {

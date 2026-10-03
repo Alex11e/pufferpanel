@@ -18,6 +18,7 @@ const route = useRoute()
 const router = useRouter()
 
 const deploymentOpen = ref(false)
+const isLocalNode = ref(false)
 let deploymentData = {}
 const withPrivateHost = ref(false)
 const name = ref('')
@@ -52,6 +53,7 @@ function validRange() {
 onMounted(async () => {
   try {
     const node = await api.node.get(route.params.id)
+    isLocalNode.value = node.isLocal
     name.value = node.name
     publicHost.value = node.publicHost
     publicPort.value = node.publicPort
@@ -96,6 +98,7 @@ async function fetchFeatures() {
 }
 
 function canSubmit() {
+	if (isLocalNode.value) return validRange()
   if (!name.value) return false
   if (!publicHost.value) return false
   if (portValue(publicPort.value) === null) return false
@@ -110,6 +113,16 @@ function canSubmit() {
 
 async function submit() {
   if (!canSubmit()) return
+  if (isLocalNode.value) {
+    await api.node.update(route.params.id, {
+      portRangeStart: portValue(portRangeStart.value),
+      portRangeEnd: portValue(portRangeEnd.value),
+      firewallEnabled: firewallEnabled.value,
+      subdomainBase: subdomainBase.value
+    })
+    toast.success(t('nodes.Updated'))
+    return
+  }
   const node = {
     name: name.value,
     publicHost: publicHost.value,
@@ -234,7 +247,8 @@ function closeDeploy() {
       </div>
     </div>
     <h2 v-text="t('nodes.Edit')" />
-    <div v-if="route.params.id > 0" class="edit">
+    <div class="edit">
+      <template v-if="!isLocalNode">
       <text-field v-model="name" class="name" :label="t('common.Name')" />
       <text-field v-model="publicHost" class="public-host" :label="t('nodes.PublicHost')" />
       <text-field v-model="publicPort" class="public-port" :label="t('nodes.PublicPort')" type="number" />
@@ -242,6 +256,8 @@ function closeDeploy() {
       <text-field v-if="withPrivateHost" v-model="privateHost" class="private-host" :label="t('nodes.PrivateHost')" />
       <text-field v-if="withPrivateHost" v-model="privatePort" class="private-port" :label="t('nodes.PrivatePort')" type="number" />
       <text-field v-model="sftpPort" class="sftp-port" :label="t('nodes.SftpPort')" type="number" />
+      </template>
+      <p v-else v-text="t('nodes.LocalNodeEdit')" />
       <h3 v-text="t('nodes.PortAllocation')" />
       <text-field v-model="portRangeStart" :label="t('nodes.PortRangeStart')" type="number" />
       <text-field v-model="portRangeEnd" :label="t('nodes.PortRangeEnd')" type="number" />
@@ -257,11 +273,11 @@ function closeDeploy() {
         <div class="subline" v-text="allocationSummary()" />
       </div>
       <btn :disabled="!canSubmit()" color="primary" @click="submit()"><icon name="save" />{{ t('nodes.Update') }}</btn>
-      <btn color="error" @click="deleteNode()"><icon name="remove" />{{ t('nodes.Delete') }}</btn>
-      <btn @click="deploymentOpen = true" v-text="t('nodes.Deploy')" />
+      <template v-if="!isLocalNode">
+        <btn color="error" @click="deleteNode()"><icon name="remove" />{{ t('nodes.Delete') }}</btn>
+        <btn @click="deploymentOpen = true" v-text="t('nodes.Deploy')" />
+      </template>
     </div>
-    <!-- eslint-disable-next-line vue/no-v-html -->
-    <div v-else class="edit" v-html="markdown(t('nodes.LocalNodeEdit'))" />
     <overlay v-model="deploymentOpen" closable :title="t('nodes.Deploy')" @close="closeDeploy()">
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div v-html="markdown(t(`nodes.deploy.Step${currentStep}`, { config: getDeployConfig() }))" />

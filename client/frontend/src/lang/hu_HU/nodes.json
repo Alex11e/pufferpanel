@@ -50,7 +50,7 @@
   "PortReleased": "{port} port felszabadítva",
   "WithPrivateAddress": "Használj másik ip/portot a két szerver közötti kommunikációhoz",
   "WithPrivateAddressHint": "Ez a külön cím akkor használatos, amikor a főcsomópont kommunikál az új csomóponttal. Olyan esetekben hasznos, mint pl.: a csomópontok azonos hálózaton vannak NAT mögött.",
-  "LocalNodeEdit": "A helyi csomópont nem rendelkezik szerkeszthető beállításokkal\n\nAz ezen a csomóponton elhelyezett kiszolgálókkal megjelenített állomás megváltoztatásához állítsa be a panelek fő url-jét a panel beállításaiban.",
+  "LocalNodeEdit": "A helyi csomópont címe és SFTP-címe a panel beállításaiból származik. Ezek módosításához állítsd be a panel fő URL-jét; a porttartomány és a domainbeállítások lent szerkeszthetők.",
   "Deploy": "Csomópont telepítése",
   "deploy": {
     "Step1": "## 1. Lépés\n\nTelepítse a PufferPanelt az új szerverre, [lásd a dokumentumokat a részletekért](https://docs.pufferpanel.com/en/latest/installing.html)",

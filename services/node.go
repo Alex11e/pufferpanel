@@ -63,6 +63,10 @@ func SyncNodeToConfig() {
 			models.LocalNode.SFTPPort = port
 		}
 	}
+	models.LocalNode.PortRangeStart = uint16(config.LocalNodePortRangeStart.Value())
+	models.LocalNode.PortRangeEnd = uint16(config.LocalNodePortRangeEnd.Value())
+	models.LocalNode.FirewallEnabled = config.LocalNodeFirewallEnabled.Value()
+	models.LocalNode.SubdomainBase = config.LocalNodeSubdomainBase.Value()
 }
 
 type Node struct {
@@ -98,6 +102,13 @@ func (ns *Node) Get(id uint) (*models.Node, error) {
 
 func (ns *Node) Update(model *models.Node) error {
 	if model.ID == models.LocalNode.ID && config.PanelEnabled.Value() {
+		if err := model.IsValid(); err != nil {
+			return err
+		}
+		if err := config.SaveLocalNodeSettings(model.PortRangeStart, model.PortRangeEnd, model.FirewallEnabled, model.SubdomainBase); err != nil {
+			return err
+		}
+		SyncNodeToConfig()
 		return nil
 	}
 
