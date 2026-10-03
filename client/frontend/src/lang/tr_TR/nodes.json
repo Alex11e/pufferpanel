@@ -3,48 +3,48 @@
   "Nodes": "Düğümler",
   "Edit": "Düğümü düzenle",
   "Add": "Düğüm ekle",
-  "Create": "Create Node",
+  "Create": "Düğüm oluştur",
   "Update": "Düğümü güncelle",
   "Delete": "Düğüm sil",
-  "ConfirmDelete": "Do you really want to delete the node {name}?",
-  "Created": "Created Node",
-  "Updated": "Updated Node",
-  "Deleted": "Deleted Node",
-  "Reachable": "This node is correctly set up and running",
-  "Unreachable": "This node is either not set up correctly or currently unavailable",
+  "ConfirmDelete": "Düğümü {name} gerçekten silmek istiyor musunuz?",
+  "Created": "Düğüm oluşturuldu",
+  "Updated": "Düğüm güncellendi",
+  "Deleted": "Düğüm silindi",
+  "Reachable": "Bu düğüm doğru şekilde yapılandırılmış ve çalışıyor",
+  "Unreachable": "Bu düğüm ya doğru yapılandırılmamış ya da şu anda kullanılamıyor",
   "features": {
     "os": {
-      "label": "Operating System",
+      "label": "İşletim Sistemi",
       "linux": "Linux",
       "windows": "Windows"
     },
     "arch": {
-      "label": "CPU Architecture",
+      "label": "CPU Mimarisi",
       "amd64": "x86 64bit",
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker available",
-      "false": "Docker not available"
+      "true": "Docker mevcut",
+      "false": "Docker mevcut değil"
     },
-    "envs": "Available Environments"
+    "envs": "Kullanılabilir Ortamlar"
   },
-  "PublicHost": "Ana sunucu",
-  "PublicPort": "Ana port",
-  "PrivateHost": "Yerel sunucu",
-  "PrivatePort": "Yerel port",
+  "PublicHost": "Genel Host",
+  "PublicPort": "Genel Port",
+  "PrivateHost": "Özel Host",
+  "PrivatePort": "Özel Port",
   "SftpPort": "SFTP Port",
-  "WithPrivateAddress": "Sunucudan sunucuya haberleşme için farklı bir \"sunucu/port\" kullanın",
+  "WithPrivateAddress": "Sunucudan sunucuya haberleşme için farklı bir \"host/port\" kullanın",
   "WithPrivateAddressHint": "Bu ayrı adres, ana düğümün yeni düğümle konuşması gerektiğinde kullanılır. Örneğin, düğümler NAT arkasında aynı ağda olduğunda kullanışlıdır.",
-  "LocalNodeEdit": "The local node does not have any editable settings\n\nTo change the host displayed with servers hosted on this node adjust the panels master url in the panel settings",
-  "Deploy": "Deploy Node",
+  "LocalNodeEdit": "Yerel düğümün düzenlenebilir hiçbir ayarı yoktur\n\nBu düğümde barındırılan sunucular için görüntülenen host'u değiştirmek için panel ayarlarındaki ana URL'yi düzenleyin",
+  "Deploy": "Düğümü Yerleştir",
   "deploy": {
-    "Step1": "## Step 1\n\nInstall PufferPanel on the new server, [see the docs for details](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Step 2\n\nStop the PufferPanel service on the new server if it was started during installation by running `sudo systemctl stop pufferpanel`",
-    "Step3": "## Step 3\n\nReplace the contents of the PufferPanel config file on the new server with the code below\n\nThe config file is usually found at `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Step 4\n\nEnable and (re)start the PufferPanel service on the new server by running `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Your new node is now set up and ready to go"
+    "Step1": "## Adım 1\n\nPufferPanel'i yeni sunucuya kurun, [ayrıntılar için belgelere bakın](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## Adım 2\n\nKurulum sırasında başlatıldıysa, yeni sunucudaki PufferPanel hizmetini `sudo systemctl stop pufferpanel` komutunu çalıştırarak durdurun",
+    "Step3": "## Adım 3\n\nYeni sunucudaki PufferPanel yapılandırma dosyasının içeriğini aşağıdaki kodla değiştirin\n\nYapılandırma dosyası genellikle `/etc/pufferpanel/config.json` konumunda bulunur\n\n```\n{config}\n```",
+    "Step4": "## Adım 4\n\n`sudo systemctl enable --now pufferpanel` komutunu çalıştırarak yeni sunucudaki PufferPanel hizmetini etkinleştirin ve (yeniden) başlatın",
+    "Step5": "### Yeni düğümünüz artık yapılandırıldı ve kullanıma hazır"
   },
   "DeploymentInstruction": "Düğümü yerleştirmek için, PufferPanel'i yeni sunucuya kurun ve yapılandırma dosyasını `/etc/pufferpanel/` dizinine yerleştirin.<br/>Daha sonra yeni sunucuda PufferPanel'i yeniden başlatın."
 }

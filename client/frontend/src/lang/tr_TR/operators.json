@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Bu adımı yalnızca bu koşul sağlanıyorsa çalıştırın",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Minecraft'ı indir",
+    "formatted": "Minecraft'ı indir"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Dosyaya yaz",
+    "formatted": "{target} dosyasına yaz"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Minecraft Forge sürümünü belirle",
+    "formatted": "Minecraft Forge sürümünü belirle"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Dosya(ları) indir",
+    "formatted": "{file} indir | {n} dosya indir",
+    "files": "Dosyalar"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Komut(ları) çalıştır",
+    "formatted": "{command} çalıştır | {n} komut çalıştır",
+    "commands": "Komutlar"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Bir dosyayı değiştir",
+    "formatted": "{target} dosyasını değiştir",
+    "regex": "Arama dizesini düzenli ifade olarak ele al",
+    "search": "Ara",
+    "replace": "Eşleşmeleri şununla değiştir"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Bir dosyayı taşı veya yeniden adlandır",
+    "formatted": "{source} dosyasını {target} konumuna taşı",
+    "source": "Kaynak Yolu",
+    "target": "Hedef Yolu"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Bir dizin oluştur",
+    "formatted": "{target} dizinini oluştur"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Dosyaları arşivle",
+    "formatted": "{file} dosyasını {destination} konumuna arşivle | {n} dosyayı {destination} konumuna arşivle",
+    "source": "Arşivlenecek dosyalar"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Arşivi çıkart",
+    "formatted": "{source} arşivini {destination} konumuna çıkart",
+    "destination": "Hedef"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Konsol mesajı",
+    "formatted": "\"{message}\" mesajını konsola yazdır",
+    "message": "Mesaj"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Bekle",
+    "formatted": "{duration} süre bekle",
+    "duration": "Süre",
+    "durationHint": "Geçerli zaman birimleri ns, us, ms, s, m ve h'dir. Birden fazla birim birleştirilebilir. Örneğin `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
-    "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "generic": "Steam'den yükle",
+    "formatted": "Steam Uygulama Kimliği {appId} yükle",
+    "appId": "Steam Uygulama Kimliği",
+    "branch": "Dal (varsayılan için boş bırakın)",
+    "branchPassword": "Dal Şifresi (gerekirse)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Java yükle",
+    "formatted": "Java {version} yükle"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Forge indir",
+    "formatted": "Minecraft Forge indir",
+    "outputVariable": "Çıktı değişkeni"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Neoforge indir",
+    "formatted": "Minecraft Neoforge indir",
+    "outputVariable": "Çıktı değişkeni"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Minecraft SpongeForge indir",
+    "formatted": "Minecraft SpongeForge indir",
+    "releaseType": "Sürüm Türü"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Minecraft Fabric indir",
+    "formatted": "Minecraft Fabric indir"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "PaperMC projesini indir",
+    "formatted": "{project} projesini {target} konumuna indir",
+    "project": "PaperMC projesi",
+    "build": "Derleme numarası"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "CurseForge'dan indir",
+    "formatted": "CurseForge'dan indir",
+    "projectId": "Proje Kimliği",
+    "fileId": "Dosya Kimliği",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Node.js yükle",
+    "formatted": "Node.js {version} yükle"
   }
 }
