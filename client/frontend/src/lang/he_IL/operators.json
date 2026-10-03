@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "בצע שלב זה רק אם תנאי זה מתקיים",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "הורד את Minecraft",
+    "formatted": "הורד את Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "כתוב לקובץ",
+    "formatted": "כתוב לקובץ {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "פתור גרסת Minecraft Forge",
+    "formatted": "פתור גרסת Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "הורד קובץ(ים)",
+    "formatted": "הורד {file} | הורד {n} קבצים",
+    "files": "קבצים"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "הרץ פקודה(ות)",
+    "formatted": "הרץ {command} | הרץ {n} פקודות",
+    "commands": "פקודות"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "שנה קובץ",
+    "formatted": "שנה קובץ {target}",
+    "regex": "התייחס למחרוזת החיפוש כביטוי רגולרי",
+    "search": "חפש",
+    "replace": "החלף התאמות ב-"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "העבר או שנה שם קובץ",
+    "formatted": "העבר קובץ {source} אל {target}",
+    "source": "נתיב מקור",
+    "target": "נתיב יעד"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "צור תיקייה",
+    "formatted": "צור תיקייה {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "ארכב קבצים",
+    "formatted": "ארכב {file} אל {destination} | ארכב {n} קבצים אל {destination}",
+    "source": "קבצים לארכוב"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "חלץ ארכיון",
+    "formatted": "חלץ {source} אל {destination}",
+    "destination": "יעד"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "הודעת מסוף",
+    "formatted": "הדפס \"{message}\" למסוף",
+    "message": "הודעה"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "המתן",
+    "formatted": "המתן {duration}",
+    "duration": "משך",
+    "durationHint": "יחידות זמן תקפות הן ns, us, ms, s, m ו-h. ניתן לשלב מספר יחידות. לדוגמה `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "התקן מ-Steam",
+    "formatted": "התקן Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "ענף (השאר ריק לברירת מחדל)",
+    "branchPassword": "סיסמת ענף (אם נדרש)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "התקן Java",
+    "formatted": "התקן Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "הורד את Minecraft Forge",
+    "formatted": "הורד את Minecraft Forge",
+    "outputVariable": "משתנה פלט"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "הורד את Minecraft Neoforge",
+    "formatted": "הורד את Minecraft Neoforge",
+    "outputVariable": "משתנה פלט"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "הורד את Minecraft SpongeForge",
+    "formatted": "הורד את Minecraft SpongeForge",
+    "releaseType": "סוג מהדורה"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "הורד את Minecraft Fabric",
+    "formatted": "הורד את Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "הורד פרויקט PaperMC",
+    "formatted": "הורד {project} אל {target}",
+    "project": "פרויקט PaperMC",
+    "build": "מספר בנייה"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "הורד מ-CurseForge",
+    "formatted": "הורד מ-CurseForge",
+    "projectId": "מזהה פרויקט",
+    "fileId": "מזהה קובץ",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "התקן Node.js",
+    "formatted": "התקן Node.js {version}"
   }
 }

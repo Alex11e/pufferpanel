@@ -4,7 +4,7 @@
     "Create": "Crea backup",
     "BackupStarted": "Backup avviato",
     "BackupsHeader": "Backup disponibili",
-    "Restore": "Ripristino",
+    "Restore": "Ripristina",
     "RestoreStarted": "Ripristino avviato",
     "RestorePrompt": "Ripristina da backup",
     "RestorePromptBody": "Vuoi davvero ripristinare da questo backup? \nL'operazione eliminerà tutti i dati esistenti, quindi è fortemente consigliato creare prima un backup.",

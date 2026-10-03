@@ -1,110 +1,110 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Jalankan langkah ini hanya jika kondisi ini terpenuhi",
   "mojangdl": {
-    "generic": "Download Minecraft",
-    "formatted": "Download Minecraft"
+    "generic": "Unduh Minecraft",
+    "formatted": "Unduh Minecraft"
   },
   "writefile": {
-    "generic": "Write to file",
-    "formatted": "Write to file {target}"
+    "generic": "Tulis ke file",
+    "formatted": "Tulis ke file {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Selesaikan Versi Minecraft Forge",
+    "formatted": "Selesaikan Versi Minecraft Forge"
   },
   "download": {
-    "generic": "Download file(s)",
-    "formatted": "Download {file} | Download {n} files",
-    "files": "Files"
+    "generic": "Unduh file",
+    "formatted": "Unduh {file} | Unduh {n} file",
+    "files": "File"
   },
   "command": {
-    "generic": "Run command(s)",
-    "formatted": "Run {command} | Run {n} commands",
-    "commands": "Commands"
+    "generic": "Jalankan perintah",
+    "formatted": "Jalankan {command} | Jalankan {n} perintah",
+    "commands": "Perintah"
   },
   "alterfile": {
-    "generic": "Modify a file",
-    "formatted": "Modify file {target}",
-    "regex": "Treat search string as regular expression",
-    "search": "Search",
-    "replace": "Replace matches with"
+    "generic": "Ubah file",
+    "formatted": "Ubah file {target}",
+    "regex": "Perlakukan string pencarian sebagai ekspresi reguler",
+    "search": "Cari",
+    "replace": "Ganti kecocokan dengan"
   },
   "move": {
-    "generic": "Move or rename a file",
-    "formatted": "Move file {source} to {target}",
-    "source": "Source Path",
-    "target": "Target Path"
+    "generic": "Pindahkan atau ganti nama file",
+    "formatted": "Pindahkan file {source} ke {target}",
+    "source": "Jalur Sumber",
+    "target": "Jalur Tujuan"
   },
   "mkdir": {
-    "generic": "Create a directory",
-    "formatted": "Create directory {target}"
+    "generic": "Buat direktori",
+    "formatted": "Buat direktori {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Arsipkan file",
+    "formatted": "Arsipkan {file} ke {destination} | Arsipkan {n} file ke {destination}",
+    "source": "File untuk diarsipkan"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Ekstrak arsip",
+    "formatted": "Ekstrak {source} ke {destination}",
+    "destination": "Tujuan"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Pesan konsol",
+    "formatted": "Cetak \"{message}\" ke konsol",
+    "message": "Pesan"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Tunggu",
+    "formatted": "Tunggu {duration}",
+    "duration": "Durasi",
+    "durationHint": "Satuan waktu yang valid adalah ns, us, ms, s, m, dan h. Beberapa satuan dapat digabungkan. Misalnya `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Install from Steam",
-    "formatted": "Install Steam App ID {appId}",
+    "generic": "Pasang dari Steam",
+    "formatted": "Pasang Steam App ID {appId}",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Cabang (biarkan kosong untuk bawaan)",
+    "branchPassword": "Kata Sandi Cabang (jika diperlukan)"
   },
   "javadl": {
-    "generic": "Install Java",
-    "formatted": "Install Java {version}"
+    "generic": "Pasang Java",
+    "formatted": "Pasang Java {version}"
   },
   "forgedl": {
-    "generic": "Download Minecraft Forge",
-    "formatted": "Download Minecraft Forge",
-    "outputVariable": "Output variable"
+    "generic": "Unduh Minecraft Forge",
+    "formatted": "Unduh Minecraft Forge",
+    "outputVariable": "Variabel keluaran"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Unduh Minecraft Neoforge",
+    "formatted": "Unduh Minecraft Neoforge",
+    "outputVariable": "Variabel keluaran"
   },
   "spongeforgedl": {
-    "generic": "Download Minecraft SpongeForge",
-    "formatted": "Download Minecraft SpongeForge",
-    "releaseType": "Release Type"
+    "generic": "Unduh Minecraft SpongeForge",
+    "formatted": "Unduh Minecraft SpongeForge",
+    "releaseType": "Jenis Rilis"
   },
   "fabricdl": {
-    "generic": "Download Minecraft Fabric",
-    "formatted": "Download Minecraft Fabric"
+    "generic": "Unduh Minecraft Fabric",
+    "formatted": "Unduh Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Unduh proyek PaperMC",
+    "formatted": "Unduh {project} ke {target}",
+    "project": "Proyek PaperMC",
+    "build": "Nomor build"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Unduh Dari CurseForge",
+    "formatted": "Unduh Dari CurseForge",
+    "projectId": "ID Proyek",
+    "fileId": "ID File",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Pasang Node.js",
+    "formatted": "Pasang Node.js {version}"
   }
 }

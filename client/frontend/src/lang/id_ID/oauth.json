@@ -1,13 +1,13 @@
 {
-  "Credentials": "OAuth2 Client Credentials",
-  "ClientId": "Client ID",
-  "ClientSecret": "Client Secret",
-  "NewClientWarning": "Note down the client secret, after closing this dialog it will never be shown again. Losing or forgetting it will render this client completely unusable.",
-  "Create": "Create new OAuth2 Client",
-  "UnnamedClient": "Unnamed OAuth2 Client",
-  "Docs": "Find API documentation here",
-  "Clients": "OAuth2 Clients",
-  "Delete": "Delete {clientName}?",
-  "ConfirmDelete": "I am aware of the effects that deleting this OAuth2 client will have and wish to proceed.",
-  "AccountDescription": "The OAuth2 Clients listed here inherit all of your accounts permissions"
+  "Credentials": "Kredensial Klien OAuth2",
+  "ClientId": "ID Klien",
+  "ClientSecret": "Rahasia Klien",
+  "NewClientWarning": "Catat rahasia klien, setelah menutup dialog ini tidak akan ditampilkan lagi. Kehilangan atau melupakannya akan membuat klien ini sepenuhnya tidak dapat digunakan.",
+  "Create": "Buat Klien OAuth2 baru",
+  "UnnamedClient": "Klien OAuth2 Tanpa Nama",
+  "Docs": "Temukan dokumentasi API di sini",
+  "Clients": "Klien OAuth2",
+  "Delete": "Hapus {clientName}?",
+  "ConfirmDelete": "Saya menyadari dampak dari menghapus klien OAuth2 ini dan ingin melanjutkan.",
+  "AccountDescription": "Klien OAuth2 yang terdaftar di sini mewarisi semua izin akun Anda"
 }

@@ -1,65 +1,65 @@
 {
   "Name": "Nama",
   "Language": "Bahasa",
-  "Online": "Hidup",
-  "Offline": "Mati",
-  "Installing": "Installing",
+  "Online": "Daring",
+  "Offline": "Luring",
+  "Installing": "Memasang",
   "Unknown": "Tak diketahui",
   "Loading": "Memuat...",
-  "Description": "Description",
+  "Description": "Deskripsi",
   "Save": "Simpan",
   "Cancel": "Batalkan",
-  "Close": "Close",
+  "Close": "Tutup",
   "Host": "Host",
   "Port": "Port",
   "Collapse": "Ciutkan",
-  "Expand": "Expand",
-  "Copy": "Copy to clipboard",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Expand": "Perluas",
+  "Copy": "Salin ke papan klip",
+  "Copied": "Disalin ke papan klip",
+  "Back": "Kembali",
   "Next": "Selanjutnya",
   "Details": "Detail",
   "ErrorDetails": "Detail Masalah",
-  "HelpTranslate": "Bantu kami terjemahkan Pufferpanel",
+  "HelpTranslate": "Bantu kami terjemahkan PufferPanel",
   "Protocol": "Protokol",
   "Add": "Tambahkan",
-  "Apply": "Apply",
-  "Confirm": "Confirm",
-  "Condition": "Condition",
-  "Discard": "Discard",
-  "ConfirmLeave": "You have unsaved changes, do you want to discard these changes and leave this page?",
+  "Apply": "Terapkan",
+  "Confirm": "Konfirmasi",
+  "Condition": "Kondisi",
+  "Discard": "Buang",
+  "ConfirmLeave": "Anda memiliki perubahan yang belum disimpan. Apakah Anda ingin membuang perubahan ini dan meninggalkan halaman ini?",
   "theme": {
-    "Theme": "Theme",
+    "Theme": "Tema",
     "Mode": "Mode",
     "mode": {
-      "Light": "Light",
-      "Dark": "Dark",
-      "DarkHighContrast": "Dark (High Contrast)",
-      "Auto": "Auto"
+      "Light": "Terang",
+      "Dark": "Gelap",
+      "DarkHighContrast": "Gelap (Kontras Tinggi)",
+      "Auto": "Otomatis"
     },
-    "BaseColor": "Base Color",
-    "ServerTypeDisplay": "Server Type Display",
+    "BaseColor": "Warna Dasar",
+    "ServerTypeDisplay": "Tampilan Jenis Server",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
-      "Icon": "Icon",
-      "None": "None"
+      "IconBackground": "Ikon + Latar Belakang",
+      "Icon": "Ikon",
+      "None": "Tidak ada"
     },
-    "ListType": "List Type",
+    "ListType": "Jenis Daftar",
     "listType": {
-      "Grid": "Grid",
-      "List": "List"
+      "Grid": "Kisi",
+      "List": "Daftar"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Ukuran Font",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Bawaan"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Jenis Huruf",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Bawaan",
+      "A11y": "Aksesibilitas dioptimalkan"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Tidak ada hasil",
+  "Yes": "Ya",
+  "No": "Tidak"
 }

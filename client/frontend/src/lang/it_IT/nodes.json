@@ -1,20 +1,20 @@
 {
   "Node": "Nodo",
   "Nodes": "Nodi",
-  "Edit": "Modifica Nodo",
-  "Add": "Aggiungi Nodo",
-  "Create": "Crea Nodo",
-  "Update": "Aggiorna Nodo",
-  "Delete": "Elimina Nodo",
-  "ConfirmDelete": "Sei sicuro di voler eliminare il ruolo \"{name}\"?",
-  "Created": "Nodo Creato",
-  "Updated": "Nodo Aggiornato",
-  "Deleted": "Nodo Eliminato",
+  "Edit": "Modifica nodo",
+  "Add": "Aggiungi nodo",
+  "Create": "Crea nodo",
+  "Update": "Aggiorna nodo",
+  "Delete": "Elimina nodo",
+  "ConfirmDelete": "Sei sicuro di voler eliminare il nodo \"{name}\"?",
+  "Created": "Nodo creato",
+  "Updated": "Nodo aggiornato",
+  "Deleted": "Nodo eliminato",
   "Reachable": "Questo nodo è correttamente impostato e in esecuzione",
   "Unreachable": "Questo nodo non è configurato correttamente o non è attualmente disponibile",
   "features": {
     "os": {
-      "label": "Sistema Operativo",
+      "label": "Sistema operativo",
       "linux": "Linux",
       "windows": "Windows"
     },
@@ -28,23 +28,23 @@
       "true": "Docker disponibile",
       "false": "Docker non disponibile"
     },
-    "envs": "Ambienti Disponibili"
+    "envs": "Ambienti disponibili"
   },
-  "PublicHost": "Host Pubblico",
-  "PublicPort": "Porta Pubblica",
-  "PrivateHost": "Host Privato",
-  "PrivatePort": "Porta Privata",
+  "PublicHost": "Host pubblico",
+  "PublicPort": "Porta pubblica",
+  "PrivateHost": "Host privato",
+  "PrivatePort": "Porta privata",
   "SftpPort": "Porta SFTP",
-  "WithPrivateAddress": "Usa un host/porta diverso per il server per la comunicazione del server",
-  "WithPrivateAddressHint": "Questo indirizzo separato viene utilizzato quando il nodo principale deve parlare con il nuovo nodo. Utile per esempio quando i nodi sono nella stessa rete dietro NAT.",
-  "LocalNodeEdit": "Il nodo locale non ha alcuna impostazione modificabile\n\nPer modificare l'host visualizzato con i server ospitati su questo nodo, modifica l'url principale dei pannelli nelle impostazioni del pannello",
-  "Deploy": "Dispiega Nodo",
+  "WithPrivateAddress": "Usa un host/porta diverso per la comunicazione server-to-server",
+  "WithPrivateAddressHint": "Questo indirizzo separato viene utilizzato quando il nodo principale deve comunicare con il nuovo nodo. Utile per esempio quando i nodi sono nella stessa rete dietro NAT.",
+  "LocalNodeEdit": "Il nodo locale non ha alcuna impostazione modificabile\n\nPer modificare l'host visualizzato con i server ospitati su questo nodo, modifica l'URL principale del pannello nelle impostazioni del pannello",
+  "Deploy": "Dispiega nodo",
   "deploy": {
     "Step1": "## Passo 1\n\nInstalla PufferPanel sul nuovo server, [vedi i documenti per i dettagli](https://docs.pufferpanel.com/en/latest/installing.html)",
     "Step2": "## Passo 2\n\nFerma il servizio PufferPanel sul nuovo server se è stato avviato durante l'installazione eseguendo `sudo systemctl stop pufferpanel`",
-    "Step3": "## Passo 3\n\nSostituire il contenuto del file di configurazione del Pannello Pufferg sul nuovo server con il codice sotto\n\nIl file di configurazione si trova solitamente in `/etc/pufferpanel/config. son`\n\n```\n{config}\n```",
+    "Step3": "## Passo 3\n\nSostituisci il contenuto del file di configurazione di PufferPanel sul nuovo server con il codice sotto\n\nIl file di configurazione si trova solitamente in `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
     "Step4": "## Passo 4\n\nAbilita e (ri)avvia il servizio PufferPanel sul nuovo server eseguendo `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Il tuo nuovo nodo è ora configurato e pronto per andare"
+    "Step5": "### Il tuo nuovo nodo è ora configurato e pronto all'uso"
   },
-  "DeploymentInstruction": "Per distribuire il nodo, installa PufferPanel sul nuovo server e metti il file di configurazione in '/etc/pufferpanel/'<br/>Riavvia PufferPanel sul serve successivamente."
+  "DeploymentInstruction": "Per distribuire il nodo, installa PufferPanel sul nuovo server e metti il file di configurazione in `/etc/pufferpanel/`<br/>Riavvia PufferPanel sul server successivamente."
 }

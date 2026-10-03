@@ -10,7 +10,7 @@
   "Save": "Salva",
   "Cancel": "Annulla",
   "Close": "Chiudi",
-  "Host": "Ospite",
+  "Host": "Host",
   "Port": "Porta",
   "Collapse": "Collassa",
   "Expand": "Espandi",
@@ -19,14 +19,14 @@
   "Back": "Indietro",
   "Next": "Successivo",
   "Details": "Dettagli",
-  "ErrorDetails": "Dettagli Errore",
+  "ErrorDetails": "Dettagli errore",
   "HelpTranslate": "Aiutaci a tradurre PufferPanel",
   "Protocol": "Protocollo",
   "Add": "Aggiungi",
   "Apply": "Applica",
   "Confirm": "Conferma",
   "Condition": "Condizione",
-  "Discard": "Annulla",
+  "Discard": "Scarta",
   "ConfirmLeave": "Hai delle modifiche non salvate, vuoi scartare queste modifiche e lasciare questa pagina?",
   "theme": {
     "Theme": "Tema",
@@ -37,19 +37,19 @@
       "DarkHighContrast": "Scuro (contrasto elevato)",
       "Auto": "Automatico"
     },
-    "BaseColor": "Colore Base",
-    "ServerTypeDisplay": "Visualizzazione Tipo Server",
+    "BaseColor": "Colore base",
+    "ServerTypeDisplay": "Visualizzazione tipo server",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Icona + Sfondo",
       "Icon": "Icona",
       "None": "Nessuno"
     },
-    "ListType": "Tipo Di Lista",
+    "ListType": "Tipo di lista",
     "listType": {
       "Grid": "Griglia",
       "List": "Lista"
     },
-    "FontSize": "Dimensione Carattere",
+    "FontSize": "Dimensione carattere",
     "fontSize": {
       "Default": "Predefinito"
     },
@@ -60,6 +60,6 @@
     }
   },
   "NoResults": "Nessun risultato",
-  "Yes": "Si",
+  "Yes": "Sì",
   "No": "No"
 }

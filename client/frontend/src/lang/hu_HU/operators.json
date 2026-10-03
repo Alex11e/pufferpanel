@@ -1,12 +1,12 @@
 {
-  "ConditionHint": "Csak akkor hajtsa végre ezt a lépést, ha a következő feltétel teljesül",
+  "ConditionHint": "Csak akkor hajtsd végre ezt a lépést, ha a következő feltétel teljesül",
   "mojangdl": {
-    "generic": "Minecraft Letöltése",
-    "formatted": "Minecraft Letöltése"
+    "generic": "Minecraft letöltése",
+    "formatted": "Minecraft letöltése"
   },
   "writefile": {
     "generic": "Fájlba írás",
-    "formatted": "Fájlba írása  {target}"
+    "formatted": "Írás a(z) {target} fájlba"
   },
   "resolveforgeversion": {
     "generic": "Minecraft Forge verzió megoldása",
@@ -14,12 +14,12 @@
   },
   "download": {
     "generic": "Fájl(ok) letöltése",
-    "formatted": "{file} letölése | {n} fájlok letöltése",
+    "formatted": "{file} letöltése | {n} fájl letöltése",
     "files": "Fájlok"
   },
   "command": {
-    "generic": "Parancs(ok) Futtatása",
-    "formatted": "{command} futtása | {n} parancs futtása",
+    "generic": "Parancs(ok) futtatása",
+    "formatted": "{command} futtatása | {n} parancs futtatása",
     "commands": "Parancsok"
   },
   "alterfile": {
@@ -30,23 +30,23 @@
     "replace": "Találatok kicserélése ezzel"
   },
   "move": {
-    "generic": "Fájl áthelyezése vagy törlése",
+    "generic": "Fájl áthelyezése vagy átnevezése",
     "formatted": "Fájl áthelyezése {source} ide {target}",
     "source": "Forrás útvonal",
     "target": "Cél útvonal"
   },
   "mkdir": {
     "generic": "Mappa létrehozása",
-    "formatted": "Mappa létrehozzása {target}"
+    "formatted": "Mappa létrehozása {target}"
   },
   "archive": {
-    "generic": "Archív Fájlok",
-    "formatted": "Archíválni {file} a {destination}-ba | Archíválni {n} fájlokat {destination}-ba",
-    "source": "Archíválandó Fájlok"
+    "generic": "Fájlok archiválása",
+    "formatted": "{file} archiválása ide: {destination} | {n} fájl archiválása ide: {destination}",
+    "source": "Archiválandó fájlok"
   },
   "extract": {
-    "generic": "Archívum Kicsomagolása",
-    "formatted": "Kicsomagolni {source} a {destination}-ba",
+    "generic": "Archívum kicsomagolása",
+    "formatted": "{source} kicsomagolása ide: {destination}",
     "destination": "Cél"
   },
   "console": {
@@ -55,52 +55,52 @@
     "message": "Üzenet"
   },
   "sleep": {
-    "generic": "Kérem Várjon",
-    "formatted": "Kérem várjon {duration}",
+    "generic": "Várjon",
+    "formatted": "Várjon {duration}",
     "duration": "Időtartam",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "durationHint": "Érvényes időegységek: ns, us, ms, s, m és h. Több egység kombinálható. Például: `1m45s`"
   },
   "steamgamedl": {
-    "generic": "Steamről telepítése",
-    "formatted": "Streamről App id-ben telepítése {appId}",
+    "generic": "Steamről telepítés",
+    "formatted": "Steam App ID {appId} telepítése",
     "appId": "Steam App ID",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Ág (hagyd üresen az alapértelmezetthez)",
+    "branchPassword": "Ág jelszava (ha szükséges)"
   },
   "javadl": {
     "generic": "Java telepítése",
     "formatted": "Java {version} telepítése"
   },
   "forgedl": {
-    "generic": "Minecraft Forge Letöltése",
-    "formatted": "Minecraft Forge Letöltése",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Forge letöltése",
+    "formatted": "Minecraft Forge letöltése",
+    "outputVariable": "Kimeneti változó"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Minecraft Neoforge letöltése",
+    "formatted": "Minecraft Neoforge letöltése",
+    "outputVariable": "Kimeneti változó"
   },
   "spongeforgedl": {
-    "generic": "Minecraft SpongeForge Letöltése",
-    "formatted": "Minecraft SpongeForge Letöltése",
-    "releaseType": "Kiadás Típusa"
+    "generic": "Minecraft SpongeForge letöltése",
+    "formatted": "Minecraft SpongeForge letöltése",
+    "releaseType": "Kiadás típusa"
   },
   "fabricdl": {
-    "generic": "Minecraft Fabric Letöltése",
-    "formatted": "Minecraft Fabric Letöltése"
+    "generic": "Minecraft Fabric letöltése",
+    "formatted": "Minecraft Fabric letöltése"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "PaperMC projekt letöltése",
+    "formatted": "{project} letöltése ide: {target}",
+    "project": "PaperMC projekt",
+    "build": "Build szám"
   },
   "curseforge": {
-    "generic": "Curseforgeról letöltés",
-    "formatted": "Curseforgeról letöltés",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Letöltés CurseForge-ról",
+    "formatted": "Letöltés CurseForge-ról",
+    "projectId": "Projekt ID",
+    "fileId": "Fájl ID",
     "java": "Java"
   },
   "nodejsdl": {

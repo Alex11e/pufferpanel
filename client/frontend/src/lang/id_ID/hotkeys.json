@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Pintasan Papan Ketik",
   "Global": {
     "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "g a": "Buka Akun",
+    "g c": "Buka Konfigurasi Panel",
+    "g n": "Buka Node",
+    "g s": "Buka Server",
+    "g t": "Buka Templat",
+    "g u": "Buka Pengguna",
+    "/": "Pencarian Global"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Akun",
+    "t 2": "Buka tab Autentikasi 2-Faktor",
+    "t a": "Buka tab Detail Akun",
+    "t o": "Buka tab OAuth",
+    "t p": "Buka tab Kata Sandi",
+    "t s": "Buka tab Preferensi"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Server",
+    "c": "Buat server baru",
+    "l": "Fokuskan server pertama dalam daftar"
   },
   "ServerView": {
     "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "t c": "Buka tab Konsol",
+    "t i": "Buka tab Statistik",
+    "t f": "Buka tab File",
+    "t s": "Buka tab Pengaturan",
+    "t u": "Buka tab Pengguna",
+    "t 6": "Buka tab SFTP",
+    "t 7": "Buka tab API",
+    "t a": "Buka tab Admin",
+    "c c": "Fokuskan Input Perintah",
+    "c x": "Bersihkan Konsol",
+    "r r": "Mulai Server",
+    "r s": "Hentikan Server",
+    "r k": "Matikan Paksa Server",
+    "r i": "Pasang Server",
+    "f a": "Arsipkan isi direktori saat ini",
+    "f c d": "Buat direktori baru",
+    "f c f": "Buat file baru",
+    "f s a": "Arsipkan file yang dipilih",
+    "f s d": "Hapus file yang dipilih",
+    "f d": "Unggah direktori",
+    "f l": "Fokuskan file/folder pertama dalam daftar",
+    "f r": "Muat ulang daftar file",
+    "f u": "Unggah file",
+    "a e": "Edit Definisi Server",
+    "a r": "Muat ulang Definisi Server dari disk"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Node",
+    "c": "Buat node baru",
+    "l": "Fokuskan node pertama dalam daftar"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Pengguna",
+    "c": "Buat pengguna baru",
+    "l": "Fokuskan pengguna pertama dalam daftar"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Templat",
+    "c": "Buat templat baru",
+    "l": "Fokuskan templat pertama dalam daftar"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Editor Templat",
+    "t e": "Buka tab Lingkungan",
+    "t g": "Buka tab Umum",
+    "t h": "Buka tab Hook",
+    "t i": "Buka tab Pemasangan",
+    "t j": "Buka tab JSON",
+    "t r": "Buka tab Konfigurasi Jalankan",
+    "t v": "Buka tab Variabel"
   }
 }

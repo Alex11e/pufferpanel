@@ -3,12 +3,12 @@
   "Nodes": "Csomópontok",
   "Edit": "Csomópont szerkesztése",
   "Add": "Új csomópont",
-  "Create": "Csomópont létrehozzása",
+  "Create": "Csomópont létrehozása",
   "Update": "Csomópont frissítése",
   "Delete": "Csomópont törlése",
-  "ConfirmDelete": "Tényleg szeretnéd törölni {name}?",
-  "Created": "Csomópont létrehozzva",
-  "Updated": "Csomópont frissítéstve",
+  "ConfirmDelete": "Tényleg szeretnéd törölni a(z) {name} csomópontot?",
+  "Created": "Csomópont létrehozva",
+  "Updated": "Csomópont frissítve",
   "Deleted": "Csomópont törölve",
   "Reachable": "Ez a csomópont helyesen van beállítva és működik",
   "Unreachable": "Ez a csomópont vagy nem megfelelően van beállítva, vagy jelenleg nem elérhető",
@@ -28,11 +28,11 @@
       "true": "Docker elérhető",
       "false": "Docker nem elérhető"
     },
-    "envs": "Elérhető környezeti védelemek"
+    "envs": "Elérhető környezetek"
   },
-  "PublicHost": "Nyilvános kiszolgáló",
+  "PublicHost": "Nyilvános gazdagép",
   "PublicPort": "Nyilvános port",
-  "PrivateHost": "Privát kiszolgáló",
+  "PrivateHost": "Privát gazdagép",
   "PrivatePort": "Privát port",
   "SftpPort": "SFTP port",
   "PortAllocation": "Portkiosztás",
@@ -52,16 +52,16 @@
   "PortsUsed": "port használatban",
   "ReleasePort": "Port felszabadítása",
   "PortReleased": "{port} port felszabadítva",
-  "WithPrivateAddress": "Használj másik ip/portot a két szerver közötti kommunikációhoz",
+  "WithPrivateAddress": "Használj másik IP/portot a két szerver közötti kommunikációhoz",
   "WithPrivateAddressHint": "Ez a külön cím akkor használatos, amikor a főcsomópont kommunikál az új csomóponttal. Olyan esetekben hasznos, mint pl.: a csomópontok azonos hálózaton vannak NAT mögött.",
   "LocalNodeEdit": "A helyi csomópont címe és SFTP-címe a panel beállításaiból származik. Ezek módosításához állítsd be a panel fő URL-jét; a porttartomány és a domainbeállítások lent szerkeszthetők.",
-  "Deploy": "Csomópont telepítése",
+  "Deploy": "Csomópont üzembe helyezése",
   "deploy": {
-    "Step1": "## 1. Lépés\n\nTelepítse a PufferPanelt az új szerverre, [lásd a dokumentumokat a részletekért](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## 2. Lépés\n\nÁllítsa le a PufferPanel szolgáltatást az új kiszolgálón, ha a telepítés során elindult a `sudo systemctl stop pufferpanel futtatásával.`",
-    "Step3": "## 3. Lépés\n\nCserélje ki a PufferPanel konfigurációs fájl tartalmát az új szerveren az alábbi kóddal:\n\nA konfigurációs fájl általában az `/etc/pufferpanel/config.json` címen található.\n\n```\n{config}\n```",
-    "Step4": "##4. Lépés\n\nEngedélyezze és (újra)indítsa a PufferPanel szolgáltatást az új szerveren a `sudo systemctl enable --now pufferpanel` futtatásával",
-    "Step5": "### A csomópontod be van állítva szabad vagy"
+    "Step1": "## 1. Lépés\n\nTelepítsd a PufferPanelt az új szerverre, [lásd a dokumentumokat a részletekért](https://docs.pufferpanel.com/en/latest/installing.html)",
+    "Step2": "## 2. Lépés\n\nÁllítsd le a PufferPanel szolgáltatást az új kiszolgálón, ha a telepítés során elindult, a `sudo systemctl stop pufferpanel` futtatásával",
+    "Step3": "## 3. Lépés\n\nCseréld ki a PufferPanel konfigurációs fájl tartalmát az új szerveren az alábbi kódra:\n\nA konfigurációs fájl általában az `/etc/pufferpanel/config.json` címen található.\n\n```\n{config}\n```",
+    "Step4": "## 4. Lépés\n\nEngedélyezd és (újra)indítsd a PufferPanel szolgáltatást az új szerveren a `sudo systemctl enable --now pufferpanel` futtatásával",
+    "Step5": "### Az új csomópontod be van állítva és használatra kész"
   },
-  "DeploymentInstruction": "A csomópont berendezéséhez telepítse a PufferPanelt az új szerveren és helyezze a konfigurációs fájlt a következő helyre: `/etc/pufferpanel/`<br/>Majd indítsa újra a PufferPanelt az új szerveren."
+  "DeploymentInstruction": "A csomópont üzembe helyezéséhez telepítsd a PufferPanelt az új szerveren és helyezd a konfigurációs fájlt a következő helyre: `/etc/pufferpanel/`<br/>Majd indítsd újra a PufferPanelt az új szerveren."
 }
