@@ -374,7 +374,8 @@ func createServer(c *gin.Context) {
 		Icon:       postBody.Icon,
 	}
 	if node.SubdomainBase != "" {
-		server.Subdomain = server.Identifier + "." + node.SubdomainBase
+		subdomain := server.Identifier + "." + node.SubdomainBase
+		server.Subdomain = &subdomain
 	}
 
 	users := make([]*models.User, len(postBody.Users))
@@ -398,13 +399,29 @@ func createServer(c *gin.Context) {
 	if _, usesPort := postBody.Variables["port"]; usesPort {
 		allocation, allocationErr := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
 		if allocationErr == services.ErrNoPortAvailable {
-			c.JSON(http.StatusConflict, gin.H{"error": "no free port in node range"})
+			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free port in node range"}})
 			return
 		}
 		if response.HandleError(c, allocationErr, http.StatusInternalServerError) { return }
 		server.Port = allocation.Port
 		postBody.Variables["port"] = pufferpanel.Variable{Type: pufferpanel.Type{Type: "integer"}, Value: int(allocation.Port)}
 		if err = ss.Update(server); response.HandleError(c, err, http.StatusInternalServerError) { return }
+	}
+
+	if postBody.Type.Type == vpsType {
+		allocation, allocationErr := (&services.Allocation{DB: db}).AllocateRangeWithPurpose(node, server.Identifier, 5902, 65535, "vnc")
+		if allocationErr == services.ErrNoPortAvailable {
+			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free VNC port is available on this node"}})
+			return
+		}
+		if response.HandleError(c, allocationErr, http.StatusInternalServerError) { return }
+		if postBody.Variables == nil {
+			postBody.Variables = make(map[string]pufferpanel.Variable)
+		}
+		vncDisplay := postBody.Variables["vnc_display"]
+		vncDisplay.Type = pufferpanel.Type{Type: "integer"}
+		vncDisplay.Value = int(allocation.Port) - 5900
+		postBody.Variables["vnc_display"] = vncDisplay
 	}
 
 	for _, v := range users {

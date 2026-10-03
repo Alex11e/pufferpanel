@@ -17,6 +17,7 @@ let loadingPage = false
 const allServersLoaded = ref(false)
 const loaderRef = ref(null)
 const firstEntry = ref(null)
+const loadError = ref('')
 const search = ref('')
 const selectedTag = ref('')
 const selectedFolder = ref('')
@@ -62,18 +63,23 @@ function isLoaderVisible() {
 
 async function loadPage(page = 1) {
   loadingPage = true
-  const data = await api.server.list(page)
-  addServers(data.servers)
-  lastPage = data.paging.page
-  allServersLoaded.value = data.paging.page * data.paging.pageSize >= (data.paging.total || 0)
-  nextTick(() => {
-    loadingPage = false
-    if (!allServersLoaded.value && isLoaderVisible()) loadPage(lastPage + 1)
-  })
+  try {
+    const data = await api.server.list(page)
+    addServers(data.servers)
+    lastPage = data.paging.page
+    allServersLoaded.value = data.paging.page * data.paging.pageSize >= (data.paging.total || 0)
+  } catch (error) {
+    loadError.value = error.message || String(error)
+  } finally {
+    nextTick(() => {
+      loadingPage = false
+      if (!loadError.value && !allServersLoaded.value && isLoaderVisible()) loadPage(lastPage + 1)
+    })
+  }
 }
 
 function onScroll() {
-  if (!loadingPage && isLoaderVisible()) loadPage(lastPage + 1)
+  if (!loadingPage && !loadError.value && isLoaderVisible()) loadPage(lastPage + 1)
 }
 
 onMounted(() => {
@@ -156,6 +162,7 @@ async function copyAddress(server) {
 <template>
   <div class="serverlist">
     <h1 v-text="t('servers.Servers')" />
+    <p v-if="loadError" class="load-error" role="alert">{{ loadError }}</p>
     <div class="server-dashboard">
       <div class="metric"><span>{{ summary.total }}</span>{{ t('servers.TotalServers') }}</div>
       <div class="metric online"><span>{{ summary.online }}</span>{{ t('common.Online') }}</div>

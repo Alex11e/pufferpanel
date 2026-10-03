@@ -32,6 +32,8 @@ const firewallEnabled = ref(false)
 const subdomainBase = ref('')
 const allocations = ref([])
 const allocationServerId = ref('')
+const nodeLoaded = ref(false)
+const loadError = ref('')
 const currentStep = ref(1)
 const featuresFetched = ref(null)
 const features = ref({})
@@ -48,25 +50,34 @@ function validRange() {
 }
 
 onMounted(async () => {
-  const node = await api.node.get(route.params.id)
-  name.value = node.name
-  publicHost.value = node.publicHost
-  publicPort.value = node.publicPort
-  privateHost.value = node.privateHost
-  privatePort.value = node.privatePort
-  sftpPort.value = node.sftpPort
-  portRangeStart.value = node.portRangeStart || 1000
-  portRangeEnd.value = node.portRangeEnd || 8000
-  firewallEnabled.value = node.firewallEnabled
-  subdomainBase.value = node.subdomainBase
-  allocations.value = await api.node.allocations(route.params.id)
-  withPrivateHost.value = !(node.publicHost === node.privateHost && node.publicPort === node.privatePort)
-  deploymentData = await api.node.deployment(route.params.id)
-  if (route.query.created) {
-    deploymentOpen.value = true
+  try {
+    const node = await api.node.get(route.params.id)
+    name.value = node.name
+    publicHost.value = node.publicHost
+    publicPort.value = node.publicPort
+    privateHost.value = node.privateHost
+    privatePort.value = node.privatePort
+    sftpPort.value = node.sftpPort
+    portRangeStart.value = node.portRangeStart || 1000
+    portRangeEnd.value = node.portRangeEnd || 8000
+    firewallEnabled.value = node.firewallEnabled
+    subdomainBase.value = node.subdomainBase
+    withPrivateHost.value = !(node.publicHost === node.privateHost && node.publicPort === node.privatePort)
+    const [allocationResult, deploymentResult] = await Promise.allSettled([
+      api.node.allocations(route.params.id),
+      api.node.deployment(route.params.id)
+    ])
+    if (allocationResult.status === 'fulfilled') allocations.value = allocationResult.value
+    if (deploymentResult.status === 'fulfilled') deploymentData = deploymentResult.value
+    if (route.query.created) {
+      deploymentOpen.value = true
+    }
+    fetchFeatures()
+  } catch (error) {
+    loadError.value = error.message || String(error)
+  } finally {
+    nodeLoaded.value = true
   }
-
-  fetchFeatures()
 })
 
 async function fetchFeatures() {
@@ -195,7 +206,9 @@ function closeDeploy() {
 </script>
 
 <template>
-  <div class="nodeview">
+  <loader v-if="!nodeLoaded" />
+  <p v-else-if="loadError" class="load-error" role="alert">{{ loadError }}</p>
+  <div v-else class="nodeview">
     <h1 v-text="name" />
     <loader v-if="featuresFetched === null" />
     <div v-else-if="featuresFetched === false" class="features">

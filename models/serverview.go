@@ -16,7 +16,7 @@ type ServerView struct {
 	Users        []ServerUserView `json:"users,omitempty"`
 	IP           string           `json:"ip,omitempty"`
 	Port         uint16           `json:"port,omitempty"`
-	Subdomain    string           `json:"subdomain,omitempty"`
+	Subdomain    *string          `json:"subdomain,omitempty"`
 	Allocations  []Allocation     `json:"allocations,omitempty"`
 	AutoBackupEnabled bool         `json:"autoBackupEnabled"`
 	AutoBackupRetention uint       `json:"autoBackupRetention,omitempty"`

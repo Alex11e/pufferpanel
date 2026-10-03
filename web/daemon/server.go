@@ -138,7 +138,7 @@ func getServerFromGin(c *gin.Context) *servers.Server {
 // @Security OAuth2Application[server.start]
 func startServer(c *gin.Context) {
 	server := getServerFromGin(c)
-	_, wait := c.GetQuery("wait")
+	wait := utils.GetQueryBool(c, "wait")
 
 	if wait {
 		err := server.Start()
@@ -347,8 +347,7 @@ func deleteServer(c *gin.Context) {
 // @Security OAuth2Application[server.install]
 func installServer(c *gin.Context) {
 	server := getServerFromGin(c)
-
-	_, wait := c.GetQuery("wait")
+	wait := utils.GetQueryBool(c, "wait")
 
 	if wait {
 		err := server.Install()

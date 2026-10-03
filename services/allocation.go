@@ -14,7 +14,16 @@ type Allocation struct{ DB *gorm.DB }
 // AllocateNext finds the first unused port in the node's configured range.
 // The database unique index is the final guard against concurrent requests.
 func (s *Allocation) AllocateNext(node *models.Node, serverID string) (*models.Allocation, error) {
-	for candidate := int(node.PortRangeStart); candidate <= int(node.PortRangeEnd); candidate++ {
+	return s.AllocateRange(node, serverID, node.PortRangeStart, node.PortRangeEnd)
+}
+
+// AllocateRange finds the first unused port in an explicit inclusive range.
+func (s *Allocation) AllocateRange(node *models.Node, serverID string, start, end uint16) (*models.Allocation, error) {
+	return s.AllocateRangeWithPurpose(node, serverID, start, end, "")
+}
+
+func (s *Allocation) AllocateRangeWithPurpose(node *models.Node, serverID string, start, end uint16, purpose string) (*models.Allocation, error) {
+	for candidate := int(start); candidate <= int(end); candidate++ {
 		port := uint16(candidate)
 		var legacy models.Server
 		// LocalNode is virtual: its servers have a NULL node_id rather than the
@@ -29,7 +38,7 @@ func (s *Allocation) AllocateNext(node *models.Node, serverID string) (*models.A
 		if legacyQuery.First(&legacy).Error == nil {
 			continue
 		}
-		allocation := &models.Allocation{NodeID: node.ID, ServerIdentifier: serverID, Port: port, Protocols: "tcp,udp"}
+		allocation := &models.Allocation{NodeID: node.ID, ServerIdentifier: serverID, Port: port, Protocols: "tcp,udp", Purpose: purpose}
 		err := s.DB.Create(allocation).Error
 		if err == nil {
 			return allocation, nil
@@ -49,7 +58,7 @@ func (s *Allocation) AllocateNext(node *models.Node, serverID string) (*models.A
 
 func (s *Allocation) List(nodeID uint) ([]models.Allocation, error) {
 	var allocations []models.Allocation
-	err := s.DB.Where("node_id = ?", nodeID).Order("port").Find(&allocations).Error
+	err := s.DB.Where("node_id = ? AND purpose = ''", nodeID).Order("port").Find(&allocations).Error
 	return allocations, err
 }
 

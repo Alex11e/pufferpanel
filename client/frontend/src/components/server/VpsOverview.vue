@@ -12,21 +12,38 @@ const events = inject('events')
 const status = ref(null)
 const vars = ref(null)
 const busy = ref(false)
+const refreshing = ref(false)
+const statusError = ref('')
+const dataError = ref('')
+const actionError = ref('')
 let timer = null
 
+function errorMessage(error) {
+  return error?.msg || error?.message || 'Ismeretlen hiba történt.'
+}
+
 async function refresh() {
+  if (refreshing.value) return
+  refreshing.value = true
   try {
     status.value = await props.server.getStatus()
-  } catch {
-    status.value = null
+    statusError.value = ''
+  } catch (error) {
+    status.value = 'unknown'
+    statusError.value = errorMessage(error)
+  } finally {
+    refreshing.value = false
   }
 }
 
 async function power(action) {
   busy.value = true
+  actionError.value = ''
   try {
     await props.server[action]()
     await refresh()
+  } catch (error) {
+    actionError.value = errorMessage(error)
   } finally {
     busy.value = false
   }
@@ -43,12 +60,13 @@ function value(key, fallback = '') {
   return entry && entry.value !== undefined && entry.value !== '' ? entry.value : fallback
 }
 
-onMounted(async () => {
-  await refresh()
+onMounted(() => {
   timer = setInterval(refresh, 10000)
+  refresh()
   if (props.server.hasScope('server.data.view')) {
-    const data = await props.server.getData()
-    vars.value = data.data || data
+    props.server.getData()
+      .then(data => { vars.value = data.data || data })
+      .catch(error => { dataError.value = errorMessage(error) })
   }
 })
 
@@ -57,10 +75,15 @@ onUnmounted(() => clearInterval(timer))
 
 <template>
   <div class="vps-overview">
-    <h2>VPS</h2>
+    <div class="title-row">
+      <h2>VPS</h2>
+      <btn variant="icon" tooltip="Állapot frissítése" :disabled="refreshing" @click="refresh"><icon name="reload" /></btn>
+    </div>
     <loader v-if="status === null" small />
     <template v-else>
-      <p>Állapot: <strong :class="['status', status]">{{ { online: 'Fut', offline: 'Leállítva', installing: 'Telepítés' }[status] || status }}</strong></p>
+      <p>Állapot: <strong :class="['status', status]">{{ { online: 'Fut', offline: 'Leállítva', installing: 'Telepítés', unknown: 'Ismeretlen' }[status] || status }}</strong></p>
+      <p v-if="statusError" class="error" role="alert">{{ statusError }}</p>
+      <p v-if="actionError" class="error" role="alert">{{ actionError }}</p>
       <div class="actions">
         <btn v-if="status === 'offline' && server.hasScope('server.start')" color="primary" :disabled="busy" @click="power('start')"><icon name="play" /> Indítás</btn>
         <template v-if="status === 'online'">
@@ -71,6 +94,7 @@ onUnmounted(() => clearInterval(timer))
       </div>
     </template>
 
+    <p v-if="dataError" class="error" role="alert">A VPS beállításai nem tölthetők be: {{ dataError }}</p>
     <section v-if="vars" class="connection">
       <h3>VNC kapcsolat</h3>
       <p v-if="Number(value('port', 0)) > 0">Böngészős konzol: <a :href="`http://${server.node?.publicHost}:${value('port')}/vnc.html?autoconnect=true`" target="_blank" rel="noopener noreferrer">http://{{ server.node?.publicHost }}:{{ value('port') }}</a></p>
@@ -90,6 +114,9 @@ onUnmounted(() => clearInterval(timer))
 
 <style scoped lang="scss">
 .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.title-row h2 { margin: 0; }
+.error { color: var(--color-error); }
 .status.online { color: var(--color-success); }
 .status.installing { color: var(--color-warning); }
 .connection { margin-top: 16px; padding: 16px; border-radius: 8px; background: var(--color-background-secondary); border: 1px solid var(--color-background); }

@@ -107,7 +107,7 @@ var vpsVariables = []vpsVariableDef{
 	{"iso_file", "ISO_FILE", "ISO file", "Boot ISO inside the server files (leave empty to boot from disk).", "string", "netboot.xyz.iso", false, true},
 	{"shared_dir", "SHARED_DIR", "Shared directory", "Optional folder exposed to the VPS as a FAT drive.", "string", "", false, true},
 	{"forward_ports", "FORWARD_PORTS", "Forwarded ports", "Format hostfwd=tcp::HOST-:GUEST, comma separated.", "string", "", false, true},
-	{"vnc_display", "VNC_DISPLAY", "VNC display", "VNC listens on port 5900 + this number. Must be unique on the node.", "integer", 1, true, false},
+	{"vnc_display", "VNC_DISPLAY", "VNC display", "VNC listen port is automatically reserved per node.", "integer", 1, true, false},
 	{"vnc_password", "VNC_PASSWORD", "VNC password", "Password for the VNC console (QEMU uses only the first 8 characters).", "string", "", true, true},
 }
 

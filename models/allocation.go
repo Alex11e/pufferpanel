@@ -11,5 +11,6 @@ type Allocation struct {
 	ServerIdentifier string    `gorm:"not null;index" json:"serverId"`
 	Port             uint16    `gorm:"not null;uniqueIndex:node_port" json:"port"`
 	Protocols        string    `gorm:"not null;default:tcp,udp" json:"protocols"`
+	Purpose          string    `gorm:"size:16;not null;default:''" json:"purpose,omitempty"`
 	CreatedAt        time.Time `json:"createdAt"`
 }

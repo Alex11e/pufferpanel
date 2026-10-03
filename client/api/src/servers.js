@@ -54,7 +54,8 @@ export class ServerApi {
   }
 
   async action(id, action, wait = false) {
-    await this._api.post(`/api/servers/${id}/${action}?wait=${wait}`)
+    const url = `/api/servers/${id}/${action}${wait ? '?wait=true' : ''}`
+    await this._api.post(url)
     return true
   }
 

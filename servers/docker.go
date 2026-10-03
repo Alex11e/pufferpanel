@@ -40,7 +40,6 @@ type Docker struct {
 	Config        container.Config     `json:"config,omitempty"`
 
 	connection   types.HijackedResponse
-	cli          *client.Client
 	statLocker   sync.Mutex
 	lastStats    *pufferpanel.ServerStats
 	lastStatTime time.Time
@@ -77,9 +76,14 @@ func (d *Docker) ExecuteAsyncImpl(environment *pufferpanel.Environment, steps pu
 		return errors.New("docker container already exists")
 	}
 
-	err = d.createContainer(environment, steps, ctx)
+	err = d.createContainer(environment, steps, dockerClient, ctx)
 	if err != nil {
 		return err
+	}
+	removeContainer := func() {
+		if removeErr := dockerClient.ContainerRemove(ctx, environment.Server.Id(), container.RemoveOptions{Force: true}); removeErr != nil {
+			environment.Log(logging.Error, "Failed to remove incomplete container: %s", removeErr)
+		}
 	}
 
 	d.disableSpecialStats = steps.DisableStats
@@ -94,6 +98,7 @@ func (d *Docker) ExecuteAsyncImpl(environment *pufferpanel.Environment, steps pu
 
 	d.connection, err = dockerClient.ContainerAttach(ctx, environment.Server.Id(), cfg)
 	if err != nil {
+		removeContainer()
 		return err
 	}
 
@@ -111,6 +116,14 @@ func (d *Docker) ExecuteAsyncImpl(environment *pufferpanel.Environment, steps pu
 
 	startOpts := container.StartOptions{}
 
+	environment.DisplayToConsole(true, "Starting container\n")
+	err = dockerClient.ContainerStart(ctx, environment.Server.Id(), startOpts)
+	if err != nil {
+		_ = d.connection.Close()
+		removeContainer()
+		return err
+	}
+
 	_ = environment.StatusTracker.WriteMessage(pufferpanel.Transmission{
 		Message: pufferpanel.ServerRunning{
 			Running:    true,
@@ -118,12 +131,6 @@ func (d *Docker) ExecuteAsyncImpl(environment *pufferpanel.Environment, steps pu
 		},
 		Type: pufferpanel.MessageTypeStatus,
 	})
-
-	environment.DisplayToConsole(true, "Starting container\n")
-	err = dockerClient.ContainerStart(ctx, environment.Server.Id(), startOpts)
-	if err != nil {
-		return err
-	}
 
 	go d.handleClose(environment, dockerClient, steps.Callback)
 	return err
@@ -268,7 +275,7 @@ func (d *Docker) GetStatsImpl(environment *pufferpanel.Environment) (*pufferpane
 	return stats, nil
 }
 
-func (d *Docker) createContainer(environment *pufferpanel.Environment, data pufferpanel.ExecutionData, ctx context.Context) error {
+func (d *Docker) createContainer(environment *pufferpanel.Environment, data pufferpanel.ExecutionData, dockerClient *client.Client, ctx context.Context) error {
 	environment.Log(logging.Debug, "Creating container")
 	containerRoot := d.ContainerRoot
 	if containerRoot == "" {
@@ -438,7 +445,7 @@ func (d *Docker) createContainer(environment *pufferpanel.Environment, data puff
 	networkConfig := &network.NetworkingConfig{}
 
 	//for now, default to linux across the board. This resolves problems that Windows has when you use it and docker
-	_, err = d.cli.ContainerCreate(ctx, containerConfig, hostConfig, networkConfig, &v1.Platform{OS: "linux"}, environment.Server.Id())
+	_, err = dockerClient.ContainerCreate(ctx, containerConfig, hostConfig, networkConfig, &v1.Platform{OS: "linux"}, environment.Server.Id())
 	return err
 }
 

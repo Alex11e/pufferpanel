@@ -10,10 +10,16 @@ const api = inject('api')
 const nodesLoaded = ref(false)
 const nodes = ref([])
 const firstEntry = ref(null)
+const loadError = ref('')
 
 onMounted(async () => {
-  nodes.value = await api.node.list()
-  nodesLoaded.value = true
+  try {
+    nodes.value = await api.node.list()
+  } catch (error) {
+    loadError.value = error.message || String(error)
+  } finally {
+    nodesLoaded.value = true
+  }
 })
 
 function setFirstEntry(ref) {
@@ -28,6 +34,7 @@ function focusList() {
 <template>
   <div class="nodelist">
     <h1 v-text="t('nodes.Nodes')" />
+    <p v-if="loadError" class="load-error" role="alert">{{ loadError }}</p>
     <div v-hotkey="'l'" class="list" @hotkey="focusList()">
       <div v-for="node in nodes" :key="node.name" class="list-item">
         <router-link :ref="setFirstEntry" :to="{ name: 'NodeView', params: { id: node.id } }">
