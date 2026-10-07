@@ -44,6 +44,8 @@
   "BillingCapacityHint": "0 uses the node's detected total CPU/RAM capacity.",
   "FirewallEnabled": "Enable panel firewall rules",
   "FirewallHint": "Reserves allocated ports as TCP and UDP. Configure the operating-system firewall on the node separately.",
+  "AutoBackupEnabled": "Enable automatic backups for new servers",
+  "AutoBackupHint": "New servers created on this node will have automatic backups enabled by default.",
   "SubdomainBase": "Subdomain base domain",
   "SubdomainHint": "New servers receive <server-id>.this-domain. DNS must be configured separately.",
   "ServerId": "Server ID",

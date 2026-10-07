@@ -16,6 +16,7 @@ const props = defineProps({
 })
 
 const { t, locale } = useI18n()
+const statsError = ref('')
 
 const numFormat = new Intl.NumberFormat(
   [locale.value.replace('_', '-'), 'en'],
@@ -64,6 +65,8 @@ const jvmMetaUsed = []
 const jvmMetaAlloc = []
 
 function addData(d) {
+  if (!d || !Number.isFinite(Number(d.cpu)) || !Number.isFinite(Number(d.memory))) return false
+  statsError.value = ''
   const x = new Date().getTime()
 
   cpu.push({ x, y: d.cpu })
@@ -92,6 +95,12 @@ function addData(d) {
     chart.options.scales.x.min = x - (60 * 1000)
     chart.update()
   }
+  return true
+}
+
+async function pollStats() {
+  const data = await props.server.getStats({ onError: () => ({ data: null }) })
+  if (!addData(data)) statsError.value = t('servers.StatsLoadFailed')
 }
 
 const chartOptions = (mode) => {
@@ -320,7 +329,7 @@ onMounted(() => {
 
   task = props.server.startTask(async () => {
     if (props.server.needsPolling() && props.server.hasScope('server.stats')) {
-      addData(await props.server.getStats())
+      await pollStats()
     }
   }, 5000)
 })
@@ -335,6 +344,7 @@ onUnmounted(() => {
 
 <template>
   <Query :server="server" />
+  <div v-if="statsError" class="alert error" role="alert" v-text="statsError" />
   <div class="chart memory">
     <canvas ref="memoryChartEl"/>
   </div>

@@ -24,6 +24,7 @@ const serverStatus = ref('unknown')
 const automaticEnabled = ref(false)
 const automaticRetention = ref(24)
 const automaticInterval = ref(24)
+const automaticSaving = ref(false)
 const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
 
 onMounted(async () => {
@@ -43,8 +44,16 @@ async function loadServerStatus() {
 }
 
 async function saveAutomaticBackup() {
-  await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value), Number(automaticInterval.value))
-  toast.success(t('backup.AutomaticSaved'))
+  try {
+    automaticSaving.value = true
+    backupError.value = ''
+    await props.server.setAutomaticBackup(automaticEnabled.value, Number(automaticRetention.value), Number(automaticInterval.value))
+    toast.success(t('backup.AutomaticSaved'))
+  } catch (failure) {
+    backupError.value = errorMessage(failure)
+  } finally {
+    automaticSaving.value = false
+  }
 }
 
 async function loadBackups() {
@@ -59,6 +68,7 @@ async function loadBackups() {
 
 function errorMessage(failure) {
   if (failure?.code === 'ErrBackupServerRunning' || failure?.msg === 'cannot backup server, is running') return t('backup.ServerMustBeStopped')
+  if (!failure?.status && failure?.request) return t('backup.NetworkError')
   return failure?.msg || failure?.message || t('backup.CreateFailed')
 }
 
@@ -197,7 +207,7 @@ const intl = new Intl.DateTimeFormat(
       <toggle v-model="automaticEnabled" :label="t('backup.AutomaticEnabled')" :hint="t('backup.AutomaticHint')" />
       <text-field v-model="automaticInterval" :label="t('backup.AutomaticIntervalHours')" type="number" />
       <text-field v-model="automaticRetention" :label="t('backup.Retention')" type="number" />
-      <btn color="primary" :disabled="automaticInterval < 1 || automaticInterval > 168 || automaticRetention < 1 || automaticRetention > 168" @click="saveAutomaticBackup()"><icon name="save" />{{ t('common.Save') }}</btn>
+      <btn color="primary" :disabled="automaticSaving || automaticInterval < 1 || automaticInterval > 168 || automaticRetention < 1 || automaticRetention > 168" @click="saveAutomaticBackup()"><icon name="save" />{{ t('common.Save') }}</btn>
     </div>
 
     <div class="group-header">

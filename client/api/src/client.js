@@ -77,7 +77,7 @@ export class ApiClient {
         const res = options.onError(e)
         if (res) return res
       }
-      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response.status) === -1) this._handleError(e)
+      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response?.status) === -1) this._handleError(e)
     }
   }
 
@@ -89,7 +89,7 @@ export class ApiClient {
         const res = options.onError(e)
         if (res) return res
       }
-      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response.status) === -1) this._handleError(e)
+      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response?.status) === -1) this._handleError(e)
     }
   }
 
@@ -101,7 +101,7 @@ export class ApiClient {
         const res = options.onError(e)
         if (res) return res
       }
-      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response.status) === -1) this._handleError(e)
+      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response?.status) === -1) this._handleError(e)
     }
   }
 
@@ -113,7 +113,7 @@ export class ApiClient {
         const res = options.onError(e)
         if (res) return res
       }
-      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response.status) === -1) this._handleError(e)
+      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response?.status) === -1) this._handleError(e)
     }
   }
 
@@ -125,7 +125,7 @@ export class ApiClient {
         const res = options.onError(e)
         if (res) return res
       }
-      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response.status) === -1) this._handleError(e)
+      if (!Array.isArray(options.unhandledErrors) || options.unhandledErrors.indexOf(e.response?.status) === -1) this._handleError(e)
     }
   }
 

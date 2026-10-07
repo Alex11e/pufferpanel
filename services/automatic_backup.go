@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -53,7 +54,9 @@ func runAutomaticBackup(db *gorm.DB, server *models.Server) {
 		return
 	}
 	ns := &Node{DB: db}
-	response, err := ns.CallNode(&server.Node, http.MethodPost, "/daemon/server/"+server.Identifier+"/backup/create", nil, nil)
+	ctx, cancel := context.WithTimeout(context.Background(), NodeCallTimeout)
+	defer cancel()
+	response, err := ns.CallNodeWithContext(ctx, &server.Node, http.MethodPost, "/daemon/server/"+server.Identifier+"/backup/create", nil, nil)
 	defer utils.CloseResponse(response)
 	if err != nil || response == nil {
 		logging.Error.Printf("automatic backup for %s failed: %v", server.Identifier, err)

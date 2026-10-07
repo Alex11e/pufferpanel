@@ -59,6 +59,10 @@ const Activity = defineAsyncComponent({
   loader: () => import('../server/Activity.vue'),
   loadingComponent: Loader
 })
+const Database = defineAsyncComponent({
+  loader: () => import('../server/Database.vue'),
+  loadingComponent: Loader
+})
 
 const { t } = useI18n()
 const events = inject('events')
@@ -202,6 +206,9 @@ onUnmounted(() => {
         hotkey="t 7"
       >
         <backup :server="server" />
+      </tab>
+      <tab v-if="server.hasScope('server.admin')" id="database" :title="t('servers.database.title')" icon="database">
+        <Database :server="server" />
       </tab>
       <tab
 		v-if="server.hasScope('server.view')"

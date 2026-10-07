@@ -28,6 +28,7 @@ var dbObjects = []interface{}{
 	&models.ServerFolder{},
 	&models.ServerFolderItem{},
 	&models.Server{},
+	&models.ServerDatabase{},
 	&models.User{},
 	&models.Template{},
 	&models.Permissions{},

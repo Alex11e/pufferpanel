@@ -41,6 +41,7 @@ var LocalNodePortRangeEnd = asInt("panel.localNode.portRangeEnd", 8000)
 var LocalNodeBillingCPUCapacityMilli = asInt("panel.localNode.billingCpuCapacityMilli", 0)
 var LocalNodeBillingMemoryCapacityMB = asInt("panel.localNode.billingMemoryCapacityMB", 0)
 var LocalNodeFirewallEnabled = asBool("panel.localNode.firewallEnabled", false)
+var LocalNodeAutoBackupEnabled = asBool("panel.localNode.autoBackupEnabled", false)
 var LocalNodeSubdomainBase = asString("panel.localNode.subdomainBase", "")
 var SessionKey = asString("panel.sessionKey", "")
 var RegistrationEnabled = asBool("panel.registrationEnabled", true)
@@ -166,12 +167,13 @@ func as[T ValueType](key string, def T) entry[T] {
 	return entry[T]{key: key}
 }
 
-func SaveLocalNodeSettings(portRangeStart, portRangeEnd uint16, billingCPUCapacityMilli, billingMemoryCapacityMB uint64, firewallEnabled bool, subdomainBase string) error {
+func SaveLocalNodeSettings(portRangeStart, portRangeEnd uint16, billingCPUCapacityMilli, billingMemoryCapacityMB uint64, firewallEnabled, autoBackupEnabled bool, subdomainBase string) error {
 	viper.Set(LocalNodePortRangeStart.Key(), portRangeStart)
 	viper.Set(LocalNodePortRangeEnd.Key(), portRangeEnd)
 	viper.Set(LocalNodeBillingCPUCapacityMilli.Key(), billingCPUCapacityMilli)
 	viper.Set(LocalNodeBillingMemoryCapacityMB.Key(), billingMemoryCapacityMB)
 	viper.Set(LocalNodeFirewallEnabled.Key(), firewallEnabled)
+	viper.Set(LocalNodeAutoBackupEnabled.Key(), autoBackupEnabled)
 	viper.Set(LocalNodeSubdomainBase.Key(), subdomainBase)
 	return viper.WriteConfig()
 }

@@ -58,19 +58,19 @@ export class ServerApi {
     return true
   }
 
-  async getStats(id) {
-    const res = await this._api.get(`/api/servers/${id}/stats`)
-    return res.data
+  async getStats(id, options = {}) {
+    const res = await this._api.get(`/api/servers/${id}/stats`, undefined, undefined, options)
+    return res?.data
   }
 
-  async getQuery(id) {
-    const res = await this._api.get(`/api/servers/${id}/query`)
-    return res.data
+  async getQuery(id, options = {}) {
+    const res = await this._api.get(`/api/servers/${id}/query`, undefined, undefined, options)
+    return res?.data
   }
 
-  async canQuery(id) {
-    await this._api.head(`/api/servers/${id}/query`)
-    return true
+  async canQuery(id, options = {}) {
+    const res = await this._api.head(`/api/servers/${id}/query`, undefined, undefined, options)
+    return !res?.unavailable
   }
 
   async action(id, action, wait = false) {
@@ -212,7 +212,7 @@ export class ServerApi {
         return 'folder'
       }
     } catch (e) {
-      if (e.response.status === 404) return false
+      if (e.response?.status === 404) return false
       this._api._handleError(e)
     }
   }
@@ -280,9 +280,39 @@ export class ServerApi {
     return true
   }
 
-  async getActivity(id) {
-    const res = await this._api.get(`/api/servers/${id}/activity`)
+  async getActivity(id, options = {}) {
+    const res = await this._api.get(`/api/servers/${id}/activity`, undefined, undefined, options)
+    return res?.data
+  }
+
+  async getDatabase(id) {
+    const res = await this._api.get(`/api/servers/${id}/database`)
     return res.data
+  }
+
+  async saveDatabase(id, database) {
+    const res = await this._api.put(`/api/servers/${id}/database`, database)
+    return res.data
+  }
+
+  async deleteDatabase(id) {
+    await this._api.delete(`/api/servers/${id}/database`)
+    return true
+  }
+
+  async getDatabase(id) {
+    const res = await this._api.get(`/api/servers/${id}/database`)
+    return res.data
+  }
+
+  async saveDatabase(id, database) {
+    const res = await this._api.put(`/api/servers/${id}/database`, database)
+    return res.data
+  }
+
+  async deleteDatabase(id) {
+    await this._api.delete(`/api/servers/${id}/database`)
+    return true
   }
 
   async getRecentActivity() {
@@ -359,6 +389,7 @@ class Server {
     this.subdomain = serverData.server.subdomain
     this.autoBackupEnabled = serverData.server.autoBackupEnabled
     this.autoBackupRetention = serverData.server.autoBackupRetention || 24
+    this.autoBackupInterval = serverData.server.autoBackupInterval || 24
     this.notes = serverData.server.notes || ''
     this.tags = serverData.server.tags || ''
     this.expiresAt = serverData.server.expiresAt || null
@@ -471,12 +502,36 @@ class Server {
     return await this._api.server.getStatus(this.id)
   }
 
-  async getStats() {
-    return await this._api.server.getStats(this.id)
+  async getStats(options) {
+    return await this._api.server.getStats(this.id, options)
   }
 
-  async getActivity() {
-    return await this._api.server.getActivity(this.id)
+  async getActivity(options) {
+    return await this._api.server.getActivity(this.id, options)
+  }
+
+  async getDatabase() {
+    return await this._api.server.getDatabase(this.id)
+  }
+
+  async saveDatabase(database) {
+    return await this._api.server.saveDatabase(this.id, database)
+  }
+
+  async deleteDatabase() {
+    return await this._api.server.deleteDatabase(this.id)
+  }
+
+  async getDatabase() {
+    return await this._api.server.getDatabase(this.id)
+  }
+
+  async saveDatabase(database) {
+    return await this._api.server.saveDatabase(this.id, database)
+  }
+
+  async deleteDatabase() {
+    return await this._api.server.deleteDatabase(this.id)
   }
 
   async setAutomaticBackup(enabled, retention, intervalHours = 24) {
@@ -494,12 +549,12 @@ class Server {
     this.emit('metadataUpdated', metadata)
   }
 
-  async getQuery() {
-    return await this._api.server.getQuery(this.id)
+  async getQuery(options) {
+    return await this._api.server.getQuery(this.id, options)
   }
 
-  async canQuery() {
-    return await this._api.server.canQuery(this.id)
+  async canQuery(options) {
+    return await this._api.server.canQuery(this.id, options)
   }
 
   async start() {

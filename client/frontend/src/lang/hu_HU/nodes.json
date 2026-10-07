@@ -44,6 +44,8 @@
   "BillingCapacityHint": "A 0 érték a node által felismert teljes CPU/RAM kapacitást használja.",
   "FirewallEnabled": "Panel tűzfalszabályok engedélyezése",
   "FirewallHint": "A kiosztott portokat TCP és UDP protokollra foglalja. Az operációs rendszer tűzfalát külön a node-on kell beállítani.",
+  "AutoBackupEnabled": "Automatikus mentések bekapcsolása az új szervereknél",
+  "AutoBackupHint": "Az ezen a node-on ezután létrehozott szervereknél alapértelmezetten engedélyezi az automatikus mentést.",
   "SubdomainBase": "Subdomain alap domain",
   "SubdomainHint": "Az új szerverek a <szerver-azonosító>.domain címet kapják. A DNS-t külön kell beállítani.",
   "ServerId": "Szerver azonosító",

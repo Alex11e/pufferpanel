@@ -24,6 +24,7 @@ type Node struct {
 	BillingCPUCapacityMilli uint64 `gorm:"column:billing_cpu_capacity_milli;not null;default:0" json:"-"`
 	BillingMemoryCapacityMB uint64 `gorm:"column:billing_memory_capacity_mb;not null;default:0" json:"-"`
 	FirewallEnabled         bool   `gorm:"column:firewall_enabled;not null;default:false" json:"-"`
+	AutoBackupEnabled       bool   `gorm:"column:auto_backup_enabled;not null;default:false" json:"-"`
 	SubdomainBase           string `gorm:"column:subdomain_base;size:253" json:"-" validate:"omitempty,fqdn"`
 
 	Secret string `gorm:"column:secret;not null;size=36" json:"-" validate:"required"`

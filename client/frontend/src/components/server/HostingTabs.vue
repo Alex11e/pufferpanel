@@ -21,6 +21,7 @@ const Network = load(() => import('./Network.vue'))
 const Backup = load(() => import('./Backup.vue'))
 const Admin = load(() => import('./Admin.vue'))
 const Activity = load(() => import('./Activity.vue'))
+const Database = load(() => import('./Database.vue'))
 
 const props = defineProps({
   server: { type: Object, required: true },
@@ -58,6 +59,9 @@ onUnmounted(() => {
     <tabs anchors>
       <tab id="overview" :title="mode === 'web' ? 'Webtárhely' : 'Adatbázis'" icon="server" hotkey="t v">
         <hosting-overview :server="server" :mode="mode" />
+      </tab>
+      <tab v-if="server.hasScope('server.admin')" id="database" :title="t('servers.database.title')" icon="database">
+        <Database :server="server" />
       </tab>
       <tab v-if="server.hasScope('server.console') || server.hasScope('server.console.send')" id="console" :title="t('servers.Console')" icon="console" hotkey="t c">
         <Console :server="server" />

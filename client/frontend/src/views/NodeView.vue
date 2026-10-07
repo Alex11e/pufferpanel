@@ -32,6 +32,7 @@ const portRangeEnd = ref('8000')
 const billingCpuCapacityMilli = ref('0')
 const billingMemoryCapacityMB = ref('0')
 const firewallEnabled = ref(false)
+const autoBackupEnabled = ref(false)
 const subdomainBase = ref('')
 const allocations = ref([])
 const allocationServerId = ref('')
@@ -67,6 +68,7 @@ onMounted(async () => {
     billingCpuCapacityMilli.value = String((node.billingCpuCapacityMilli || 0) / 1000)
     billingMemoryCapacityMB.value = String(node.billingMemoryCapacityMB || 0)
     firewallEnabled.value = node.firewallEnabled
+    autoBackupEnabled.value = node.autoBackupEnabled
     subdomainBase.value = node.subdomainBase
     withPrivateHost.value = !(node.publicHost === node.privateHost && node.publicPort === node.privatePort)
     const [allocationResult, deploymentResult] = await Promise.allSettled([
@@ -124,6 +126,7 @@ async function submit() {
       billingCpuCapacityMilli: Math.max(0, Math.round(Number(billingCpuCapacityMilli.value) * 1000)),
       billingMemoryCapacityMB: Math.max(0, Math.floor(Number(billingMemoryCapacityMB.value))),
       firewallEnabled: firewallEnabled.value,
+      autoBackupEnabled: autoBackupEnabled.value,
       subdomainBase: subdomainBase.value
     })
     toast.success(t('nodes.Updated'))
@@ -138,7 +141,9 @@ async function submit() {
     portRangeEnd: portValue(portRangeEnd.value),
     billingCpuCapacityMilli: Math.max(0, Math.round(Number(billingCpuCapacityMilli.value) * 1000)),
     billingMemoryCapacityMB: Math.max(0, Math.floor(Number(billingMemoryCapacityMB.value))),
-    firewallEnabled: firewallEnabled.value, subdomainBase: subdomainBase.value
+    firewallEnabled: firewallEnabled.value,
+    autoBackupEnabled: autoBackupEnabled.value,
+    subdomainBase: subdomainBase.value
   }
   if (withPrivateHost.value) {
     node.privateHost = privateHost.value
@@ -270,9 +275,10 @@ function closeDeploy() {
       <text-field v-model="portRangeStart" class="port-range-start" :label="t('nodes.PortRangeStart')" type="number" />
       <text-field v-model="portRangeEnd" class="port-range-end" :label="t('nodes.PortRangeEnd')" type="number" />
       <h2 v-text="t('nodes.BillingCapacity')" />
-      <text-field v-model="billingCpuCapacityMilli" :label="t('nodes.BillingCPUCapacity')" type="number" :hint="t('nodes.BillingCapacityHint')" />
-      <text-field v-model="billingMemoryCapacityMB" :label="t('nodes.BillingMemoryCapacity')" type="number" />
+      <text-field v-model="billingCpuCapacityMilli" class="billing-cpu-capacity" :label="t('nodes.BillingCPUCapacity')" type="number" :hint="t('nodes.BillingCapacityHint')" />
+      <text-field v-model="billingMemoryCapacityMB" class="billing-memory-capacity" :label="t('nodes.BillingMemoryCapacity')" type="number" />
       <toggle v-model="firewallEnabled" class="local-firewall" :label="t('nodes.FirewallEnabled')" :hint="t('nodes.FirewallHint')" />
+      <toggle v-model="autoBackupEnabled" class="auto-backup" :label="t('nodes.AutoBackupEnabled')" :hint="t('nodes.AutoBackupHint')" />
       <text-field v-model="subdomainBase" class="subdomain-base" :label="t('nodes.SubdomainBase')" :hint="t('nodes.SubdomainHint')" />
       <div class="allocations">
         <div class="allocation-entry">
@@ -312,6 +318,7 @@ function closeDeploy() {
 .nodeview .edit .port-range-start,
 .nodeview .edit .port-range-end,
 .nodeview .edit .local-firewall,
+.nodeview .edit .auto-backup,
 .nodeview .edit .subdomain-base { grid-column: span 6; min-width: 0; }
 .nodeview .edit .allocations { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; min-width: 0; }
 .allocation-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .75rem; min-width: 0; }
@@ -325,6 +332,9 @@ function closeDeploy() {
   .nodeview .edit .port-range-start,
   .nodeview .edit .port-range-end,
   .nodeview .edit .local-firewall,
+  .nodeview .edit .auto-backup,
+  .nodeview .edit .billing-cpu-capacity,
+  .nodeview .edit .billing-memory-capacity,
   .nodeview .edit .subdomain-base { grid-column: 1 / -1; }
   .allocation-entry { grid-template-columns: minmax(0, 1fr); }
   .allocation-entry :deep(button) { justify-self: start; }

@@ -23,6 +23,7 @@ const Network = load(() => import('../server/Network.vue'))
 const Backup = load(() => import('../server/Backup.vue'))
 const Admin = load(() => import('../server/Admin.vue'))
 const Activity = load(() => import('../server/Activity.vue'))
+const Database = load(() => import('../server/Database.vue'))
 
 const { t } = useI18n()
 const events = inject('events')
@@ -120,6 +121,9 @@ onUnmounted(() => {
       </tab>
       <tab v-if="server.hasScope('server.backup.view')" id="backups" :title="t('backup.Backup')" icon="backup" hotkey="t 7">
         <backup :server="server" />
+      </tab>
+      <tab v-if="server.hasScope('server.admin')" id="database" :title="t('servers.database.title')" icon="database">
+        <Database :server="server" />
       </tab>
       <tab v-if="server.hasScope('server.view')" id="activity" :title="t('servers.Activity')" icon="stats" hotkey="t y">
         <activity :server="server" />

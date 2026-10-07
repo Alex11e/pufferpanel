@@ -16,7 +16,7 @@ func TestAutomaticBackupDue(t *testing.T) {
 		{name: "first backup", interval: 24, want: true},
 		{name: "interval not elapsed", last: now.Add(-23 * time.Hour), interval: 24, want: false},
 		{name: "interval elapsed", last: now.Add(-24 * time.Hour), interval: 24, want: true},
-		{name: "legacy interval defaults to one day", last: now.Add(-23 * time.Hour), want: false},
+		{name: "legacy interval defaults to one day", last: now.Add(-23 * time.Hour), interval: 0, want: false},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

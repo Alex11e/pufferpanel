@@ -20,6 +20,7 @@ type NodeView struct {
 	BillingCPUCapacityMilli *uint64 `json:"billingCpuCapacityMilli,omitempty"`
 	BillingMemoryCapacityMB *uint64 `json:"billingMemoryCapacityMB,omitempty"`
 	FirewallEnabled         bool    `json:"firewallEnabled"`
+	AutoBackupEnabled       bool    `json:"autoBackupEnabled"`
 	SubdomainBase           string  `json:"subdomainBase,omitempty"`
 	Local                   bool    `json:"isLocal"`
 } //@name Node
@@ -36,8 +37,9 @@ func FromNode(n *Node) *NodeView {
 		PrivatePort:    n.PrivatePort,
 		SFTPPort:       n.SFTPPort,
 		PortRangeStart: n.PortRangeStart, PortRangeEnd: n.PortRangeEnd,
-		FirewallEnabled: n.FirewallEnabled, SubdomainBase: n.SubdomainBase,
-		Local: n.IsLocal(),
+		FirewallEnabled: n.FirewallEnabled, AutoBackupEnabled: n.AutoBackupEnabled,
+		SubdomainBase: n.SubdomainBase,
+		Local:         n.IsLocal(),
 	}
 	if n.BillingCPUCapacityMilli > 0 {
 		view.BillingCPUCapacityMilli = &n.BillingCPUCapacityMilli
@@ -95,6 +97,7 @@ func (n *NodeView) CopyToModel(newModel *Node) {
 		newModel.BillingMemoryCapacityMB = *n.BillingMemoryCapacityMB
 	}
 	newModel.FirewallEnabled = n.FirewallEnabled
+	newModel.AutoBackupEnabled = n.AutoBackupEnabled
 	newModel.SubdomainBase = n.SubdomainBase
 }
 

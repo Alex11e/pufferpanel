@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Btn from '@/components/ui/Btn.vue'
+import Icon from '@/components/ui/Icon.vue'
 
 const props = defineProps({
   server: { type: Object, required: true }
@@ -9,15 +11,31 @@ const props = defineProps({
 const { t } = useI18n()
 
 const data = ref({})
+const queryError = ref(false)
 
 let task = null
-onMounted(async () => {
-  if (await props.server.canQuery()) {
-    task = setInterval(async () => {
-      data.value = await props.server.getQuery()
-    }, 30000)
-    data.value = await props.server.getQuery()
+async function loadQuery() {
+  try {
+    const canQuery = await props.server.canQuery({ onError: () => ({ unavailable: true }) })
+    if (!canQuery) {
+      queryError.value = true
+      return
+    }
+    const result = await props.server.getQuery({ onError: () => ({ data: null }) })
+    if (!result) {
+      queryError.value = true
+      return
+    }
+    data.value = result
+    queryError.value = false
+  } catch {
+    queryError.value = true
   }
+}
+
+onMounted(async () => {
+  await loadQuery()
+  task = setInterval(loadQuery, 30000)
 })
 
 onUnmounted(() => {
@@ -27,6 +45,10 @@ onUnmounted(() => {
 
 <template>
   <div class="query">
+    <div v-if="queryError" class="alert error" role="alert">
+      <span>{{ t('servers.QueryLoadFailed') }}</span>
+      <btn variant="icon" :tooltip="t('servers.Retry')" @click="loadQuery"><icon name="reload" /></btn>
+    </div>
     <div v-if="data.minecraft" class="minecraft">
       <span class="playerCountText">
         {{ t('servers.NumPlayersOnline', {current: data.minecraft.numPlayers, max: data.minecraft.maxPlayers}) }}

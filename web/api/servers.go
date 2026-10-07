@@ -58,6 +58,10 @@ func registerServers(g *gin.RouterGroup) {
 	g.Handle("GET", "/:serverId/definition", middleware.RequiresPermission(scopes.ScopeServerViewDefinition), middleware.ResolveServerPanel, proxyServerRequest)
 	g.Handle("PUT", "/:serverId/definition", middleware.RequiresPermission(scopes.ScopeServerEditDefinition), middleware.ResolveServerPanel, middleware.HasTransaction, editServer)
 	g.Handle("OPTIONS", "/:serverId/definition", response.CreateOptions("PUT", "GET"))
+	g.GET("/:serverId/database", middleware.RequiresPermission(scopes.ScopeServerAdmin), middleware.ResolveServerPanel, getServerDatabase)
+	g.PUT("/:serverId/database", middleware.RequiresPermission(scopes.ScopeServerAdmin), middleware.ResolveServerPanel, saveServerDatabase)
+	g.DELETE("/:serverId/database", middleware.RequiresPermission(scopes.ScopeServerAdmin), middleware.ResolveServerPanel, deleteServerDatabase)
+	g.OPTIONS("/:serverId/database", response.CreateOptions("GET", "PUT", "DELETE"))
 
 	g.Handle("GET", "/:serverId/user", middleware.RequiresPermission(scopes.ScopeServerUserView), middleware.ResolveServerPanel, getServerUsers)
 	g.Handle("OPTIONS", "/:serverId/user", response.CreateOptions("GET"))
@@ -601,13 +605,14 @@ func createServer(c *gin.Context) {
 	}
 
 	server := &models.Server{
-		Name:       postBody.Name,
-		Identifier: postBody.Identifier,
-		NodeID:     node.ID,
-		IP:         cast.ToString(ip),
-		Port:       cast.ToUint16(port),
-		Type:       postBody.Type.Type,
-		Icon:       postBody.Icon,
+		Name:              postBody.Name,
+		Identifier:        postBody.Identifier,
+		NodeID:            node.ID,
+		IP:                cast.ToString(ip),
+		Port:              cast.ToUint16(port),
+		AutoBackupEnabled: node.AutoBackupEnabled,
+		Type:              postBody.Type.Type,
+		Icon:              postBody.Icon,
 	}
 	if node.SubdomainBase != "" {
 		subdomain := server.Identifier + "." + node.SubdomainBase
@@ -1369,7 +1374,9 @@ func createBackup(c *gin.Context) {
 		resolvedPath += "?" + c.Request.URL.RawQuery
 	}
 
-	callResponse, err := ns.CallNode(node, c.Request.Method, resolvedPath, c.Request.Body, c.Request.Header)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), services.NodeCallTimeout)
+	defer cancel()
+	callResponse, err := ns.CallNodeWithContext(ctx, node, c.Request.Method, resolvedPath, c.Request.Body, c.Request.Header)
 	defer utils.CloseResponse(callResponse)
 	if callResponse == nil || callResponse.StatusCode == 0 {
 		if err == nil {
@@ -1378,7 +1385,7 @@ func createBackup(c *gin.Context) {
 		response.HandleError(c, err, http.StatusBadGateway)
 		return
 	}
-	if response.HandleError(c, err, http.StatusInternalServerError) {
+	if response.HandleError(c, err, http.StatusBadGateway) {
 		return
 	}
 

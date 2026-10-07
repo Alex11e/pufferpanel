@@ -58,7 +58,7 @@ export default {
         .filter(e => e && e.props && e.props.title)
         .map(e => {
           return {
-            key: e.props.id || e.props.title.toLowercase().replace(/ /g, '-'),
+            key: e.props.id || e.props.title.toLowerCase().replace(/ /g, '-'),
             title: e.props.title,
             icon: e.props.icon,
             hotkey: e.props.hotkey

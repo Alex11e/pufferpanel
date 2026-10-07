@@ -12,25 +12,27 @@ func TestFromNodes(t *testing.T) {
 
 	sourceNode := make([]*Node, 1)
 	sourceNode[0] = &Node{
-		ID:          5,
-		Name:        "node",
-		PublicHost:  "localhost",
-		PrivateHost: "127.0.0.1",
-		PublicPort:  8080,
-		PrivatePort: 5658,
-		SFTPPort:    5657,
-		Secret:      "somesecret",
+		ID:                5,
+		Name:              "node",
+		PublicHost:        "localhost",
+		PrivateHost:       "127.0.0.1",
+		PublicPort:        8080,
+		PrivatePort:       5658,
+		SFTPPort:          5657,
+		AutoBackupEnabled: true,
+		Secret:            "somesecret",
 	}
 
 	desired := make(NodesView, 1)
 	desired[0] = &NodeView{
-		Id:          sourceNode[0].ID,
-		Name:        sourceNode[0].Name,
-		PublicHost:  sourceNode[0].PublicHost,
-		PrivateHost: sourceNode[0].PrivateHost,
-		PublicPort:  sourceNode[0].PublicPort,
-		PrivatePort: sourceNode[0].PrivatePort,
-		SFTPPort:    sourceNode[0].SFTPPort,
+		Id:                sourceNode[0].ID,
+		Name:              sourceNode[0].Name,
+		PublicHost:        sourceNode[0].PublicHost,
+		PrivateHost:       sourceNode[0].PrivateHost,
+		PublicPort:        sourceNode[0].PublicPort,
+		PrivatePort:       sourceNode[0].PrivatePort,
+		SFTPPort:          sourceNode[0].SFTPPort,
+		AutoBackupEnabled: true,
 	}
 
 	tests := []struct {

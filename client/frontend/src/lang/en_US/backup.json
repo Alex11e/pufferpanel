@@ -4,6 +4,7 @@
     "Create": "Create backup",
     "BackupStarted":"Backup started",
     "CreateFailed":"The backup could not be created. Check the server status and node connection.",
+    "NetworkError":"The panel did not respond. Check the panel network address and node connectivity.",
     "ServerMustBeStopped":"Stop the server before creating a backup.",
     "NoBackups":"No backups yet.",
     "BackupsHeader": "Available backups",

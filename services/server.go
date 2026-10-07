@@ -1,11 +1,13 @@
 package services
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/gofrs/uuid/v5"
 	"github.com/pufferpanel/pufferpanel/v3/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strings"
 )
 
 type Server struct {
@@ -87,11 +89,20 @@ func (ss *Server) Update(model *models.Server) error {
 // Callers should set the DB to be a transaction if needed
 // (Because Gorm V2 has removed `RollbackUnlessCommitted1)
 func (ss *Server) Delete(id string) error {
+	var databaseLink models.ServerDatabase
+	err := ss.DB.Where("database_server_identifier = ?", id).First(&databaseLink).Error
+	if err == nil {
+		return errors.New("database server must be detached before deletion")
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+
 	model := &models.Server{
 		Identifier: id,
 	}
 
-	err := ss.DB.Delete(models.Permissions{}, "server_identifier = ?", id).Error
+	err = ss.DB.Delete(models.Permissions{}, "server_identifier = ?", id).Error
 	if err != nil {
 		return err
 	}
@@ -105,8 +116,14 @@ func (ss *Server) Delete(id string) error {
 	if err != nil {
 		return err
 	}
+	err = ss.DB.Where("server_identifier = ? OR database_server_identifier = ?", id, id).Delete(&models.ServerDatabase{}).Error
+	if err != nil {
+		return err
+	}
 	err = ss.DB.Delete(models.Allocation{}, "server_identifier = ?", id).Error
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	err = ss.DB.Delete(model).Error
 	if err != nil {

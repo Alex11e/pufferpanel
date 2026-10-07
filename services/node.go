@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/pufferpanel/pufferpanel/v3"
@@ -68,12 +70,15 @@ func SyncNodeToConfig() {
 	models.LocalNode.BillingCPUCapacityMilli = uint64(config.LocalNodeBillingCPUCapacityMilli.Value())
 	models.LocalNode.BillingMemoryCapacityMB = uint64(config.LocalNodeBillingMemoryCapacityMB.Value())
 	models.LocalNode.FirewallEnabled = config.LocalNodeFirewallEnabled.Value()
+	models.LocalNode.AutoBackupEnabled = config.LocalNodeAutoBackupEnabled.Value()
 	models.LocalNode.SubdomainBase = config.LocalNodeSubdomainBase.Value()
 }
 
 type Node struct {
 	DB *gorm.DB
 }
+
+const NodeCallTimeout = 30 * time.Second
 
 func (ns *Node) GetAll() ([]*models.Node, error) {
 	var nodes []*models.Node
@@ -107,7 +112,7 @@ func (ns *Node) Update(model *models.Node) error {
 		if err := model.IsValid(); err != nil {
 			return err
 		}
-		if err := config.SaveLocalNodeSettings(model.PortRangeStart, model.PortRangeEnd, model.BillingCPUCapacityMilli, model.BillingMemoryCapacityMB, model.FirewallEnabled, model.SubdomainBase); err != nil {
+		if err := config.SaveLocalNodeSettings(model.PortRangeStart, model.PortRangeEnd, model.BillingCPUCapacityMilli, model.BillingMemoryCapacityMB, model.FirewallEnabled, model.AutoBackupEnabled, model.SubdomainBase); err != nil {
 			return err
 		}
 		SyncNodeToConfig()
@@ -143,13 +148,17 @@ func (ns *Node) Create(node *models.Node) error {
 }
 
 func (ns *Node) CallNode(node *models.Node, method string, path string, body io.ReadCloser, headers http.Header) (*http.Response, error) {
+	return ns.CallNodeWithContext(context.Background(), node, method, path, body, headers)
+}
+
+func (ns *Node) CallNodeWithContext(ctx context.Context, node *models.Node, method string, path string, body io.ReadCloser, headers http.Header) (*http.Response, error) {
 	var fullUrl string
 	var err error
 
 	if node.IsLocal() {
 		fullUrl = "http://localhost" + path
 	} else {
-		fullUrl, err = createNodeURL(node, path)
+		fullUrl, err = createNodeURLWithContext(ctx, node, path)
 		if err != nil {
 			return nil, err
 		}
@@ -160,11 +169,11 @@ func (ns *Node) CallNode(node *models.Node, method string, path string, body io.
 		return nil, err
 	}
 
-	request := &http.Request{
+	request := (&http.Request{
 		Method: method,
 		URL:    addr,
 		Header: headers,
-	}
+	}).WithContext(ctx)
 
 	if method != "GET" && body != nil {
 		request.Body = body
@@ -256,6 +265,10 @@ func (ns *Node) OpenSocket(node *models.Node, path string, writer http.ResponseW
 }
 
 func doesDaemonUseSSL(node *models.Node) (bool, error) {
+	return doesDaemonUseSSLWithContext(context.Background(), node)
+}
+
+func doesDaemonUseSSLWithContext(ctx context.Context, node *models.Node) (bool, error) {
 	if node.IsLocal() {
 		return false, nil
 	}
@@ -268,8 +281,11 @@ func doesDaemonUseSSL(node *models.Node) (bool, error) {
 		return false, err
 	}
 
-	request := &http.Request{Method: http.MethodOptions, URL: u}
-	_, err = pufferpanel.Http().Do(request)
+	request := (&http.Request{Method: http.MethodOptions, URL: u}).WithContext(ctx)
+	probeResponse, err := pufferpanel.Http().Do(request)
+	if probeResponse != nil && probeResponse.Body != nil {
+		_ = probeResponse.Body.Close()
+	}
 
 	if err != nil {
 		u, err = url.Parse("http" + path)
@@ -277,8 +293,11 @@ func doesDaemonUseSSL(node *models.Node) (bool, error) {
 			return false, err
 		}
 
-		request = &http.Request{Method: http.MethodOptions, URL: u}
-		_, err = pufferpanel.Http().Do(request)
+		request = (&http.Request{Method: http.MethodOptions, URL: u}).WithContext(ctx)
+		probeResponse, err = pufferpanel.Http().Do(request)
+		if probeResponse != nil && probeResponse.Body != nil {
+			_ = probeResponse.Body.Close()
+		}
 		return false, err
 	}
 
@@ -286,7 +305,11 @@ func doesDaemonUseSSL(node *models.Node) (bool, error) {
 }
 
 func createNodeURL(node *models.Node, path string) (string, error) {
-	ssl, err := doesDaemonUseSSL(node)
+	return createNodeURLWithContext(context.Background(), node, path)
+}
+
+func createNodeURLWithContext(ctx context.Context, node *models.Node, path string) (string, error) {
+	ssl, err := doesDaemonUseSSLWithContext(ctx, node)
 	if err != nil {
 		return "", err
 	}

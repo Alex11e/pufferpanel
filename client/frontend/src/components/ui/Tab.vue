@@ -8,7 +8,7 @@ const props = defineProps({
 })
 
 const activeKey = inject('activeKey')
-const key = props.id || props.title.toLowercase().replace(/ /g, '-')
+const key = props.id || props.title.toLowerCase().replace(/ /g, '-')
 </script>
 
 <template>
