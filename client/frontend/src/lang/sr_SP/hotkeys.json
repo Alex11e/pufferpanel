@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Prečice na tastaturi",
   "Global": {
-    "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "Title": "Globalno",
+    "g a": "Idi na nalog",
+    "g c": "Idi na konfiguraciju panela",
+    "g n": "Idi na čvorove",
+    "g s": "Idi na servere",
+    "g t": "Idi na šablone",
+    "g u": "Idi na korisnike",
+    "/": "Globalna pretraga"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Nalog",
+    "t 2": "Idi na karticu dvofaktorske autentifikacije",
+    "t a": "Idi na karticu detalja naloga",
+    "t o": "Idi na OAuth karticu",
+    "t p": "Idi na karticu lozinke",
+    "t s": "Idi na karticu podešavanja"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Serveri",
+    "c": "Napravi novi server",
+    "l": "Fokusiraj prvi server u listi"
   },
   "ServerView": {
     "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "t c": "Idi na karticu konzole",
+    "t i": "Idi na karticu statistike",
+    "t f": "Idi na karticu datoteka",
+    "t s": "Idi na karticu podešavanja",
+    "t u": "Idi na karticu korisnika",
+    "t 6": "Idi na SFTP karticu",
+    "t 7": "Idi na API karticu",
+    "t a": "Idi na administratorsku karticu",
+    "c c": "Fokusiraj unos komandi",
+    "c x": "Očisti konzolu",
+    "r r": "Pokreni server",
+    "r s": "Zaustavi server",
+    "r k": "Nasilno zaustavi server",
+    "r i": "Instaliraj server",
+    "f a": "Arhiviraj sadržaj trenutnog direktorijuma",
+    "f c d": "Napravi novi direktorijum",
+    "f c f": "Napravi novu datoteku",
+    "f s a": "Arhiviraj izabrane datoteke",
+    "f s d": "Izbriši izabrane datoteke",
+    "f d": "Otpremi direktorijum",
+    "f l": "Fokusiraj prvu datoteku/fasciklu u listi",
+    "f r": "Ponovo učitaj listu datoteka",
+    "f u": "Otpremi datoteke",
+    "a e": "Uredi definiciju servera",
+    "a r": "Ponovo učitaj definiciju servera sa diska"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Čvorovi",
+    "c": "Napravi novi čvor",
+    "l": "Fokusiraj prvi čvor u listi"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Korisnici",
+    "c": "Napravi novog korisnika",
+    "l": "Fokusiraj prvog korisnika u listi"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Šabloni",
+    "c": "Napravi novi šablon",
+    "l": "Fokusiraj prvi šablon u listi"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Uređivač šablona",
+    "t e": "Idi na karticu okruženja",
+    "t g": "Idi na opštu karticu",
+    "t h": "Idi na karticu Hook-ova",
+    "t i": "Idi na karticu instalacije",
+    "t j": "Idi na JSON karticu",
+    "t r": "Idi na karticu konfiguracije pokretanja",
+    "t v": "Idi na karticu promenljivih"
   }
 }

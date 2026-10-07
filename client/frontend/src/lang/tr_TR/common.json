@@ -2,7 +2,7 @@
   "Name": "İsim",
   "Language": "Dil",
   "Online": "Çevrimiçi",
-  "Offline": "Çevrımdışı",
+  "Offline": "Çevrimdışı",
   "Installing": "Kurulum",
   "Unknown": "Bilinmeyen",
   "Loading": "Yükleniyor...",
@@ -10,7 +10,7 @@
   "Save": "Kaydet",
   "Cancel": "İptal",
   "Close": "Kapat",
-  "Host": "Sunucu",
+  "Host": "Host",
   "Port": "Port",
   "Collapse": "Daralt",
   "Expand": "Genişlet",
@@ -40,7 +40,7 @@
     "BaseColor": "Ana Renk",
     "ServerTypeDisplay": "Sunucu Tipini Göster",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Simge + Arka Plan",
       "Icon": "İkon",
       "None": "Hiçbiri"
     },

@@ -1,79 +1,79 @@
 {
-  "Title": "Keyboard Shortcuts",
+  "Title": "Klavye Kısayolları",
   "Global": {
-    "Title": "Global",
-    "g a": "Go to Account",
-    "g c": "Go to Panel Configuration",
-    "g n": "Go to Nodes",
-    "g s": "Go to Servers",
-    "g t": "Go to Templates",
-    "g u": "Go to Users",
-    "/": "Global Search"
+    "Title": "Genel",
+    "g a": "Hesaba git",
+    "g c": "Panel Yapılandırmasına git",
+    "g n": "Düğümlere git",
+    "g s": "Sunuculara git",
+    "g t": "Şablonlara git",
+    "g u": "Kullanıcılara git",
+    "/": "Genel Arama"
   },
   "Self": {
-    "Title": "Account",
-    "t 2": "Go to 2-Factor-Auth tab",
-    "t a": "Go to Account Details tab",
-    "t o": "Go to OAuth tab",
-    "t p": "Go to Password tab",
-    "t s": "Go to Preferences tab"
+    "Title": "Hesap",
+    "t 2": "İki Faktörlü Kimlik Doğrulama sekmesine git",
+    "t a": "Hesap Detayları sekmesine git",
+    "t o": "OAuth sekmesine git",
+    "t p": "Şifre sekmesine git",
+    "t s": "Tercihler sekmesine git"
   },
   "ServerList": {
-    "Title": "Servers",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "Title": "Sunucular",
+    "c": "Yeni bir sunucu oluştur",
+    "l": "Listedeki ilk sunucuya odaklan"
   },
   "ServerView": {
-    "Title": "Server",
-    "t c": "Go to Console tab",
-    "t i": "Go to Statistics tab",
-    "t f": "Go to Files tab",
-    "t s": "Go to Settings tab",
-    "t u": "Go to Users tab",
-    "t 6": "Go to SFTP tab",
-    "t 7": "Go to Api tab",
-    "t a": "Go to Admin tab",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Start Server",
-    "r s": "Stop Server",
-    "r k": "Kill Server",
-    "r i": "Install Server",
-    "f a": "Archive current directory contents",
-    "f c d": "Create new directory",
-    "f c f": "Create new file",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Upload directory",
-    "f l": "Focus first file/folder in the list",
-    "f r": "Reload file list",
-    "f u": "Upload files",
-    "a e": "Edit Server Definition",
-    "a r": "Reload Server Definiton from disk"
+    "Title": "Sunucu",
+    "t c": "Konsol sekmesine git",
+    "t i": "İstatistikler sekmesine git",
+    "t f": "Dosyalar sekmesine git",
+    "t s": "Ayarlar sekmesine git",
+    "t u": "Kullanıcılar sekmesine git",
+    "t 6": "SFTP sekmesine git",
+    "t 7": "API sekmesine git",
+    "t a": "Yönetici sekmesine git",
+    "c c": "Komut Girişine odaklan",
+    "c x": "Konsolu Temizle",
+    "r r": "Sunucuyu Başlat",
+    "r s": "Sunucuyu Durdur",
+    "r k": "Sunucuyu Zorla Durdur",
+    "r i": "Sunucuyu Kur",
+    "f a": "Geçerli dizin içeriğini arşivle",
+    "f c d": "Yeni dizin oluştur",
+    "f c f": "Yeni dosya oluştur",
+    "f s a": "Seçili dosyaları arşivle",
+    "f s d": "Seçili dosyaları sil",
+    "f d": "Dizin yükle",
+    "f l": "Listedeki ilk dosyaya/klasöre odaklan",
+    "f r": "Dosya listesini yenile",
+    "f u": "Dosyaları yükle",
+    "a e": "Sunucu Tanımını Düzenle",
+    "a r": "Sunucu Tanımını diskten yeniden yükle"
   },
   "NodeList": {
-    "Title": "Nodes",
-    "c": "Create a new node",
-    "l": "Focus the first node in the list"
+    "Title": "Düğümler",
+    "c": "Yeni bir düğüm oluştur",
+    "l": "Listedeki ilk düğüme odaklan"
   },
   "UserList": {
-    "Title": "Users",
-    "c": "Create a new user",
-    "l": "Focus the first user in the list"
+    "Title": "Kullanıcılar",
+    "c": "Yeni bir kullanıcı oluştur",
+    "l": "Listedeki ilk kullanıcıya odaklan"
   },
   "TemplateList": {
-    "Title": "Templates",
-    "c": "Create a new template",
-    "l": "Focus the first template in the list"
+    "Title": "Şablonlar",
+    "c": "Yeni bir şablon oluştur",
+    "l": "Listedeki ilk şablona odaklan"
   },
   "Template": {
-    "Title": "Template Editor",
-    "t e": "Go to Environment tab",
-    "t g": "Go to General tab",
-    "t h": "Go to Hooks tab",
-    "t i": "Go to Install tab",
-    "t j": "Go to JSON tab",
-    "t r": "Go to Run Configuration tab",
-    "t v": "Go to Variables tab"
+    "Title": "Şablon Düzenleyici",
+    "t e": "Ortam sekmesine git",
+    "t g": "Genel sekmesine git",
+    "t h": "Hook'lar sekmesine git",
+    "t i": "Kurulum sekmesine git",
+    "t j": "JSON sekmesine git",
+    "t r": "Çalıştırma Yapılandırması sekmesine git",
+    "t v": "Değişkenler sekmesine git"
   }
 }

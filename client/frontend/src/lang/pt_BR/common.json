@@ -1,8 +1,8 @@
 {
   "Name": "Nome",
-  "Language": "Linguagem",
+  "Language": "Idioma",
   "Online": "Disponível",
-  "Offline": "Desligado",
+  "Offline": "Offline",
   "Installing": "Instalando",
   "Unknown": "Desconhecido",
   "Loading": "Carregando...",
@@ -10,9 +10,9 @@
   "Save": "Salvar",
   "Cancel": "Cancelar",
   "Close": "Fechar",
-  "Host": "Servidor",
+  "Host": "Host",
   "Port": "Porta",
-  "Collapse": "Ocultar",
+  "Collapse": "Recolher",
   "Expand": "Expandir",
   "Copy": "Copiar para área de transferência",
   "Copied": "Copiado para a área de transferência",
@@ -37,10 +37,10 @@
       "DarkHighContrast": "Escuro (alto contraste)",
       "Auto": "Automático"
     },
-    "BaseColor": "Cor Principal",
-    "ServerTypeDisplay": "Mostrar Tipo de Servidor",
+    "BaseColor": "Cor base",
+    "ServerTypeDisplay": "Exibição do tipo de servidor",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ícone + Fundo",
       "Icon": "Ícone",
       "None": "Nenhum"
     },

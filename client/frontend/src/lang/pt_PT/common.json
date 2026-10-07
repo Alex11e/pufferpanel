@@ -12,10 +12,10 @@
   "Close": "Fechar",
   "Host": "Host",
   "Port": "Porta",
-  "Collapse": "Esconder",
+  "Collapse": "Recolher",
   "Expand": "Expandir",
   "Copy": "Copiar para área de transferência",
-  "Copied": "Copiado",
+  "Copied": "Copiado para a área de transferência",
   "Back": "Voltar",
   "Next": "Próximo",
   "Details": "Detalhes",
@@ -40,7 +40,7 @@
     "BaseColor": "Cor base",
     "ServerTypeDisplay": "Exibição do tipo de servidor",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ícone + Fundo",
       "Icon": "Ícone",
       "None": "Nenhum"
     },
@@ -56,7 +56,7 @@
     "FontFace": "Fonte",
     "fontFace": {
       "Default": "Padrão",
-      "A11y": "Accessibility optimized"
+      "A11y": "Acessibilidade otimizada"
     }
   },
   "NoResults": "Sem resultados",

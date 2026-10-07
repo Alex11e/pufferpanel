@@ -1,5 +1,5 @@
 {
-  "ConditionHint": "Only execute this step if this condition is met",
+  "ConditionHint": "Wykonaj ten krok tylko wtedy, gdy ten warunek jest spełniony",
   "mojangdl": {
     "generic": "Pobierz Minecraft",
     "formatted": "Pobierz Minecraft"
@@ -9,8 +9,8 @@
     "formatted": "Zapisz do pliku {target}"
   },
   "resolveforgeversion": {
-    "generic": "Resolve Minecraft Forge Version",
-    "formatted": "Resolve Minecraft Forge Version"
+    "generic": "Ustal wersję Minecraft Forge",
+    "formatted": "Ustal wersję Minecraft Forge"
   },
   "download": {
     "generic": "Pobierz plik(i)",
@@ -40,32 +40,32 @@
     "formatted": "Utwórz katalog {target}"
   },
   "archive": {
-    "generic": "Archive files",
-    "formatted": "Archive {file} to {destination} | Archive {n} files to {destination}",
-    "source": "Files to archive"
+    "generic": "Archiwizuj pliki",
+    "formatted": "Archiwizuj {file} do {destination} | Archiwizuj {n} plików do {destination}",
+    "source": "Pliki do zarchiwizowania"
   },
   "extract": {
-    "generic": "Extract archive",
-    "formatted": "Extract {source} to {destination}",
-    "destination": "Destination"
+    "generic": "Wyodrębnij archiwum",
+    "formatted": "Wyodrębnij {source} do {destination}",
+    "destination": "Miejsce docelowe"
   },
   "console": {
-    "generic": "Console message",
-    "formatted": "Print \"{message}\" to console",
-    "message": "Message"
+    "generic": "Wiadomość konsoli",
+    "formatted": "Wypisz \"{message}\" w konsoli",
+    "message": "Wiadomość"
   },
   "sleep": {
-    "generic": "Wait",
-    "formatted": "Wait for {duration}",
-    "duration": "Duration",
-    "durationHint": "Valid time units are ns, us, ms, s, m and h. Multiple units can be combined. For example `1m45s`"
+    "generic": "Czekaj",
+    "formatted": "Czekaj {duration}",
+    "duration": "Czas trwania",
+    "durationHint": "Prawidłowe jednostki czasu to ns, us, ms, s, m i h. Można łączyć wiele jednostek. Na przykład `1m45s`"
   },
   "steamgamedl": {
     "generic": "Zainstaluj ze Steam",
     "formatted": "Zainstaluj aplikację Steam o identyfikatorze {appId}",
     "appId": "Identyfikator aplikacji Steam",
-    "branch": "Branch (leave blank for default)",
-    "branchPassword": "Branch Password (if needed)"
+    "branch": "Gałąź (pozostaw puste dla domyślnej)",
+    "branchPassword": "Hasło gałęzi (jeśli wymagane)"
   },
   "javadl": {
     "generic": "Zainstaluj Javę",
@@ -74,12 +74,12 @@
   "forgedl": {
     "generic": "Pobierz Minecraft Forge",
     "formatted": "Pobierz Minecraft Forge",
-    "outputVariable": "Output variable"
+    "outputVariable": "Zmienna wyjściowa"
   },
   "neoforgedl": {
-    "generic": "Download Minecraft Neoforge",
-    "formatted": "Download Minecraft Neoforge",
-    "outputVariable": "Output variable"
+    "generic": "Pobierz Minecraft Neoforge",
+    "formatted": "Pobierz Minecraft Neoforge",
+    "outputVariable": "Zmienna wyjściowa"
   },
   "spongeforgedl": {
     "generic": "Pobierz Minecraft SpongeForge",
@@ -91,20 +91,20 @@
     "formatted": "Pobierz Minecraft Fabric"
   },
   "paperdl": {
-    "generic": "Download PaperMC project",
-    "formatted": "Download {project} to {target}",
-    "project": "PaperMC project",
-    "build": "Build number"
+    "generic": "Pobierz projekt PaperMC",
+    "formatted": "Pobierz {project} do {target}",
+    "project": "Projekt PaperMC",
+    "build": "Numer kompilacji"
   },
   "curseforge": {
-    "generic": "Download From CurseForge",
-    "formatted": "Download From CurseForge",
-    "projectId": "Project ID",
-    "fileId": "File ID",
+    "generic": "Pobierz z CurseForge",
+    "formatted": "Pobierz z CurseForge",
+    "projectId": "ID projektu",
+    "fileId": "ID pliku",
     "java": "Java"
   },
   "nodejsdl": {
-    "generic": "Install Node.js",
-    "formatted": "Install Node.js {version}"
+    "generic": "Zainstaluj Node.js",
+    "formatted": "Zainstaluj Node.js {version}"
   }
 }

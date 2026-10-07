@@ -8,10 +8,10 @@
     "g s": "Ir para Servidores",
     "g t": "Ir para Modelos",
     "g u": "Ir para Utilizadores",
-    "/": "Global Search"
+    "/": "Pesquisa global"
   },
   "Self": {
-    "Title": "Account",
+    "Title": "Conta",
     "t 2": "Ir para Autenticação de 2 Fatores",
     "t a": "Ir para Detalhes da Conta",
     "t o": "Ir para OAuth",
@@ -20,58 +20,58 @@
   },
   "ServerList": {
     "Title": "Servidores",
-    "c": "Create a new server",
-    "l": "Focus the first server in the list"
+    "c": "Criar um novo servidor",
+    "l": "Focar o primeiro servidor da lista"
   },
   "ServerView": {
-    "Title": "Server",
+    "Title": "Servidor",
     "t c": "Ir para Consola",
     "t i": "Ir para Estatísticas",
     "t f": "Ir para Ficheiros",
     "t s": "Ir para Definições",
     "t u": "Ir para Utilizadores",
-    "t 6": "Ir para STFP",
+    "t 6": "Ir para SFTP",
     "t 7": "Ir para API",
     "t a": "Ir para Administração",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
+    "c c": "Focar na entrada de comandos",
+    "c x": "Limpar consola",
     "r r": "Iniciar servidor",
     "r s": "Parar servidor",
     "r k": "Terminar servidor",
     "r i": "Instalar servidor",
-    "f a": "Archive current directory contents",
+    "f a": "Comprimir o conteúdo do diretório atual",
     "f c d": "Criar diretório",
     "f c f": "Criar ficheiro",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
+    "f s a": "Comprimir ficheiros selecionados",
+    "f s d": "Apagar ficheiros selecionados",
     "f d": "Carregar diretório",
-    "f l": "Focus first file/folder in the list",
+    "f l": "Focar o primeiro ficheiro/pasta da lista",
     "f r": "Atualizar lista de ficheiros",
     "f u": "Carregar ficheiros",
     "a e": "Editar a configuração do servidor",
-    "a r": "Reload Server Definiton from disk"
+    "a r": "Recarregar a definição do servidor a partir do disco"
   },
   "NodeList": {
     "Title": "Nós",
     "c": "Criar nó",
-    "l": "Focus the first node in the list"
+    "l": "Focar o primeiro nó da lista"
   },
   "UserList": {
     "Title": "Utilizadores",
     "c": "Criar um novo utilizador",
-    "l": "Focus the first user in the list"
+    "l": "Focar o primeiro utilizador da lista"
   },
   "TemplateList": {
     "Title": "Modelos",
     "c": "Criar modelo",
-    "l": "Focus the first template in the list"
+    "l": "Focar o primeiro modelo da lista"
   },
   "Template": {
-    "Title": "Template Editor",
+    "Title": "Editor de modelos",
     "t e": "Ir para Ambiente",
     "t g": "Ir para Geral",
     "t h": "Ir para Hooks",
-    "t i": "Ir para Instalar",
+    "t i": "Ir para Instalação",
     "t j": "Ir para JSON",
     "t r": "Ir para Configuração de Execução",
     "t v": "Ir para Variáveis"

@@ -8,15 +8,15 @@
     "g s": "Mergi la servere",
     "g t": "Mergi la șabloane",
     "g u": "Mergi la Utilizatori",
-    "/": "Global Search"
+    "/": "Căutare globală"
   },
   "Self": {
     "Title": "Cont",
-    "t 2": "Mergi la fila 2-Factor-Auth",
+    "t 2": "Mergi la fila Autentificare cu 2 factori",
     "t a": "Mergi la fila Detalii Cont",
     "t o": "Du-te la fila OAuth",
     "t p": "Du-te la fila Parola",
-    "t s": "Mergeți la fila Preferințe"
+    "t s": "Mergi la fila Preferințe"
   },
   "ServerList": {
     "Title": "Servere",
@@ -31,44 +31,44 @@
     "t s": "Mergi la fila Setări",
     "t u": "Mergi la fila Utilizatori",
     "t 6": "Mergi la fila SFTP",
-    "t 7": "Mergi la fila Api",
+    "t 7": "Mergi la fila API",
     "t a": "Mergi la fila Admin",
-    "c c": "Focus Command Input",
-    "c x": "Clear Console",
-    "r r": "Porneste serverul",
+    "c c": "Focalizează introducerea comenzii",
+    "c x": "Golește consola",
+    "r r": "Pornește serverul",
     "r s": "Oprește serverul",
-    "r k": "Omoară serverul",
+    "r k": "Forțează oprirea serverului",
     "r i": "Instalează serverul",
-    "f a": "Arhivați conținutul curent al folderului",
-    "f c d": "Crează un folder nou",
-    "f c f": "Crează un fișier nou",
-    "f s a": "Archive selected files",
-    "f s d": "Delete selected files",
-    "f d": "Incarcă un folder",
-    "f l": "Evidențiază primul fişier/dosar în listă",
+    "f a": "Arhivează conținutul folderului curent",
+    "f c d": "Creează un folder nou",
+    "f c f": "Creează un fișier nou",
+    "f s a": "Arhivează fișierele selectate",
+    "f s d": "Șterge fișierele selectate",
+    "f d": "Încarcă un folder",
+    "f l": "Evidențiază primul fișier/dosar din listă",
     "f r": "Reîncarcă lista de fișiere",
-    "f u": "Încarcă fişiere",
-    "a e": "Editează Definiția Serverului",
+    "f u": "Încarcă fișiere",
+    "a e": "Editează definiția serverului",
     "a r": "Reîncarcă datele serverului de pe disc"
   },
   "NodeList": {
     "Title": "Node-uri",
     "c": "Creează un node nou",
-    "l": "Evidențiaza primul node in listă"
+    "l": "Evidențiază primul node din listă"
   },
   "UserList": {
     "Title": "Utilizatori",
     "c": "Creează un utilizator nou",
-    "l": "Evidențiază primul utilizator in listă"
+    "l": "Evidențiază primul utilizator din listă"
   },
   "TemplateList": {
     "Title": "Șabloane",
-    "c": "Crează un șablon nou",
-    "l": "Evidențiaza primul șablon in listă"
+    "c": "Creează un șablon nou",
+    "l": "Evidențiază primul șablon din listă"
   },
   "Template": {
     "Title": "Editor de șabloane",
-    "t e": "Go to Environment tab",
+    "t e": "Mergi la fila Mediu",
     "t g": "Mergi la fila General",
     "t h": "Mergi la fila Hooks",
     "t i": "Mergi la fila de instalare",

@@ -11,7 +11,7 @@
   "Updated": "Uzol aktualizovaný",
   "Deleted": "Uzol vymazaný",
   "Reachable": "Tento uzol je správne nastavený a spustený",
-  "Unreachable": "Tento uzol buď nie je správne nastavený, alebo nie je k dispozícií",
+  "Unreachable": "Tento uzol buď nie je správne nastavený, alebo nie je k dispozícii",
   "features": {
     "os": {
       "label": "Operačný systém",
@@ -25,8 +25,8 @@
       "arm64": "ARM 64bit"
     },
     "docker": {
-      "true": "Docker je k dispozícií",
-      "false": "Docker nie je k dispozícií"
+      "true": "Docker je k dispozícii",
+      "false": "Docker nie je k dispozícii"
     },
     "envs": "Dostupné prostredia"
   },
@@ -34,17 +34,17 @@
   "PublicPort": "Verejný port",
   "PrivateHost": "Súkromný hostiteľ",
   "PrivatePort": "Súkromný port",
-  "SftpPort": "SFTP Port",
-  "WithPrivateAddress": "Použije iného hostiteľa/port na komunikáciu medzi servermi",
+  "SftpPort": "SFTP port",
+  "WithPrivateAddress": "Použiť iného hostiteľa/port na komunikáciu medzi servermi",
   "WithPrivateAddressHint": "Táto samostatná adresa sa používa, keď hlavný uzol potrebuje komunikovať s novým uzlom. Užitočné napríklad vtedy, keď sú uzly v rovnakej sieti za NAT.",
-  "LocalNodeEdit": "Miestny uzol nemá žiadne upraviteľné nastavenia\n\nAk chcete zmeniť hostiteľa zobrazeného so servermi umiestnenými v tomto uzle, upravte hlavnú url adresu panelov v nastaveniach panelu",
-  "Deploy": "Uvoľniť uzol",
+  "LocalNodeEdit": "Miestny uzol nemá žiadne upraviteľné nastavenia\n\nAk chcete zmeniť hostiteľa zobrazeného so servermi umiestnenými v tomto uzle, upravte hlavnú URL adresu panelov v nastaveniach panelu",
+  "Deploy": "Nasadiť uzol",
   "deploy": {
     "Step1": "## Krok 1\n\nNainštalujte PufferPanel na nový server, [viď. dokumentácia](https://docs.pufferpanel.com/en/latest/installing.html)",
-    "Step2": "## Krok 2\n\nZastavte PufferPanel servis v prípade, že bol počas inštalácie spustený, príkazom `sudo systemctl stop pufferpanel`",
+    "Step2": "## Krok 2\n\nZastavte službu PufferPanel, ak bola spustená počas inštalácie, príkazom `sudo systemctl stop pufferpanel`",
     "Step3": "## Krok 3\n\nNahraďte konfiguračný súbor na novom serveri nasledovným kódom\n\nKonfiguračný súbor sa obvykle nachádza v `/etc/pufferpanel/config.json`\n\n```\n{config}\n```",
-    "Step4": "## Krok 4\n\nPovoľte a (re)štartuje PufferPanel servis na novom serveri príkazom `sudo systemctl enable --now pufferpanel`",
-    "Step5": "### Tvoj novy uzol je nastavený a pripravený na spustenie"
+    "Step4": "## Krok 4\n\nPovoľte a (re)štartujte službu PufferPanel na novom serveri príkazom `sudo systemctl enable --now pufferpanel`",
+    "Step5": "### Tvoj nový uzol je nastavený a pripravený na spustenie"
   },
-  "DeploymentInstruction": "To deploy the node, install PufferPanel on the new server and place the config file in `/etc/pufferpanel/`<br/>Restart PufferPanel on the new server afterwards."
+  "DeploymentInstruction": "Ak chcete nasadiť uzol, nainštalujte PufferPanel na nový server a umiestnite konfiguračný súbor do `/etc/pufferpanel/`<br/>Potom reštartujte PufferPanel na novom serveri."
 }

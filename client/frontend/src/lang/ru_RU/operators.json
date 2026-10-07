@@ -9,12 +9,12 @@
     "formatted": "Записать в файл {target}"
   },
   "resolveforgeversion": {
-    "generic": "Разрешить версию Minecraft Forge",
-    "formatted": "Разрешить версию Minecraft Forge"
+    "generic": "Определить версию Minecraft Forge",
+    "formatted": "Определить версию Minecraft Forge"
   },
   "download": {
     "generic": "Загрузить файл(ы)",
-    "formatted": "Загрузить {file}. | Загрузить {n} файлов",
+    "formatted": "Загрузить {file} | Загрузить {n} файлов",
     "files": "Файлы"
   },
   "command": {
@@ -58,7 +58,7 @@
     "generic": "Ждать",
     "formatted": "Ждать {duration}",
     "duration": "Продолжительность",
-    "durationHint": "Допустимые единицы времени — ns, us, ms, m и h. Единицы можно комбинировать. Например `1m45s`"
+    "durationHint": "Допустимые единицы времени — ns, us, ms, s, m и h. Единицы можно комбинировать. Например `1m45s`"
   },
   "steamgamedl": {
     "generic": "Установить из Steam",

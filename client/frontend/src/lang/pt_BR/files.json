@@ -18,15 +18,15 @@
   "CurrentlyUploading": "Enviando arquivo {current}/{total}",
   "Current": "Atual",
   "Total": "Total",
-  "OpenLargeFile": "Esse arquivo pode causar problemas de desempenho para o seu navegador devido ao seu tamanho, deseja abri-lo de qualquer maneira?",
+  "OpenLargeFile": "Este arquivo pode causar problemas de desempenho para o seu navegador devido ao seu tamanho, deseja abri-lo de qualquer maneira?",
   "OpenAnyways": "Abrir mesmo assim",
   "Saved": "Arquivo salvo",
   "Select": "Selecionar arquivo",
-  "Deselect": "Desmarcar arquivos",
+  "Deselect": "Desmarcar arquivo",
   "Selected": "1 arquivo selecionado | {n} arquivos selecionados",
   "ArchiveSelected": "Arquivar arquivos selecionados",
-  "ArchiveSelectedName": "Nome do Arquivo",
+  "ArchiveSelectedName": "Nome do arquivo compactado",
   "DeselectAll": "Desmarcar todos",
   "DeleteSelected": "Excluir 1 arquivo | Excluir {n} arquivos",
-  "ConfirmDeleteSelected": "Você realmente quer excluir este arquivo? | Você realmente quer excluir {n} arquivos?"
+  "ConfirmDeleteSelected": "Você realmente deseja excluir este arquivo? | Você realmente deseja excluir {n} arquivos?"
 }

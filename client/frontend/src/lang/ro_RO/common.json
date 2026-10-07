@@ -9,14 +9,14 @@
   "Description": "Descriere",
   "Save": "Salvează",
   "Cancel": "Anulează",
-  "Close": "Inchide",
+  "Close": "Închide",
   "Host": "Host",
   "Port": "Port",
   "Collapse": "Restrânge",
   "Expand": "Extinde",
   "Copy": "Copiază",
-  "Copied": "Copied to clipboard",
-  "Back": "Back",
+  "Copied": "Copiat în clipboard",
+  "Back": "Înapoi",
   "Next": "Înainte",
   "Details": "Detalii",
   "ErrorDetails": "Detalii eroare",
@@ -34,32 +34,32 @@
     "mode": {
       "Light": "Luminos",
       "Dark": "Întunecat",
-      "DarkHighContrast": "Dark (High Contrast)",
+      "DarkHighContrast": "Întunecat (contrast ridicat)",
       "Auto": "Automat"
     },
     "BaseColor": "Culoarea de bază",
     "ServerTypeDisplay": "Afișare tip server",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Pictogramă + Fundal",
       "Icon": "Pictogramă",
-      "None": "None"
+      "None": "Niciunul"
     },
     "ListType": "Tip de listă",
     "listType": {
       "Grid": "Grilă",
       "List": "Listă"
     },
-    "FontSize": "Font Size",
+    "FontSize": "Dimensiune font",
     "fontSize": {
-      "Default": "Default"
+      "Default": "Implicit"
     },
-    "FontFace": "Font Face",
+    "FontFace": "Tip de font",
     "fontFace": {
-      "Default": "Default",
-      "A11y": "Accessibility optimized"
+      "Default": "Implicit",
+      "A11y": "Accesibilitate optimizată"
     }
   },
-  "NoResults": "No Results",
-  "Yes": "Yes",
-  "No": "No"
+  "NoResults": "Niciun rezultat",
+  "Yes": "Da",
+  "No": "Nu"
 }

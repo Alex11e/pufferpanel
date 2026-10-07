@@ -25,8 +25,8 @@
   "Add": "Pridať",
   "Apply": "Použiť",
   "Confirm": "Potvrdiť",
-  "Condition": "Podmienky",
-  "Discard": "Vymazať",
+  "Condition": "Podmienka",
+  "Discard": "Zahodiť",
   "ConfirmLeave": "Máte neuložené zmeny, chcete ich zrušiť a opustiť túto stránku?",
   "theme": {
     "Theme": "Motív",
@@ -40,7 +40,7 @@
     "BaseColor": "Základná farba",
     "ServerTypeDisplay": "Zobrazenie typu servera",
     "serverTypeDisplay": {
-      "IconBackground": "Icon + Background",
+      "IconBackground": "Ikona + Pozadie",
       "Icon": "Ikona",
       "None": "Žiadne"
     },
@@ -56,7 +56,7 @@
     "FontFace": "Písmo",
     "fontFace": {
       "Default": "Predvolené",
-      "A11y": "Optimalizované pre bezbarierovosť"
+      "A11y": "Optimalizované pre bezbariérovosť"
     }
   },
   "NoResults": "Žiadne výsledky",

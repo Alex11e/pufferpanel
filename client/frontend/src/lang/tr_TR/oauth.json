@@ -1,13 +1,13 @@
 {
-  "Credentials": "İki aşamalı doğrulama bilgileri",
-  "ClientId": "Kullanıcı ID",
-  "ClientSecret": "Kullanıcı anahtarı",
-  "NewClientWarning": "Kullanıcı anahtarınızı lütfen kaydedin, bu sayfayı kapattıktan sonra anahtar kesinlikle tekrar gösterilemez.",
-  "Create": "Yeni iki aşamalı doğrulama oluştur",
-  "UnnamedClient": "İsimsiz iki aşamalı doğrulama",
+  "Credentials": "OAuth2 İstemci Kimlik Bilgileri",
+  "ClientId": "İstemci ID",
+  "ClientSecret": "İstemci anahtarı",
+  "NewClientWarning": "İstemci anahtarınızı lütfen kaydedin, bu sayfayı kapattıktan sonra anahtar kesinlikle tekrar gösterilemez.",
+  "Create": "Yeni OAuth2 İstemcisi Oluştur",
+  "UnnamedClient": "İsimsiz OAuth2 İstemcisi",
   "Docs": "API dökümantasyonlarını görüntüle",
-  "Clients": "İki aşamalı doğrulama",
+  "Clients": "OAuth2 İstemcileri",
   "Delete": "{clientName} silinsin mi?",
-  "ConfirmDelete": "Bu iki aşamalı doğrulamanın silinmesinden kaynaklanabilecek sorunların farkındayım ve devam etmek istiyorum.",
-  "AccountDescription": "Burada listelenen iki aşamalı doğrulama tüm hesap izinlerini devralır"
+  "ConfirmDelete": "Bu OAuth2 istemcisinin silinmesinin etkilerinin farkındayım ve devam etmek istiyorum.",
+  "AccountDescription": "Burada listelenen OAuth2 istemcileri, hesabınızın tüm izinlerini devralır"
 }
