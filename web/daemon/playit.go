@@ -46,6 +46,8 @@ type playitIPCError struct {
 	Message string `json:"message"`
 }
 
+var ErrPlayitAgentUnavailable = errors.New("Playit agent is not running or installed")
+
 func registerPlayitRoutes(router *gin.RouterGroup) {
 	routes := router.Group("/playit", middleware.ValidateJWT)
 	routes.GET("/state", getPlayitState)
@@ -103,8 +105,17 @@ func stopPlayitAgent(c *gin.Context) {
 func playitIPCRequest(parent context.Context, requestType string, fields map[string]string) (json.RawMessage, error) {
 	ctx, cancel := context.WithTimeout(parent, 5*time.Second)
 	defer cancel()
-	connection, err := dialPlayitAgent(ctx, playitSocketPath())
+	path := playitSocketPath()
+	if _, err := os.Stat(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, ErrPlayitAgentUnavailable
+		}
+	}
+	connection, err := dialPlayitAgent(ctx, path)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) || strings.Contains(err.Error(), "no such file or directory") {
+			return nil, ErrPlayitAgentUnavailable
+		}
 		return nil, fmt.Errorf("could not connect to Playit agent IPC: %w", err)
 	}
 	defer connection.Close()
