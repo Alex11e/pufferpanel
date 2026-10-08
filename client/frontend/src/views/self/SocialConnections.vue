@@ -12,6 +12,20 @@ const loading = ref(true)
 const error = ref('')
 const notice = ref('')
 
+const socialErrorMessages = {
+  state_cookie: 'A böngésző nem őrizte meg a biztonsági állapotot. Engedélyezd a sütiket, majd próbáld újra.',
+  state: 'A bejelentkezési folyamat lejárt vagy a visszatérési cím nem egyezik. Indítsd újra az összekapcsolást.',
+  provider_denied: 'A külső szolgáltató elutasította vagy megszakította az engedélyezést.',
+  provider_config: 'A szolgáltató beállítása vagy a regisztrált callback URL hibás. Ellenőrizd az admin beállításokat.',
+  exchange: 'A szolgáltató nem fogadta el a kódot. Ellenőrizd a Client ID, Client secret és callback URL értékeket.',
+  identity: 'Nem sikerült ellenőrizni a külső fiók azonosítóját vagy OIDC nonce értékét.',
+  session: 'A panel munkamenete lejárt. Jelentkezz be újra, majd indítsd el ismét az összekapcsolást.',
+  linking_disabled: 'Az admin letiltotta a külső fiókok összekapcsolását.',
+  account_missing: 'A panel fiók már nem található. Jelentkezz be újra.',
+  account_conflict: 'Ez a külső fiók már egy másik PufferPanel-fiókhoz van kapcsolva.',
+  connection: 'A kapcsolat adatbázisba mentése nem sikerült. Próbáld újra, vagy nézd meg a panel szervernaplóját.'
+}
+
 async function load() {
   loading.value = true
   error.value = ''
@@ -45,7 +59,8 @@ function disconnect(connection) {
 onMounted(() => {
   const query = new URLSearchParams(window.location.search)
   if (query.get('socialConnected') === '1') notice.value = 'A külső fiók sikeresen összekapcsolva.'
-  if (query.get('socialError') === '1') notice.value = 'A külső fiók összekapcsolása nem sikerült.'
+  const reason = query.get('socialError')
+  if (reason) notice.value = socialErrorMessages[reason] || 'A külső fiók összekapcsolása nem sikerült. Ellenőrizd a panel szervernaplóját.'
   load()
 })
 </script>
@@ -61,13 +76,15 @@ onMounted(() => {
       <div v-if="!providers.length" class="empty">Jelenleg nincs elérhető külső bejelentkezés.</div>
       <div v-for="provider in providers" :key="provider.key" class="provider-row">
         <div><strong>{{ provider.name }}</strong><small>{{ connections.find(connection => connection.key === provider.key)?.displayName || connections.find(connection => connection.key === provider.key)?.email || 'Nincs összekapcsolva' }}</small></div>
-        <btn v-if="connections.some(connection => connection.key === provider.key)" color="error" @click="disconnect(connections.find(connection => connection.key === provider.key))"><icon name="remove" /> Leválasztás</btn>
+        <btn v-if="connections.some(connection => connection.key === provider.key) && connections.find(connection => connection.key === provider.key).canDisconnect" color="error" @click="disconnect(connections.find(connection => connection.key === provider.key))"><icon name="remove" /> Leválasztás</btn>
+        <small v-else-if="connections.some(connection => connection.key === provider.key)">Az utolsó belépési mód nem választható le. Adj hozzá másikat.</small>
         <a v-else-if="provider.connectable" :href="`/api/self/social/${encodeURIComponent(provider.key)}/connect`"><btn color="primary"><icon name="account" /> Összekapcsolás</btn></a>
         <small v-else>Az összekapcsolást az admin letiltotta.</small>
       </div>
       <div v-for="connection in connections.filter(item => !providers.some(provider => provider.key === item.key))" :key="connection.key" class="provider-row">
         <div><strong>{{ connection.provider }}</strong><small>{{ connection.displayName || connection.email || 'Összekapcsolva, jelenleg letiltva' }}</small></div>
-        <btn color="error" @click="disconnect(connection)"><icon name="remove" /> Leválasztás</btn>
+        <btn v-if="connection.canDisconnect" color="error" @click="disconnect(connection)"><icon name="remove" /> Leválasztás</btn>
+        <small v-else>Az utolsó belépési mód nem választható le. Adj hozzá másikat.</small>
       </div>
     </template>
   </section>

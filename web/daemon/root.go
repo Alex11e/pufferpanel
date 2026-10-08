@@ -25,6 +25,7 @@ func RegisterDaemonRoutes(e *gin.RouterGroup) {
 	e.GET("features", getFeatures)
 	e.Handle("OPTIONS", "features", response.CreateOptions("GET"))
 
+	registerPlayitRoutes(e)
 	RegisterServerRoutes(e)
 }
 

@@ -24,6 +24,9 @@ const servers = ref([])
 const templates = ref([])
 const users = ref([])
 const nodes = ref([])
+const tickets = ref([])
+const pages = ref([])
+let searchRequestId = 0
 
 function cancel() {
   if (timeout) {
@@ -36,6 +39,11 @@ function cancel() {
 }
 
 function close() {
+  searchRequestId += 1
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
   active.value = false
   query.value = ''
   document.activeElement.blur()
@@ -46,32 +54,41 @@ function input() {
     clearTimeout(timeout)
     timeout = null
   }
-  timeout = setTimeout(search, 500)
+  const requestId = ++searchRequestId
+  active.value = true
+  loading.value = true
+  reset()
+  timeout = setTimeout(() => search(requestId), 500)
 }
 
-async function search() {
+async function search(requestId) {
+  if (requestId !== searchRequestId) return
   loading.value = true
   active.value = true
   const q = query.value.toLowerCase()
   reset()
-  await Promise.all([
-    findServers(q),
-    api.auth.hasScope('users.info.search') ? findUsers(q) : Promise.resolve(),
-    api.auth.hasScope('nodes.view') ? findNodes(q) : Promise.resolve(),
-    api.auth.hasScope('templates.view') ? findTemplates(q) : Promise.resolve()
+  await Promise.allSettled([
+    findServers(q, requestId),
+    api.auth.hasScope('users.info.search') ? findUsers(q, requestId) : Promise.resolve(),
+    api.auth.hasScope('nodes.view') ? findNodes(q, requestId) : Promise.resolve(),
+    api.auth.hasScope('templates.view') ? findTemplates(q, requestId) : Promise.resolve(),
+    findTickets(q, requestId),
+    findPages(q, requestId)
   ])
-  let mi = servers.value.length + users.value.length + nodes.value.length
+  if (requestId !== searchRequestId) return
+  let mi = servers.value.length + users.value.length + nodes.value.length + tickets.value.length + pages.value.length
   templates.value.map(repo => mi += repo.templates.length)
   maxIndex.value = mi - 1
   loading.value = false
 }
 
-async function findServers(query) {
-  servers.value = (await api.server.list(1, 5, query)).servers
+async function findServers(query, requestId) {
+  const result = await api.server.list(1, 5, query)
+  if (requestId === searchRequestId) servers.value = result.servers || []
 }
 
-async function findTemplates(query) {
-  templates.value = (await api.template.listAllTemplates()).map(repo => {
+async function findTemplates(query, requestId) {
+  const result = (await api.template.listAllTemplates()).map(repo => {
     repo.templates = repo.templates.filter(template => {
       if (template.name.toLowerCase().indexOf(query) > -1) return true
       return template.display.toLowerCase().indexOf(query) > -1
@@ -80,20 +97,44 @@ async function findTemplates(query) {
   }).filter(repo => {
     return repo.templates.length > 0
   })
+  if (requestId === searchRequestId) templates.value = result
 }
 
-async function findUsers(query) {
+async function findUsers(query, requestId) {
   const byName = await api.user.search(query, 5)
   const byEmail = (await api.user.searchEmail(query, 5)).filter(u => {
     return byName.filter(n => {
       return n.id === u.id
     }).length === 0
   })
-  users.value = byName.concat(byEmail).slice(0, 5)
+  if (requestId === searchRequestId) users.value = byName.concat(byEmail).slice(0, 5)
 }
 
-async function findNodes(query) {
-  nodes.value = (await api.node.list()).filter(node => node.name.toLowerCase().indexOf(query) > -1).slice(0, 5)
+async function findNodes(query, requestId) {
+  const result = (await api.node.list()).filter(node => node.name.toLowerCase().indexOf(query) > -1).slice(0, 5)
+  if (requestId === searchRequestId) nodes.value = result
+}
+
+async function findTickets(query, requestId) {
+  const response = await api.get('/api/tickets')
+  const result = (response.data || []).filter(ticket => {
+    return `${ticket.id} ${ticket.subject} ${ticket.category} ${ticket.status} ${ticket.username || ''}`.toLowerCase().includes(query)
+  }).slice(0, 5)
+  if (requestId === searchRequestId) tickets.value = result
+}
+
+function findPages(query, requestId) {
+  const result = router.getRoutes().filter(route => {
+    if (!route.name || !route.meta.tkey || route.path.includes(':')) return false
+    if (route.meta.permission !== true && (!route.meta.permission || !api.auth.hasScope(route.meta.permission))) return false
+    const label = t(route.meta.tkey).toLowerCase()
+    return label.includes(query) || String(route.name).toLowerCase().includes(query) || route.path.toLowerCase().includes(query)
+  }).slice(0, 5).map(route => ({
+    label: t(route.meta.tkey),
+    name: route.name,
+    path: route.path
+  }))
+  if (requestId === searchRequestId) pages.value = result
 }
 
 function reset() {
@@ -106,6 +147,8 @@ function reset() {
   templates.value = []
   users.value = []
   nodes.value = []
+  tickets.value = []
+  pages.value = []
 }
 
 function getServerAddress(server) {
@@ -138,6 +181,16 @@ function templateIndex(repo, i) {
   return offset + i
 }
 
+function ticketIndex(i) {
+  let offset = servers.value.length + users.value.length + nodes.value.length
+  templates.value.forEach(repo => { offset += repo.templates.length })
+  return offset + i
+}
+
+function pageIndex(i) {
+  return ticketIndex(tickets.value.length) + i
+}
+
 function setRef(i) {
   return ref => {
     if (currIndex.value === i)
@@ -159,6 +212,7 @@ function scrollIfNeeded(complete) {
 }
 
 function up() {
+  if (maxIndex.value < 0) return
   if (currIndex.value === 0) {
     currIndex.value = maxIndex.value
     scrollIfNeeded(true)
@@ -169,6 +223,7 @@ function up() {
 }
 
 function down() {
+  if (maxIndex.value < 0) return
   if (currIndex.value === maxIndex.value) {
     currIndex.value = 0
     scrollIfNeeded(true)
@@ -179,6 +234,7 @@ function down() {
 }
 
 function go() {
+  if (maxIndex.value < 0 || !links[currIndex.value]) return
   router.push(links[currIndex.value])
   close()
 }
@@ -235,6 +291,24 @@ function link(index, to) {
               <div class="subline">{{ template.name }}</div>
             </router-link>
           </div>
+        </div>
+      </div>
+      <div v-if="tickets.length > 0" class="ticket-results">
+        <h3>Támogatási jegyek</h3>
+        <div v-for="(ticket, i) in tickets" :key="ticket.id" :ref="setRef(ticketIndex(i))" :class="['result', currIndex === ticketIndex(i) ? 'selected' : '']">
+          <router-link :to="link(ticketIndex(i), { name: 'SupportTickets', query: { q: ticket.subject } })">
+            <div class="title">#{{ ticket.id }} · {{ ticket.subject }}</div>
+            <div class="subline">{{ ticket.status }} · {{ ticket.category }}<template v-if="api.auth.hasScope('admin')"> · {{ ticket.username }}</template></div>
+          </router-link>
+        </div>
+      </div>
+      <div v-if="pages.length > 0" class="page-results">
+        <h3>Ugrás oldalra</h3>
+        <div v-for="(page, i) in pages" :key="page.name" :ref="setRef(pageIndex(i))" :class="['result', currIndex === pageIndex(i) ? 'selected' : '']">
+          <router-link :to="link(pageIndex(i), { name: page.name })">
+            <div class="title">{{ page.label }}</div>
+            <div class="subline">{{ page.path }}</div>
+          </router-link>
         </div>
       </div>
       <div v-if="maxIndex === -1" class="no-results" v-text="t('common.NoResults')" />

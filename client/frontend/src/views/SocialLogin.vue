@@ -12,7 +12,7 @@ const error = ref('')
 const providers = ref([])
 const redirectUrl = ref('')
 const providerForms = ref({})
-const settings = ref({ allowRegistration: false, allowEmailLinking: false, allowAccountLinking: false })
+const settings = ref({ allowRegistration: false, allowEmailLinking: false, allowAccountLinking: false, redirectBaseUrl: '' })
 const draft = ref({ key: '', name: '', kind: 'google', clientId: '', clientSecret: '', issuerUrl: '', enabled: false })
 
 async function load() {
@@ -25,7 +25,8 @@ async function load() {
     settings.value = {
       allowRegistration: response.data.allowRegistration,
       allowEmailLinking: response.data.allowEmailLinking,
-      allowAccountLinking: response.data.allowAccountLinking
+      allowAccountLinking: response.data.allowAccountLinking,
+      redirectBaseUrl: response.data.redirectBaseUrl || ''
     }
     providerForms.value = Object.fromEntries(providers.value.map(provider => [provider.key, { ...provider, clientSecret: '' }]))
   } catch (failure) {
@@ -94,6 +95,8 @@ onMounted(load)
         <label><input v-model="settings.allowRegistration" type="checkbox"> Új fiókok létrehozása külső belépéssel</label>
         <label><input v-model="settings.allowEmailLinking" type="checkbox"> Meglévő fiók automatikus összekapcsolása ellenőrzött e-mail alapján</label>
         <label><input v-model="settings.allowAccountLinking" type="checkbox"> Felhasználók provider fiókot kapcsolhatnak vagy választhatnak le</label>
+        <label class="callback-setting">OAuth callback base URL<input v-model="settings.redirectBaseUrl" type="url" placeholder="Üresen a panel Master URL-jét használja"></label>
+        <p class="callback-preview">Provider callback URL: <code>{{ redirectUrl }}</code></p>
         <btn color="primary" :disabled="saving" @click="saveSettings"><icon name="save" /> Policy-k mentése</btn>
       </section>
       <section>
@@ -135,6 +138,9 @@ onMounted(load)
 section { margin-top:18px; padding:16px; background:var(--color-background-secondary); border-radius:6px; }
 section h2 { margin-top:0; }
 section > label { display:flex; align-items:center; gap:9px; margin:12px 0; }
+.callback-setting { align-items:flex-start; flex-direction:column; }
+.callback-setting input { width:min(100%, 560px); padding:9px; color:var(--color-text); background:var(--color-background); border:1px solid var(--color-background); border-radius:5px; }
+.callback-preview { color:var(--color-text-secondary); overflow-wrap:anywhere; }
 article { padding:14px 0; border-top:1px solid var(--color-background); }
 .provider-heading h3 { margin:0; }
 .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:14px 0; }

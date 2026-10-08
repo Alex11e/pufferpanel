@@ -41,6 +41,7 @@ var dbObjects = []interface{}{
 	&models.WebauthnCredential{},
 	&models.SocialProvider{},
 	&models.SocialConnection{},
+	&models.SocialLoginFlow{},
 }
 
 func Upgrade(dbConn *gorm.DB, prettyPrint bool) error {

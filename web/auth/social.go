@@ -3,9 +3,7 @@ package auth
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,8 +18,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/gofrs/uuid/v5"
-	"github.com/gorilla/securecookie"
 	"github.com/pufferpanel/pufferpanel/v3/config"
+	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
 	"github.com/pufferpanel/pufferpanel/v3/models"
 	"github.com/pufferpanel/pufferpanel/v3/scopes"
@@ -30,15 +28,14 @@ import (
 	"gorm.io/gorm"
 )
 
-const socialFlowCookieName = "puffer_social_flow"
-
 type socialFlow struct {
-	State    string `json:"state"`
-	Verifier string `json:"verifier"`
-	Provider string `json:"provider"`
-	Mode     string `json:"mode"`
-	UserID   uint   `json:"userId,omitempty"`
-	IssuedAt int64  `json:"issuedAt"`
+	State            string
+	Verifier         string
+	Provider         string
+	Mode             string
+	UserID           uint
+	SessionTokenHash string
+	ExpiresAt        time.Time
 }
 
 type socialProviderPublicView struct {
@@ -100,7 +97,7 @@ func beginSocialFlow(c *gin.Context, mode string, userID uint) {
 	db := middleware.GetDatabase(c)
 	var provider models.SocialProvider
 	if err := db.Where("key = ? AND enabled = ?", c.Param("provider"), true).First(&provider).Error; err != nil {
-		c.Redirect(http.StatusFound, "/auth/login?socialError=1")
+		socialFlowFailure(c, mode, "provider_config", err)
 		return
 	}
 	if mode == "connect" && userID == 0 {
@@ -111,24 +108,36 @@ func beginSocialFlow(c *gin.Context, mode string, userID uint) {
 	defer cancel()
 	providerConfig, err := makeOAuthProvider(ctx, provider)
 	if err != nil {
-		c.Redirect(http.StatusFound, "/auth/login?socialError=1")
+		socialFlowFailure(c, mode, "provider_config", err)
 		return
 	}
 	stateBytes := make([]byte, 32)
 	if _, err := rand.Read(stateBytes); err != nil {
-		c.Redirect(http.StatusFound, "/auth/login?socialError=1")
+		socialFlowFailure(c, mode, "state", err)
 		return
 	}
 	flow := socialFlow{
-		State:    base64.RawURLEncoding.EncodeToString(stateBytes),
-		Verifier: oauth2.GenerateVerifier(),
-		Provider: provider.Key,
-		Mode:     mode,
-		UserID:   userID,
-		IssuedAt: time.Now().Unix(),
+		State:     base64.RawURLEncoding.EncodeToString(stateBytes),
+		Verifier:  oauth2.GenerateVerifier(),
+		Provider:  provider.Key,
+		Mode:      mode,
+		UserID:    userID,
+		ExpiresAt: time.Now().Add(10 * time.Minute),
 	}
-	if !writeSocialFlowCookie(c, flow) {
-		c.Redirect(http.StatusFound, "/auth/login?socialError=1")
+	if mode == "connect" {
+		sessionToken, err := c.Cookie("puffer_auth")
+		if err != nil || sessionToken == "" {
+			socialFlowFailure(c, mode, "session", err)
+			return
+		}
+		flow.SessionTokenHash, err = services.HashToken(sessionToken)
+		if err != nil {
+			socialFlowFailure(c, mode, "session", err)
+			return
+		}
+	}
+	if err := storeSocialFlow(db, flow); err != nil {
+		socialFlowFailure(c, mode, "state_store", err)
 		return
 	}
 	options := []oauth2.AuthCodeOption{oauth2.S256ChallengeOption(flow.Verifier)}
@@ -142,58 +151,69 @@ func beginSocialFlow(c *gin.Context, mode string, userID uint) {
 }
 
 func SocialCallback(c *gin.Context) {
-	flow, ok := readSocialFlowCookie(c)
-	clearSocialFlowCookie(c)
-	if !ok || flow.State == "" || c.Query("state") != flow.State || time.Since(time.Unix(flow.IssuedAt, 0)) > 10*time.Minute {
-		c.Redirect(http.StatusFound, "/auth/login?socialError=1")
+	db := middleware.GetDatabase(c)
+	flow, err := consumeSocialFlow(db, c.Query("state"))
+	if err != nil {
+		socialFlowFailure(c, "login", "state", err)
 		return
 	}
 	if c.Query("error") != "" || c.Query("code") == "" {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "provider_denied", nil)
 		return
 	}
-	db := middleware.GetDatabase(c)
 	var provider models.SocialProvider
 	if err := db.Where("key = ? AND enabled = ?", flow.Provider, true).First(&provider).Error; err != nil {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "provider_config", err)
 		return
 	}
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
 	defer cancel()
 	providerConfig, err := makeOAuthProvider(ctx, provider)
 	if err != nil {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "provider_config", err)
 		return
 	}
 	token, err := providerConfig.config.Exchange(ctx, c.Query("code"), oauth2.VerifierOption(flow.Verifier))
 	if err != nil {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "exchange", err)
 		return
 	}
 	identity, err := providerConfig.identity(ctx, token, flow.State)
 	if err != nil || identity.Subject == "" {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "identity", err)
 		return
 	}
 	identity.Email = strings.ToLower(strings.TrimSpace(identity.Email))
 
 	if flow.Mode == "connect" {
-		if !config.SocialLoginAllowAccountLinking.Value() || !socialRequestUserMatches(c, db, flow.UserID) {
-			socialFlowFailure(c, flow.Mode)
+		if !config.SocialLoginAllowAccountLinking.Value() {
+			socialFlowFailure(c, flow.Mode, "linking_disabled", nil)
+			return
+		}
+		if !socialRequestUserMatches(db, flow) {
+			socialFlowFailure(c, flow.Mode, "session", nil)
 			return
 		}
 		var user models.User
-		if err := db.First(&user, flow.UserID).Error; err != nil || attachSocialIdentity(db, &user, provider, identity) != nil {
-			c.Redirect(http.StatusFound, "/self?socialError=1#social")
+		if err := db.First(&user, flow.UserID).Error; err != nil {
+			socialFlowFailure(c, flow.Mode, "account_missing", err)
 			return
 		}
-		c.Redirect(http.StatusFound, "/self?socialConnected=1#social")
+		if err := attachSocialIdentity(db, &user, provider, identity); err != nil {
+			reason := "connection"
+			if strings.Contains(err.Error(), "already connected") || strings.Contains(err.Error(), "different account") {
+				reason = "account_conflict"
+			}
+			socialFlowFailure(c, flow.Mode, reason, err)
+			return
+		}
+		issueSocialSessionTo(c, &user, flow.Mode, "/self?socialConnected=1#social")
 		return
 	}
 
 	user, err := findOrCreateSocialUser(db, provider, identity)
 	if err != nil {
-		socialFlowFailure(c, flow.Mode)
+		socialFlowFailure(c, flow.Mode, "account_policy", err)
 		return
 	}
 	if user.OtpActive {
@@ -202,7 +222,7 @@ func SocialCallback(c *gin.Context) {
 		loginSession.Set("user", user.Email)
 		loginSession.Set("time", time.Now().Unix())
 		if err := loginSession.Save(); err != nil {
-			socialFlowFailure(c, flow.Mode)
+			socialFlowFailure(c, flow.Mode, "session", err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/auth/login?social2fa=1")
@@ -216,8 +236,8 @@ func makeOAuthProvider(ctx context.Context, provider models.SocialProvider) (*so
 	if err != nil {
 		return nil, err
 	}
-	baseURL := strings.TrimRight(config.MasterUrl.Value(), "/")
-	if baseURL == "" {
+	callbackURL := config.SocialLoginCallbackURL()
+	if callbackURL == "" {
 		return nil, errors.New("panel master URL is not configured")
 	}
 	result := &socialOAuthProvider{
@@ -225,7 +245,7 @@ func makeOAuthProvider(ctx context.Context, provider models.SocialProvider) (*so
 		config: oauth2.Config{
 			ClientID:     provider.ClientID,
 			ClientSecret: secret,
-			RedirectURL:  baseURL + "/auth/social/callback",
+			RedirectURL:  callbackURL,
 		},
 	}
 	switch provider.Kind {
@@ -399,7 +419,7 @@ func findOrCreateSocialUser(db *gorm.DB, provider models.SocialProvider, identit
 			return nil, errors.New("email account linking is disabled")
 		}
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
-		if !config.SocialLoginAllowRegistration.Value() {
+		if !socialRegistrationAllowed() {
 			return nil, errors.New("social registration is disabled")
 		}
 		user, err = createSocialUser(db, identity.Email)
@@ -413,6 +433,10 @@ func findOrCreateSocialUser(db *gorm.DB, provider models.SocialProvider, identit
 		return nil, err
 	}
 	return &user, nil
+}
+
+func socialRegistrationAllowed() bool {
+	return config.RegistrationEnabled.Value() && config.SocialLoginAllowRegistration.Value()
 }
 
 func createSocialUser(db *gorm.DB, email string) (models.User, error) {
@@ -484,30 +508,34 @@ func attachSocialIdentity(db *gorm.DB, user *models.User, provider models.Social
 	}).Error
 }
 
-func socialRequestUserMatches(c *gin.Context, db *gorm.DB, expectedUserID uint) bool {
-	token, err := c.Cookie("puffer_auth")
-	if err != nil || token == "" {
+func socialRequestUserMatches(db *gorm.DB, flow socialFlow) bool {
+	if flow.UserID == 0 || flow.SessionTokenHash == "" {
 		return false
 	}
-	validated, err := (&services.Session{DB: db}).Validate(token)
-	return err == nil && validated.UserId != nil && *validated.UserId == expectedUserID
+	var session models.Session
+	err := db.Where("token = ? AND user_id = ? AND expiration_time > ?", flow.SessionTokenHash, flow.UserID, time.Now()).First(&session).Error
+	return err == nil && session.UserId != nil && *session.UserId == flow.UserID
 }
 
 func issueSocialSession(c *gin.Context, user *models.User) {
+	issueSocialSessionTo(c, user, "login", "/")
+}
+
+func issueSocialSessionTo(c *gin.Context, user *models.User, mode string, destination string) {
 	db := middleware.GetDatabase(c)
 	perms, err := (&services.Permission{DB: db}).GetForUserAndServer(user.ID, "")
 	if err != nil || !scopes.ContainsScope(perms.Scopes, scopes.ScopeLogin) {
-		socialFlowFailure(c, "login")
+		socialFlowFailure(c, mode, "permissions", err)
 		return
 	}
 	token, err := (&services.Session{DB: db}).CreateForUser(user)
 	if err != nil {
-		socialFlowFailure(c, "login")
+		socialFlowFailure(c, mode, "session", err)
 		return
 	}
 	scopeData, err := json.Marshal(perms.Scopes)
 	if err != nil {
-		socialFlowFailure(c, "login")
+		socialFlowFailure(c, mode, "session", err)
 		return
 	}
 	secure := config.PanelWebCookiesSecure.Value() || c.Request.TLS != nil
@@ -521,61 +549,73 @@ func issueSocialSession(c *gin.Context, user *models.User) {
 	c.SetCookie("puffer_auth", token, maxAge, path, domain, secure, true)
 	c.SetCookie("puffer_auth_expires", "", maxAge, path, domain, secure, false)
 	c.SetCookie("puffer_scopes", url.QueryEscape(string(scopeData)), maxAge, path, domain, secure, false)
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusFound, destination)
 }
 
-func socialFlowFailure(c *gin.Context, mode string) {
+func socialFlowFailure(c *gin.Context, mode string, reason string, cause error) {
+	if cause != nil {
+		logging.Error.Printf("Social %s flow failed at %s: %v", mode, reason, cause)
+	} else {
+		logging.Error.Printf("Social %s flow failed at %s", mode, reason)
+	}
 	if mode == "connect" {
-		c.Redirect(http.StatusFound, "/self?socialError=1")
+		c.Redirect(http.StatusFound, "/self?socialError="+url.QueryEscape(reason)+"#social")
 		return
 	}
 	c.Redirect(http.StatusFound, "/auth/login?socialError=1")
 }
 
-func writeSocialFlowCookie(c *gin.Context, flow socialFlow) bool {
-	codec, err := socialFlowCodec()
+func storeSocialFlow(db *gorm.DB, flow socialFlow) error {
+	stateHash, err := services.HashToken(flow.State)
 	if err != nil {
-		return false
+		return err
 	}
-	value, err := codec.Encode(socialFlowCookieName, flow)
+	verifierEncrypted, err := services.EncryptSocialSecret(flow.Verifier)
 	if err != nil {
-		return false
+		return err
 	}
-	secure := config.PanelWebCookiesSecure.Value() || c.Request.TLS != nil
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name: socialFlowCookieName, Value: value, Path: "/auth/social/callback",
-		MaxAge: 600, HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode,
+	if err := db.Where("expires_at <= ?", time.Now()).Delete(&models.SocialLoginFlow{}).Error; err != nil {
+		return err
+	}
+	return db.Create(&models.SocialLoginFlow{
+		StateHash: stateHash, ProviderKey: flow.Provider, Mode: flow.Mode,
+		UserID: flow.UserID, SessionTokenHash: flow.SessionTokenHash,
+		VerifierEncrypted: verifierEncrypted, ExpiresAt: flow.ExpiresAt,
+	}).Error
+}
+
+func consumeSocialFlow(db *gorm.DB, state string) (socialFlow, error) {
+	if state == "" {
+		return socialFlow{}, errors.New("missing OAuth state")
+	}
+	stateHash, err := services.HashToken(state)
+	if err != nil {
+		return socialFlow{}, err
+	}
+	var stored models.SocialLoginFlow
+	err = db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("state_hash = ? AND expires_at > ?", stateHash, time.Now()).First(&stored).Error; err != nil {
+			return err
+		}
+		result := tx.Delete(&stored)
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected != 1 {
+			return gorm.ErrRecordNotFound
+		}
+		return nil
 	})
-	return true
-}
-
-func readSocialFlowCookie(c *gin.Context) (socialFlow, bool) {
-	var flow socialFlow
-	value, err := c.Cookie(socialFlowCookieName)
 	if err != nil {
-		return flow, false
+		return socialFlow{}, err
 	}
-	codec, err := socialFlowCodec()
-	if err != nil || codec.Decode(socialFlowCookieName, value, &flow) != nil {
-		return flow, false
+	verifier, err := services.DecryptSocialSecret(stored.VerifierEncrypted)
+	if err != nil {
+		return socialFlow{}, err
 	}
-	return flow, true
-}
-
-func clearSocialFlowCookie(c *gin.Context) {
-	secure := config.PanelWebCookiesSecure.Value() || c.Request.TLS != nil
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name: socialFlowCookieName, Value: "", Path: "/auth/social/callback",
-		MaxAge: -1, HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode,
-	})
-}
-
-func socialFlowCodec() (*securecookie.SecureCookie, error) {
-	key, err := hex.DecodeString(config.SessionKey.Value())
-	if err != nil || len(key) < 32 {
-		return nil, errors.New("panel session key is not available")
-	}
-	hashKey := sha256.Sum256(append([]byte("pufferpanel-social-flow-hmac-v1:"), key...))
-	blockKey := sha256.Sum256(append([]byte("pufferpanel-social-flow-encryption-v1:"), key...))
-	return securecookie.New(hashKey[:], blockKey[:]).MaxAge(600), nil
+	return socialFlow{
+		State: state, Verifier: verifier, Provider: stored.ProviderKey,
+		Mode: stored.Mode, UserID: stored.UserID,
+		SessionTokenHash: stored.SessionTokenHash, ExpiresAt: stored.ExpiresAt,
+	}, nil
 }

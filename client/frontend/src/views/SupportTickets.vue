@@ -1,14 +1,16 @@
 <script setup>
-import { computed, inject, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
 
 const api = inject('api')
 const tickets = ref([])
+const route = useRoute()
 const active = ref(null)
 const loading = ref(true)
-const search = ref('')
+const search = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const statusFilter = ref('')
 const priorityFilter = ref('')
 const form = ref({ subject: '', serverId: '', category: 'technical', priority: 'normal', message: '' })
@@ -33,6 +35,10 @@ async function create() { error.value = ''; try { const response = await api.pos
 async function sendReply() { if (!reply.value.trim() || !active.value) return; try { await api.post(`/api/tickets/${active.value.id}/messages`, { body: reply.value }); await open(active.value); await load() } catch { error.value = 'Az üzenet elküldése nem sikerült.' } }
 async function closeTicket() { if (!active.value) return; error.value = ''; try { await api.put(`/api/tickets/${active.value.id}/status`, { status: 'closed' }); await open(active.value); await load() } catch (failure) { error.value = failure?.msg || failure?.message || 'A hibajegy lezárása nem sikerült.' } }
 async function updatePriority() { if (!active.value || !isAdmin.value) return; error.value = ''; try { await api.put(`/api/tickets/${active.value.id}/status`, { status: active.value.status, priority: active.value.priority }); await load() } catch (failure) { error.value = failure?.msg || failure?.message || 'A prioritás módosítása nem sikerült.' } }
+watch(() => route.query.q, value => {
+  search.value = typeof value === 'string' ? value : ''
+})
+
 onMounted(load)
 </script>
 

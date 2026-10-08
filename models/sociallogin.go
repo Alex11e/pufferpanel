@@ -27,3 +27,15 @@ type SocialConnection struct {
 	User        User           `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE"`
 	Provider    SocialProvider `gorm:"foreignKey:ProviderID;references:ID;constraint:OnDelete:CASCADE"`
 }
+
+type SocialLoginFlow struct {
+	ID                uint      `gorm:"primaryKey;autoIncrement"`
+	StateHash         string    `gorm:"not null;size:64;uniqueIndex"`
+	ProviderKey       string    `gorm:"not null;size:40;index"`
+	Mode              string    `gorm:"not null;size:16"`
+	UserID            uint      `gorm:"index"`
+	SessionTokenHash  string    `gorm:"size:64"`
+	VerifierEncrypted string    `gorm:"not null;size:2048"`
+	ExpiresAt         time.Time `gorm:"not null;index"`
+	CreatedAt         time.Time
+}

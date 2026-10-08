@@ -23,6 +23,7 @@ func RegisterRoutes(rg *gin.RouterGroup) {
 	rg.Use(recordActivity)
 	registerNodes(rg.Group("/nodes"))
 	registerServers(rg.Group("/servers"))
+	registerPlayitServerRoutes(rg.Group("/servers"))
 	registerUsers(rg.Group("/users"))
 	registerTemplates(rg.Group("/templates"))
 	registerSelf(rg.Group("/self"))

@@ -30,19 +30,30 @@ const announcements = ref([])
 let lastWidth = window.innerWidth
 let reauthTimer = null
 
+function isSensitiveRequestField(key) {
+  const normalized = key.toLowerCase().replace(/[_-]/g, '')
+  return ['password', 'secret', 'clientsecret', 'token', 'sessiontoken', 'accesstoken', 'refreshtoken', 'apikey', 'privatekey', 'authorization'].includes(normalized)
+}
+
+function redactSensitiveRequestData(value) {
+  if (Array.isArray(value)) return value.map(redactSensitiveRequestData)
+  if (typeof value !== 'object' || value === null) return value
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => [
+    key,
+    isSensitiveRequestField(key) ? '[redacted]' : redactSensitiveRequestData(child)
+  ]))
+}
+
 function showErrorDetails(e) {
   const getCircularReplacer = () => {
     const seen = new WeakSet()
     return (key, value) => {
-      if (key === 'password') return '[password]'
+      if (isSensitiveRequestField(key)) return '[redacted]'
       if (typeof value === 'string') {
         try {
           const json = JSON.parse(value)
           if (typeof json === 'object' && json !== null) {
-            if (Object.keys(json).indexOf('password') !== -1) {
-              json.password = '[password]'
-            }
-            return JSON.stringify(json)
+            return JSON.stringify(redactSensitiveRequestData(json))
           } else { return value }
         } catch { return value }
       }

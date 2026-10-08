@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -22,6 +23,7 @@ var socialProviderKeyPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{1,39}$`)
 type socialLoginAdminResponse struct {
 	Providers           []socialProviderAdminView `json:"providers"`
 	RedirectURL         string                    `json:"redirectUrl"`
+	RedirectBaseURL     string                    `json:"redirectBaseUrl"`
 	AllowRegistration   bool                      `json:"allowRegistration"`
 	AllowEmailLinking   bool                      `json:"allowEmailLinking"`
 	AllowAccountLinking bool                      `json:"allowAccountLinking"`
@@ -47,9 +49,10 @@ type socialProviderRequest struct {
 }
 
 type socialLoginSettingsRequest struct {
-	AllowRegistration   *bool `json:"allowRegistration"`
-	AllowEmailLinking   *bool `json:"allowEmailLinking"`
-	AllowAccountLinking *bool `json:"allowAccountLinking"`
+	AllowRegistration   *bool   `json:"allowRegistration"`
+	AllowEmailLinking   *bool   `json:"allowEmailLinking"`
+	AllowAccountLinking *bool   `json:"allowAccountLinking"`
+	RedirectBaseURL     *string `json:"redirectBaseUrl"`
 }
 
 func registerSocialLoginAdmin(g *gin.RouterGroup) {
@@ -79,7 +82,8 @@ func getSocialLoginAdmin(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, socialLoginAdminResponse{
 		Providers:           views,
-		RedirectURL:         strings.TrimRight(config.MasterUrl.Value(), "/") + "/auth/social/callback",
+		RedirectURL:         config.SocialLoginCallbackURL(),
+		RedirectBaseURL:     config.SocialLoginRedirectBaseURL.Value(),
 		AllowRegistration:   config.SocialLoginAllowRegistration.Value(),
 		AllowEmailLinking:   config.SocialLoginAllowEmailLinking.Value(),
 		AllowAccountLinking: config.SocialLoginAllowAccountLinking.Value(),
@@ -95,6 +99,15 @@ func updateSocialLoginSettings(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "all social login policies are required"})
 		return
 	}
+	var redirectBaseURL *string
+	if request.RedirectBaseURL != nil {
+		normalized, err := normalizeSocialRedirectBaseURL(*request.RedirectBaseURL)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": err.Error()}})
+			return
+		}
+		redirectBaseURL = &normalized
+	}
 	if err := config.SocialLoginAllowRegistration.Set(*request.AllowRegistration, true); response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}
@@ -104,7 +117,34 @@ func updateSocialLoginSettings(c *gin.Context) {
 	if err := config.SocialLoginAllowAccountLinking.Set(*request.AllowAccountLinking, true); response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}
+	if redirectBaseURL != nil {
+		if err := config.SocialLoginRedirectBaseURL.Set(*redirectBaseURL, true); response.HandleError(c, err, http.StatusInternalServerError) {
+			return
+		}
+	}
 	c.Status(http.StatusNoContent)
+}
+
+func normalizeSocialRedirectBaseURL(value string) (string, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return "", nil
+	}
+	parsed, err := url.ParseRequestURI(value)
+	if err != nil || !parsed.IsAbs() || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" {
+		return "", errors.New("callback base URL must be an absolute origin without credentials, path, query, or fragment")
+	}
+	if parsed.Path != "" && parsed.Path != "/" {
+		return "", errors.New("callback base URL must not include a path")
+	}
+	if parsed.Scheme != "https" {
+		host := parsed.Hostname()
+		ip := net.ParseIP(host)
+		if parsed.Scheme != "http" || (host != "localhost" && (ip == nil || !ip.IsLoopback())) {
+			return "", errors.New("callback base URL must use HTTPS; HTTP is allowed only for localhost")
+		}
+	}
+	return strings.TrimRight(parsed.String(), "/"), nil
 }
 
 func saveSocialProvider(c *gin.Context) {

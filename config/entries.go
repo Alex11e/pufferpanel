@@ -2,6 +2,7 @@ package config
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -48,10 +49,19 @@ var RegistrationEnabled = asBool("panel.registrationEnabled", true)
 var SocialLoginAllowRegistration = asBool("panel.socialLogin.allowRegistration", false)
 var SocialLoginAllowEmailLinking = asBool("panel.socialLogin.allowEmailLinking", false)
 var SocialLoginAllowAccountLinking = asBool("panel.socialLogin.allowAccountLinking", false)
+var SocialLoginRedirectBaseURL = asString("panel.socialLogin.redirectBaseURL", "")
 var BillingEnabled = asBool("panel.billing.enable", false)
 var PrivateKey = asString("panel.token", "")
 var UpdateRepo = asString("panel.update.repo", "Alex11e/pufferpanel")
 var UpdateDownloadsFolder = asDataFolder("panel.update.downloads", "updates")
+
+func SocialLoginCallbackURL() string {
+	baseURL := SocialLoginRedirectBaseURL.Value()
+	if baseURL == "" {
+		baseURL = MasterUrl.Value()
+	}
+	return strings.TrimRight(baseURL, "/") + "/auth/social/callback"
+}
 
 // UpdateCommand is set only by the host owner in the config file; the web UI can run it but never change it.
 var UpdateCommand = asString("panel.update.command", "")
@@ -63,6 +73,7 @@ var SftpHost = asString("daemon.sftp.host", "0.0.0.0:5657")
 var SftpKey = asDataFolder("daemon.sftp.key", "sftp.key")
 var SftpDebugLog = asBool("daemon.sftp.log", false)
 var AuthUrl = asString("daemon.auth.url", "http://localhost:8080")
+var PlayitSocketPath = asString("daemon.playit.socketPath", "")
 var ClientId = asString("daemon.auth.clientId", "")
 var ClientSecret = asString("daemon.auth.clientSecret", "")
 var CacheFolder = asDataFolder("daemon.data.cache", "cache")
