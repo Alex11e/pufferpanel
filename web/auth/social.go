@@ -122,7 +122,7 @@ func beginSocialFlow(c *gin.Context, mode string, userID uint) {
 		Provider:  provider.Key,
 		Mode:      mode,
 		UserID:    userID,
-		ExpiresAt: time.Now().Add(10 * time.Minute),
+		ExpiresAt: time.Now().UTC().Add(10 * time.Minute),
 	}
 	if mode == "connect" {
 		sessionToken, err := c.Cookie("puffer_auth")
@@ -574,7 +574,8 @@ func storeSocialFlow(db *gorm.DB, flow socialFlow) error {
 	if err != nil {
 		return err
 	}
-	if err := db.Where("expires_at <= ?", time.Now()).Delete(&models.SocialLoginFlow{}).Error; err != nil {
+	flow.ExpiresAt = flow.ExpiresAt.UTC()
+	if err := db.Where("expires_at <= ?", time.Now().UTC()).Delete(&models.SocialLoginFlow{}).Error; err != nil {
 		return err
 	}
 	return db.Create(&models.SocialLoginFlow{
@@ -616,6 +617,6 @@ func consumeSocialFlow(db *gorm.DB, state string) (socialFlow, error) {
 	return socialFlow{
 		State: state, Verifier: verifier, Provider: stored.ProviderKey,
 		Mode: stored.Mode, UserID: stored.UserID,
-		SessionTokenHash: stored.SessionTokenHash, ExpiresAt: stored.ExpiresAt,
+		SessionTokenHash: stored.SessionTokenHash, ExpiresAt: stored.ExpiresAt.UTC(),
 	}, nil
 }

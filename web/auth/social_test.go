@@ -36,7 +36,7 @@ func TestSocialFlowStateIsConsumedOnceAcrossHosts(t *testing.T) {
 	want := socialFlow{
 		State: "opaque-state", Verifier: "pkce-verifier", Provider: "google",
 		Mode: "connect", UserID: 42, SessionTokenHash: strings.Repeat("a", 64),
-		ExpiresAt: time.Now().Add(time.Minute),
+		ExpiresAt: time.Now().UTC().Add(time.Minute),
 	}
 	if err := storeSocialFlow(db, want); err != nil {
 		t.Fatal(err)
@@ -45,7 +45,7 @@ func TestSocialFlowStateIsConsumedOnceAcrossHosts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got != want {
+	if got.State != want.State || got.Verifier != want.Verifier || got.Provider != want.Provider || got.Mode != want.Mode || got.UserID != want.UserID || got.SessionTokenHash != want.SessionTokenHash || !got.ExpiresAt.Equal(want.ExpiresAt) {
 		t.Fatalf("consumed flow = %#v, want %#v", got, want)
 	}
 	if _, err := consumeSocialFlow(db, want.State); err == nil {
