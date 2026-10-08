@@ -1,25 +1,23 @@
-//go:build !windows
+//go:build windows
 
 package nodejsdl
 
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 
 	"github.com/hashicorp/go-version"
 	"github.com/pufferpanel/pufferpanel/v3"
 	"github.com/pufferpanel/pufferpanel/v3/files"
 	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
-	"golang.org/x/sys/unix"
 )
 
-var downloader sync.Mutex
 var VersionMeta = "https://nodejs.org/dist/index.json"
 var DownloadLink = "https://nodejs.org/dist/v${version}/node-v${version}-${os}-${arch}.${ext}"
 var VersionSlug = "node-v${version}-${os}-${arch}"
@@ -30,17 +28,12 @@ type NodejsDl struct {
 
 func (op NodejsDl) Run(args pufferpanel.RunOperatorArgs) pufferpanel.OperationResult {
 	env := args.Environment
-
 	env.DisplayToConsole(true, "Downloading Node.js "+op.Version)
-
-	downloader.Lock()
-	defer downloader.Unlock()
 
 	mainNodeCommand := "node" + op.Version
 	mainNpmCommand := "npm" + op.Version
 
 	_, err := exec.LookPath("node" + op.Version)
-
 	if errors.Is(err, exec.ErrNotFound) {
 		var release ReleaseInfo
 		release, err = op.getRelease()
@@ -48,7 +41,6 @@ func (op NodejsDl) Run(args pufferpanel.RunOperatorArgs) pufferpanel.OperationRe
 			return pufferpanel.OperationResult{Error: err}
 		}
 
-		//cleanup the existing dir
 		err = files.BinaryFS.RemoveAll(release.Slug)
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
@@ -56,23 +48,20 @@ func (op NodejsDl) Run(args pufferpanel.RunOperatorArgs) pufferpanel.OperationRe
 
 		logging.Debug.Println("Calling " + release.Url)
 		err = pufferpanel.HttpExtract(release.Url, files.BinaryFS, "/", nil)
-
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
 
 		logging.Debug.Printf("Adding to path: %s\n", mainNodeCommand)
-		//err = files.BinaryFS.Symlink(filepath.Join(release.Slug, "bin", "node"), mainNodeCommand)
-		_ = unix.Unlinkat(files.BinaryFS.GetRootFD(), mainNodeCommand, 0)
-		err = unix.Symlinkat(filepath.Join(release.Slug, "bin", "node"), files.BinaryFS.GetRootFD(), mainNodeCommand)
+		_ = os.Remove(filepath.Join(files.BinaryFS.Prefix(), mainNodeCommand))
+		err = os.Symlink(filepath.Join(release.Slug, "bin", "node"), filepath.Join(files.BinaryFS.Prefix(), mainNodeCommand))
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
 
 		logging.Debug.Printf("Adding to path: %s\n", mainNpmCommand)
-		//err = files.BinaryFS.Symlink(filepath.Join(release.Slug, "bin", "npm"), mainNpmCommand)
-		_ = unix.Unlinkat(files.BinaryFS.GetRootFD(), mainNpmCommand, 0)
-		err = unix.Symlinkat(filepath.Join(release.Slug, "bin", "npm"), files.BinaryFS.GetRootFD(), mainNpmCommand)
+		_ = os.Remove(filepath.Join(files.BinaryFS.Prefix(), mainNpmCommand))
+		err = os.Symlink(filepath.Join(release.Slug, "bin", "npm"), filepath.Join(files.BinaryFS.Prefix(), mainNpmCommand))
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
@@ -120,17 +109,11 @@ func (op NodejsDl) getRelease() (ReleaseInfo, error) {
 
 	switch runtime.GOARCH {
 	case "arm64":
-		{
-			replacements["arch"] = "arm64"
-		}
+		replacements["arch"] = "arm64"
 	case "arm":
-		{
-			replacements["arch"] = "armv7l"
-		}
+		replacements["arch"] = "armv7l"
 	default:
-		{
-			replacements["arch"] = "x64"
-		}
+		replacements["arch"] = "x64"
 	}
 
 	release := ReleaseInfo{

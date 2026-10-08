@@ -1,4 +1,4 @@
-//go:build !windows
+//go:build windows
 
 package javadl
 
@@ -6,19 +6,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"sync"
 
 	"github.com/pufferpanel/pufferpanel/v3"
 	"github.com/pufferpanel/pufferpanel/v3/files"
 	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/utils"
-	"golang.org/x/sys/unix"
 )
 
-var downloader sync.Mutex
 var DownloadLink = "https://api.adoptium.net/v3/assets/feature_releases/${version}/ga?architecture=${arch}&image_type=jdk&os=${os}&page=0&page_size=1&project=jdk&sort_method=DEFAULT&sort_order=DESC&vendor=eclipse"
 
 type JavaDl struct {
@@ -27,17 +25,12 @@ type JavaDl struct {
 
 func (op JavaDl) Run(args pufferpanel.RunOperatorArgs) pufferpanel.OperationResult {
 	env := args.Environment
-
 	env.DisplayToConsole(true, "Downloading Java "+op.Version)
-
-	downloader.Lock()
-	defer downloader.Unlock()
 
 	mainCommand := "java" + op.Version
 	mainCCommand := "javac" + op.Version
 
 	_, err := exec.LookPath("java" + op.Version)
-
 	if errors.Is(err, exec.ErrNotFound) {
 		var file File
 		file, err = op.callAdoptiumApi()
@@ -45,35 +38,28 @@ func (op JavaDl) Run(args pufferpanel.RunOperatorArgs) pufferpanel.OperationResu
 			return pufferpanel.OperationResult{Error: err}
 		}
 
-		//cleanup the existing dir
 		err = files.BinaryFS.RemoveAll(file.ReleaseName)
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
 
 		url := file.Binaries[0].Package.Link
-
 		logging.Debug.Println("Calling " + url)
 		err = pufferpanel.HttpExtract(url, files.BinaryFS, "/", nil)
-
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
 
 		logging.Debug.Printf("Adding to path: %s\n", mainCommand)
-		//TODO: This cannot use the FileSystem for now, because symlink protection is a pain
-		//for now, we know this is safe, so we'll do it ourselves
-		_ = unix.Unlinkat(files.BinaryFS.GetRootFD(), mainCommand, 0)
-		err = unix.Symlinkat(filepath.Join(file.ReleaseName, "bin", "java"), files.BinaryFS.GetRootFD(), mainCommand)
-		//err = files.BinaryFS.Symlink(filepath.Join(file.ReleaseName, "bin", "java"), mainCommand)
+		_ = os.Remove(filepath.Join(files.BinaryFS.Prefix(), mainCommand))
+		err = os.Symlink(filepath.Join(file.ReleaseName, "bin", "java"), filepath.Join(files.BinaryFS.Prefix(), mainCommand))
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
 
 		logging.Debug.Printf("Adding to path: %s\n", mainCCommand)
-		//err = files.BinaryFS.Symlink(filepath.Join(file.ReleaseName, "bin", "javac"), mainCCommand)
-		_ = unix.Unlinkat(files.BinaryFS.GetRootFD(), mainCCommand, 0)
-		err = unix.Symlinkat(filepath.Join(file.ReleaseName, "bin", "javac"), files.BinaryFS.GetRootFD(), mainCCommand)
+		_ = os.Remove(filepath.Join(files.BinaryFS.Prefix(), mainCCommand))
+		err = os.Symlink(filepath.Join(file.ReleaseName, "bin", "javac"), filepath.Join(files.BinaryFS.Prefix(), mainCCommand))
 		if err != nil {
 			return pufferpanel.OperationResult{Error: err}
 		}
@@ -94,21 +80,14 @@ func (op JavaDl) callAdoptiumApi() (File, error) {
 
 	switch runtime.GOARCH {
 	case "arm64":
-		{
-			replacements["arch"] = "aarch64"
-		}
+		replacements["arch"] = "aarch64"
 	case "arm":
-		{
-			replacements["arch"] = "arm"
-		}
+		replacements["arch"] = "arm"
 	default:
-		{
-			replacements["arch"] = "x64"
-		}
+		replacements["arch"] = "x64"
 	}
 
 	url := utils.ReplaceTokens(DownloadLink, replacements, utils.PlainReplace)
-
 	logging.Debug.Println("Calling " + url)
 	response, err := pufferpanel.HttpGet(url)
 	defer utils.CloseResponse(response)
