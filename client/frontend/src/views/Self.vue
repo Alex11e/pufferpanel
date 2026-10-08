@@ -8,6 +8,7 @@ import Tabs from '@/components/ui/Tabs.vue'
 import Password from './self/Password.vue'
 import Preferences from './self/Preferences.vue'
 import Security from './self/Security.vue'
+import SocialConnections from './self/SocialConnections.vue'
 import UserDetails from './self/Details.vue'
 
 const { t } = useI18n()
@@ -28,6 +29,9 @@ const api = inject('api')
       </tab>
       <tab v-if="api.auth.hasScope('self.edit')" id="security" :title="t('users.2fa')" icon="2fa" hotkey="t 2">
         <security />
+      </tab>
+      <tab v-if="api.auth.hasScope('self.edit')" id="social" title="Kapcsolt bejelentkezések" icon="account" hotkey="t l">
+        <social-connections />
       </tab>
       <tab v-if="api.auth.hasScope('self.clients')" id="oauth" :title="t('oauth.Clients')" icon="api" hotkey="t o">
         <div class="oauth">

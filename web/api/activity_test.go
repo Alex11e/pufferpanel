@@ -18,6 +18,8 @@ func TestClassifyActivity(t *testing.T) {
 		{name: "server started", method: http.MethodPost, path: "/api/servers/test-server/start", wantAction: "server.start", wantServer: "test-server"},
 		{name: "console command excludes command content", method: http.MethodPost, path: "/api/servers/test-server/console", wantAction: "server.console.command", wantServer: "test-server"},
 		{name: "backup restored", method: http.MethodPost, path: "/api/servers/test-server/backup/restore/42", wantAction: "server.backup.restore", wantServer: "test-server", wantDetails: "42"},
+		{name: "database linked", method: http.MethodPut, path: "/api/servers/test-server/database", wantAction: "server.database.attach", wantServer: "test-server"},
+		{name: "database detached", method: http.MethodDelete, path: "/api/servers/test-server/database", wantAction: "server.database.detach", wantServer: "test-server"},
 		{name: "file edited", method: http.MethodPut, path: "/api/servers/test-server/file/config/server.properties", wantAction: "server.file.write", wantServer: "test-server", wantDetails: "config/server.properties"},
 		{name: "read is not a mutation", method: http.MethodGet, path: "/api/servers/test-server", wantServer: "test-server"},
 		{name: "unrelated path ignored", method: http.MethodPost, path: "/api/users", wantServer: ""},

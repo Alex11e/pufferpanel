@@ -17,16 +17,21 @@ let task = null
 async function loadQuery() {
   try {
     const canQuery = await props.server.canQuery({ onError: () => ({ unavailable: true }) })
+    if (canQuery === null) {
+      queryError.value = true
+      return
+    }
     if (!canQuery) {
+      data.value = {}
+      queryError.value = false
+      return
+    }
+    const result = await props.server.getQuery({ onError: () => ({ data: { networkError: true } }) })
+    if (result?.networkError) {
       queryError.value = true
       return
     }
-    const result = await props.server.getQuery({ onError: () => ({ data: null }) })
-    if (!result) {
-      queryError.value = true
-      return
-    }
-    data.value = result
+    data.value = result || {}
     queryError.value = false
   } catch {
     queryError.value = true

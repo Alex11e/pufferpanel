@@ -22,6 +22,7 @@ import (
 )
 
 func registerSelf(g *gin.RouterGroup) {
+	registerSelfSocial(g)
 	g.Handle("GET", "", middleware.RequiresPermission(scopes.ScopeLogin), getSelf)
 	g.Handle("PUT", "", middleware.RequiresPermission(scopes.ScopeSelfEdit), updateSelf)
 	g.Handle("OPTIONS", "", response.CreateOptions("GET", "PUT"))

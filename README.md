@@ -38,7 +38,7 @@ The setup saves configuration, logs, and server data under the `data/` directory
 For a fresh Debian or Ubuntu server, run the automated installation script:
 
 ```bash
-bash <(curl -fsSL [https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh](https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh))
+bash <(curl -fsSL https://raw.githubusercontent.com/Alex11e/pufferpanel/v3/install-remote.sh)
 ```
 
 ---

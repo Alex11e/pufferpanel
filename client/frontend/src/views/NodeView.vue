@@ -97,6 +97,8 @@ async function fetchFeatures() {
     features.value.docker = f.features.indexOf('docker') !== -1
     features.value.os = f.os
     features.value.arch = f.arch
+    features.value.cpuCount = f.cpuCount || 0
+    features.value.memoryCapacityMB = f.memoryCapacityMB || 0
     featuresFetched.value = true
   } catch(e) {
     featuresFetched.value = false
@@ -249,6 +251,14 @@ function closeDeploy() {
       <div class="arch">
         <span v-text="t('nodes.features.arch.label')" />
         <span v-text="t('nodes.features.arch.' + features.arch)" />
+      </div>
+      <div class="cpu-capacity">
+        <span v-text="t('nodes.features.cpuCount')" />
+        <span>{{ features.cpuCount }}</span>
+      </div>
+      <div class="memory-capacity">
+        <span v-text="t('nodes.features.memoryCapacity')" />
+        <span>{{ (features.memoryCapacityMB / 1024).toFixed(1) }} GB</span>
       </div>
       <div class="env">
         <span v-text="t('nodes.features.envs')" />

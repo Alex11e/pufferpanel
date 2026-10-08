@@ -24,10 +24,10 @@ const props = defineProps({
 })
 
 const hotkeys = {
-  'r r': () => props.server.restart(),
-  'r s': () => props.server.stop(),
-  'r k': () => props.server.kill(),
-  'r i': () => props.server.install()
+  'r r': () => restart(),
+  'r s': () => props.server.hasScope('server.stop') && props.server.stop(),
+  'r k': () => props.server.hasScope('server.kill') && props.server.kill(),
+  'r i': () => props.server.hasScope('server.install') && props.server.install()
 }
 
 function onHotkey(keys) {
@@ -41,7 +41,7 @@ const showMenu =
   props.server.hasScope('server.install')
 
 function restart() {
-  if (!props.server.hasScope('servers.start') || !props.server.hasScope('servers.stop')) return
+  if (!props.server.hasScope('server.start') || !props.server.hasScope('server.stop')) return
   props.server.restart()
   restartDisabled.value = true
   setTimeout(() => restartDisabled.value = false, 3000)
@@ -70,7 +70,7 @@ function restart() {
       <icon name="install" />
       <span class="text">{{ t('servers.Install') }}</span>
     </btn>
-    <btn class="menu" @click="toggleMenu()">
+    <btn v-if="showMenu" class="menu" @click="toggleMenu()">
       <icon name="menu" />
     </btn>
     <div v-if="showMenu" v-click-outside="hideMenu" :class="['menu', menuOpen ? 'open' : 'closed']">

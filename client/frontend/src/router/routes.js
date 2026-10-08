@@ -148,6 +148,16 @@ export default (api) => [
     }
   },
   {
+    path: '/admin/social-login',
+    component: () => import('@/views/SocialLogin.vue'),
+    name: 'SocialLoginAdmin',
+    meta: {
+      tkey: 'Külső bejelentkezések',
+      permission: 'admin',
+      icon: 'account'
+    }
+  },
+  {
     path: '/admin/billing',
     component: () => import('@/views/BillingPlans.vue'),
     name: 'BillingPlans',

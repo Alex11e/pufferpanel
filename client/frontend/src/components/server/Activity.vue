@@ -31,6 +31,10 @@ onMounted(loadActivity)
 
 <template>
   <div class="activity-log">
+    <div class="activity-heading">
+      <h2 v-text="t('servers.Activity')" />
+      <btn variant="icon" :tooltip="t('servers.RefreshActivity')" :disabled="loading" @click="loadActivity"><icon :name="loading ? 'loading' : 'reload'" :spin="loading" /></btn>
+    </div>
     <loader v-if="loading" />
     <div v-else-if="loadError" class="alert error" role="alert">
       <span v-text="loadError" />
@@ -43,3 +47,8 @@ onMounted(loadActivity)
     </div>
   </div>
 </template>
+
+<style scoped>
+.activity-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.activity-heading h2 { margin: 0; }
+</style>

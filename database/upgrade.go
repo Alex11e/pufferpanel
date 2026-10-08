@@ -39,6 +39,8 @@ var dbObjects = []interface{}{
 	&models.Backup{},
 	&models.RecoveryCode{},
 	&models.WebauthnCredential{},
+	&models.SocialProvider{},
+	&models.SocialConnection{},
 }
 
 func Upgrade(dbConn *gorm.DB, prettyPrint bool) error {

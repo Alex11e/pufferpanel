@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/middleware"
 	"github.com/pufferpanel/pufferpanel/v3/models"
 )
@@ -18,13 +19,22 @@ func recordActivity(c *gin.Context) {
 	if action == "" || serverID == "" {
 		return
 	}
-	user, ok := c.Get("user")
-	if !ok {
+	username := ""
+	if user, ok := c.Get("user"); ok {
+		username = user.(*models.User).Username
+	} else if client, ok := c.Get("client"); ok {
+		apiClient := client.(*models.Client)
+		username = apiClient.Name
+		if username == "" {
+			username = apiClient.ClientId
+		}
+	} else {
 		return
 	}
-	username := user.(*models.User).Username
 	activity := &models.Activity{ServerIdentifier: serverID, Username: username, Action: action, Details: details, IPAddress: c.ClientIP()}
-	_ = middleware.GetDatabase(c).Create(activity).Error
+	if err := middleware.GetDatabase(c).Create(activity).Error; err != nil {
+		logging.Error.Printf("could not record activity for server %s: %s", serverID, err)
+	}
 }
 
 func activityFromRequest(c *gin.Context) (action, serverID, details string) {
@@ -62,6 +72,12 @@ func classifyActivity(method, requestPath string) (action, serverID, details str
 	case "metadata":
 		if len(parts) == 4 && method == http.MethodPut {
 			action = "server.metadata.update"
+		}
+	case "database":
+		if len(parts) == 4 && method == http.MethodPut {
+			action = "server.database.attach"
+		} else if len(parts) == 4 && method == http.MethodDelete {
+			action = "server.database.detach"
 		}
 	case "definition":
 		if len(parts) == 4 && method == http.MethodPut {

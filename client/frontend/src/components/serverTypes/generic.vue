@@ -63,6 +63,10 @@ const Database = defineAsyncComponent({
   loader: () => import('../server/Database.vue'),
   loadingComponent: Loader
 })
+const MinecraftPlayers = defineAsyncComponent({
+  loader: () => import('../server/MinecraftPlayers.vue'),
+  loadingComponent: Loader
+})
 
 const { t } = useI18n()
 const events = inject('events')
@@ -139,6 +143,9 @@ onUnmounted(() => {
         hotkey="t i"
       >
         <stats :server="server" />
+      </tab>
+      <tab v-if="server.type === 'minecraft-java' && (server.hasScope('server.stats') || server.hasScope('server.console.send'))" id="players" :title="t('servers.players.title')" icon="users">
+        <MinecraftPlayers :server="server" />
       </tab>
       <tab
         v-if="server.hasScope('server.files.view')"

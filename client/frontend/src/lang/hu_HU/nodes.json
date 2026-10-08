@@ -24,6 +24,8 @@
       "arm": "ARM 32bit",
       "arm64": "ARM 64bit"
     },
+    "cpuCount": "Logikai CPU-magok",
+    "memoryCapacity": "Memória kapacitás",
     "docker": {
       "true": "Docker elérhető",
       "false": "Docker nem elérhető"

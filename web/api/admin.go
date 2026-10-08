@@ -49,6 +49,7 @@ type AdminBackupView struct {
 }
 
 func registerAdmin(g *gin.RouterGroup) {
+	registerSocialLoginAdmin(g)
 	g.GET("/overview", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminOverview)
 	g.GET("/ports", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminPortUsage)
 	g.GET("/backups", middleware.RequiresPermission(scopes.ScopeAdmin), getAdminBackups)

@@ -19,6 +19,10 @@ const WWWAuthenticateHeader = "WWW-Authenticate"
 const WWWAuthenticateHeaderContents = "Bearer realm=\"\""
 
 func AuthMiddleware(c *gin.Context) {
+	if isCorsPreflightRequest(c.Request.Method, c.GetHeader("Access-Control-Request-Method")) {
+		return
+	}
+
 	for _, v := range noLogin {
 		if strings.HasPrefix(c.Request.URL.Path, v) {
 			//and now we see if it's actually one we override
@@ -95,4 +99,8 @@ func AuthMiddleware(c *gin.Context) {
 	if sess.ClientId != nil {
 		c.Set("client", &sess.Client)
 	}
+}
+
+func isCorsPreflightRequest(method, requestedMethod string) bool {
+	return method == http.MethodOptions && requestedMethod != ""
 }

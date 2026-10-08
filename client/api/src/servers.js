@@ -70,7 +70,8 @@ export class ServerApi {
 
   async canQuery(id, options = {}) {
     const res = await this._api.head(`/api/servers/${id}/query`, undefined, undefined, options)
-    return !res?.unavailable
+    if (!res || res.unavailable) return null
+    return res.status === 202
   }
 
   async action(id, action, wait = false) {
@@ -381,7 +382,7 @@ class Server {
     }
 
     this.id = serverData.server.id
-    this.ip = serverData.server.id
+    this.ip = serverData.server.ip
     this.name = serverData.server.name
     this.node = serverData.server.node
     this.port = serverData.server.port

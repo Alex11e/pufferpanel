@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, nextTick } from 'vue'
+import { ref, inject, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import TextField from '@/components/ui/TextField.vue'
@@ -7,6 +7,7 @@ import OtpInput from '@/components/ui/OtpInput.vue'
 import Loader from '@/components/ui/Loader.vue'
 import Btn from '@/components/ui/Btn.vue'
 import defaultRoute from '@/router/defaultRoute'
+import SocialProviders from '@/components/auth/SocialProviders.vue'
 
 const { t } = useI18n()
 const api = inject('api')
@@ -27,6 +28,16 @@ const passwordError = ref(false)
 const otpRecovery = ref(false)
 const token = ref('')
 const secondFactorData = ref(null)
+const socialError = ref(false)
+
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  socialError.value = params.get('socialError') === '1'
+  if (params.get('social2fa') === '1') {
+    step.value = 'secondFactor'
+    secondFactorData.value = { otpEnabled: true, webauthnChallenge: null }
+  }
+})
 
 function loggedIn() {
   try {
@@ -165,6 +176,7 @@ async function nextStep(e) {
   <div :class="['login', step]">
     <h1 v-text="t('users.Login')" />
     <form @keydown.enter="nextStep($event)">
+      <p v-if="socialError" class="social-error" role="alert">A külső bejelentkezés nem sikerült. Ellenőrizd a fiókot vagy próbáld újra.</p>
       <text-field
         ref="emailInput"
         v-model="email"
@@ -231,5 +243,6 @@ async function nextStep(e) {
         v-text="t('users.RegisterLink')"
       />
     </form>
+    <social-providers v-if="step === 'email'" />
   </div>
 </template>
