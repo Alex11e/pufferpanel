@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"math/big"
 	"net/http"
+	"net/url"
 	"strings"
 
 	webauthnProto "github.com/go-webauthn/webauthn/protocol"
@@ -348,13 +349,32 @@ func (us *User) DisableOtp(userId uint) error {
 }
 
 func (us *User) webAuthn() (*webauthn.WebAuthn, error) {
+	rpID, err := webAuthnRPID(config.MasterUrl.Value())
+	if err != nil {
+		return nil, err
+	}
+
 	rpConfig := &webauthn.Config{
 		RPDisplayName: config.CompanyName.Value(),
-		RPID:          strings.TrimPrefix(config.MasterUrl.Value(), "https://"),
+		RPID:          rpID,
 		RPOrigins:     []string{config.MasterUrl.Value()},
 	}
 
 	return webauthn.New(rpConfig)
+}
+
+func webAuthnRPID(masterURL string) (string, error) {
+	parsedURL, err := url.Parse(masterURL)
+	if err != nil {
+		return "", err
+	}
+
+	hostname := parsedURL.Hostname()
+	if hostname == "" {
+		return "", errors.New("master URL must include a hostname")
+	}
+
+	return hostname, nil
 }
 
 func (us *User) getPasskeys(userId uint) ([]webauthn.Credential, error) {
