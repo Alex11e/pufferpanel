@@ -26,6 +26,8 @@ func registerSelf(g *gin.RouterGroup) {
 	g.Handle("GET", "", middleware.RequiresPermission(scopes.ScopeLogin), getSelf)
 	g.Handle("PUT", "", middleware.RequiresPermission(scopes.ScopeSelfEdit), updateSelf)
 	g.Handle("OPTIONS", "", response.CreateOptions("GET", "PUT"))
+	g.Handle("PUT", "/password", middleware.RequiresPermission(scopes.ScopeSelfEdit), setInitialPassword)
+	g.Handle("OPTIONS", "/password", response.CreateOptions("PUT"))
 
 	g.Handle("GET", "/otp", middleware.RequiresPermission(scopes.ScopeSelfEdit), getOtpStatus)
 	g.Handle("POST", "/otp", middleware.RequiresPermission(scopes.ScopeSelfEdit), startOtpEnroll)
@@ -146,6 +148,35 @@ func updateSelf(c *gin.Context) {
 		}
 	}
 
+	c.Status(http.StatusNoContent)
+}
+
+func setInitialPassword(c *gin.Context) {
+	user := c.MustGet("user").(*models.User)
+	if user.HasLocalPassword {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "A local password is already configured."}})
+		return
+	}
+
+	var request struct {
+		Password string `json:"password"`
+	}
+	if err := c.BindJSON(&request); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	us := &services.User{DB: middleware.GetDatabase(c)}
+	if err := us.IsSecurePassword(request.Password); response.HandleError(c, err, http.StatusBadRequest) {
+		return
+	}
+	if err := user.SetPassword(request.Password); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if err := us.Update(user); response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if err := services.GetEmailService().SendEmail(user.Email, "passwordChanged", nil, true); err != nil {
+		logging.Error.Printf("Error sending email: %s\n", err)
+	}
 	c.Status(http.StatusNoContent)
 }
 

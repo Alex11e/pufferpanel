@@ -20,6 +20,11 @@ export class SelfApi {
     return true
   }
 
+  async setInitialPassword(password) {
+    await this._api.put('/api/self/password', { password })
+    return true
+  }
+
   async isOtpEnabled() {
     const res = await this._api.get('/api/self/otp')
     return res.data.otpEnabled

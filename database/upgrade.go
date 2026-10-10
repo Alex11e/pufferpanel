@@ -418,5 +418,42 @@ var migrations = [][]*gormigrate.Migration{
 				return nil
 			},
 		},
+		{
+			ID: "20261009-social-password-setup",
+			Migrate: func(db *gorm.DB) error {
+				var users []models.User
+				if err := db.Select("id", "username").Where("username LIKE ?", "social-%").Find(&users).Error; err != nil {
+					return err
+				}
+				for _, user := range users {
+					if !isGeneratedSocialUsername(user.Username) {
+						continue
+					}
+					var connections int64
+					if err := db.Model(&models.SocialConnection{}).Where("user_id = ?", user.ID).Count(&connections).Error; err != nil {
+						return err
+					}
+					if connections > 0 {
+						if err := db.Model(&models.User{}).Where("id = ?", user.ID).Update("has_local_password", false).Error; err != nil {
+							return err
+						}
+					}
+				}
+				return nil
+			},
+		},
 	},
+}
+
+func isGeneratedSocialUsername(username string) bool {
+	const prefix = "social-"
+	if len(username) != len(prefix)+11 || username[:len(prefix)] != prefix {
+		return false
+	}
+	for _, character := range username[len(prefix):] {
+		if !(character >= '0' && character <= '9') && !(character >= 'a' && character <= 'f') {
+			return false
+		}
+	}
+	return true
 }

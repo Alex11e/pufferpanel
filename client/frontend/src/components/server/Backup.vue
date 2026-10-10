@@ -26,6 +26,10 @@ const automaticRetention = ref(24)
 const automaticInterval = ref(24)
 const automaticSaving = ref(false)
 const sortedBackups = computed(() => backups.value.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+const backupUsagePercentage = computed(() => {
+  if (!props.server.backupLimit || !Array.isArray(backups.value)) return 0
+  return Math.min(100, Math.round(backups.value.length / props.server.backupLimit * 100))
+})
 
 onMounted(async () => {
   automaticEnabled.value = props.server.autoBackupEnabled
@@ -143,6 +147,8 @@ async function restore(file) {
     await props.server.restoreBackup(file.id);
     toast.success(t('backup.RestoreStarted'))
     await loadBackups()
+  } catch (failure) {
+    backupError.value = errorMessage(failure)
   }
   finally {
     loading.value = false
@@ -176,6 +182,8 @@ async function deleteBackup(file) {
     await props.server.deleteBackup(file.id);
     toast.success(t('backup.Deleted'))
     await loadBackups()
+  } catch (failure) {
+    backupError.value = errorMessage(failure)
   }
   finally {
     loading.value = false
@@ -192,15 +200,18 @@ const intl = new Intl.DateTimeFormat(
 <template>
   <div class="backup-manager">
     <h2 v-text="t('backup.Backup')" />
+    <p v-if="backupError" class="error" role="alert">{{ backupError }}</p>
     <div v-if="server.hasScope('server.backup.create')">
       <text-field v-model="backupName" :label="t('backup.Name')" />
       <p v-if="serverStatus === 'online' || serverStatus === 'installing'" class="hint" v-text="t('backup.ServerMustBeStopped')" />
-      <p v-if="backupError" class="error" role="alert">{{ backupError }}</p>
       <btn color="primary" :disabled="!backupName.trim() || isBackingUp() || isLoading() || limitReached() || serverStatus === 'online' || serverStatus === 'installing'" @click="save()">
         <icon v-if="!isBackingUp()" name="plus" />
         <icon v-else name="loading" spin /> {{ t('backup.Create') }}
       </btn>
-      <small v-if="server.backupLimit">{{ Array.isArray(backups) ? backups.length : 0 }} / {{ server.backupLimit }}</small>
+      <div v-if="server.backupLimit" class="backup-quota">
+        <div class="quota-label"><small>{{ Array.isArray(backups) ? backups.length : 0 }} / {{ server.backupLimit }}</small><small v-if="limitReached()" role="status">{{ t('backup.LimitReached') }}</small></div>
+        <div class="quota-track" role="progressbar" :aria-label="t('backup.BackupLimit')" :aria-valuenow="backupUsagePercentage" aria-valuemin="0" aria-valuemax="100"><span :class="{ full: limitReached() }" :style="{ width: `${backupUsagePercentage}%` }" /></div>
+      </div>
     </div>
     <div v-if="server.hasScope('server.backup.create')" class="automatic-backup">
       <h3 v-text="t('backup.AutomaticHeader')" />
@@ -255,3 +266,12 @@ const intl = new Intl.DateTimeFormat(
     </div>
   </div>
 </template>
+
+<style scoped>
+.backup-quota { max-width: 360px; margin-top: 8px; }
+.quota-label { display: flex; justify-content: space-between; gap: 12px; color: var(--color-text-secondary); }
+.quota-label small:last-child { color: var(--color-error); }
+.quota-track { height: 6px; margin-top: 5px; overflow: hidden; border-radius: 3px; background: var(--color-background-secondary); }
+.quota-track span { display: block; height: 100%; background: var(--color-primary); transition: width 180ms ease; }
+.quota-track span.full { background: var(--color-error); }
+</style>

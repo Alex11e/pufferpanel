@@ -45,7 +45,7 @@ func listSocialConnections(c *gin.Context) {
 		canUsePasskey = credentialCount > 0
 	}
 	views := make([]socialConnectionView, 0, len(connections))
-	canDisconnect := len(connections) > 1 || canUsePasskey
+	canDisconnect := len(connections) > 1 || canUsePasskey || user.HasLocalPassword
 	for _, connection := range connections {
 		views = append(views, socialConnectionView{
 			Key: connection.Provider.Key, Provider: connection.Provider.Name,
@@ -75,7 +75,7 @@ func deleteSocialConnection(c *gin.Context) {
 		}
 		canUsePasskey = credentialCount > 0
 	}
-	if connectionCount <= 1 && !canUsePasskey {
+	if connectionCount <= 1 && !canUsePasskey && !user.HasLocalPassword {
 		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "Add another sign-in method before disconnecting this account."}})
 		return
 	}

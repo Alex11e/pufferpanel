@@ -23,6 +23,7 @@ const step = ref('email')
 const email = ref('')
 const emailError = ref(false)
 const emailInput = ref(null)
+const passwordInput = ref(null)
 const password = ref('')
 const passwordError = ref(false)
 const otpRecovery = ref(false)
@@ -133,6 +134,15 @@ function canNextStep() {
   }
 }
 
+function continueWithPassword() {
+  if (!validate.email(email.value)) {
+    validateEmail()
+    return
+  }
+  step.value = 'password'
+  nextTick(() => passwordInput.value?.focus())
+}
+
 async function nextStep(e) {
   if (e) e.preventDefault()
   if (!canNextStep()) return
@@ -192,6 +202,7 @@ async function nextStep(e) {
       />
       <a v-if="step !== 'email'" class="change-email" @click="step = 'email'; nextTick(() => emailInput.focus())" v-text="t('users.ChangeEmail')" />
       <text-field
+        ref="passwordInput"
         v-if="step !== 'email'"
         v-model="password"
         type="password"
@@ -236,6 +247,7 @@ async function nextStep(e) {
         <loader v-if="loading" />
         <span v-else v-text="t('common.Next')" />
       </btn>
+      <btn v-if="step === 'email'" variant="text" :disabled="loading" @click="continueWithPassword()" v-text="t('users.SignInWithPassword')" />
       <btn
         v-if="$config.registrationEnabled"
         variant="text"

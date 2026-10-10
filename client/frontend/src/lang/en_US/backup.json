@@ -23,4 +23,6 @@
     ,"AutomaticIntervalHours":"Backup interval (hours, 1–168)"
     ,"Retention":"Backups to keep (1–168)"
     ,"AutomaticSaved":"Automatic backup settings saved"
+    ,"BackupLimit":"Backup limit usage"
+    ,"LimitReached":"Backup limit reached"
 }

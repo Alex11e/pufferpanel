@@ -22,5 +22,7 @@
     "AutomaticHint": "A beállított időközönként fut, amíg a panel elérhető. A mentéshez az elsődleges szervernek le kell állítva lennie.",
     "AutomaticIntervalHours": "Mentés gyakorisága (óra, 1–168)",
     "Retention": "Megtartandó mentések száma (1–168)",
-    "AutomaticSaved": "Automatikus mentési beállítások elmentve"
+    "AutomaticSaved": "Automatikus mentési beállítások elmentve",
+    "BackupLimit": "Biztonsági mentési korlát használata",
+    "LimitReached": "Elérted a mentések megengedett számát"
 }

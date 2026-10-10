@@ -4,6 +4,7 @@ import { createI18n } from 'vue-i18n'
 let i18n = null
 const ltr = ref(true)
 const fallback = 'en_US'
+let fallbackMessagesLoaded = false
 
 const getLocale = () => {
   const stored = localStorage.getItem('locale')
@@ -38,6 +39,15 @@ const rtl = ['ar_SA', 'he_IL']
 const files = ['common', 'env', 'errors', 'files', 'hotkeys', 'nodes', 'oauth', 'operators', 'scopes', 'servers', 'settings', 'templates', 'users','backup']
 export async function updateLocale(locale, save = true) {
   if (save) localStorage.setItem('locale', locale)
+  if (locale !== fallback && !fallbackMessagesLoaded) {
+    const fallbackMessages = {}
+    for (const file of files) {
+      fallbackMessages[file] = (await import(`../lang/${fallback}/${file}.json`)).default
+    }
+    i18n.global.setLocaleMessage(fallback, fallbackMessages)
+    fallbackMessagesLoaded = true
+  }
+
   const messages = {}
   for (let i = 0; i < files.length; i++) {
     const file = files[i]

@@ -1,11 +1,12 @@
 package models
 
 import (
+	"time"
+
 	"github.com/pufferpanel/pufferpanel/v3"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/gorm"
-	"time"
 )
 
 type User struct {
@@ -13,6 +14,7 @@ type User struct {
 	Username               string `gorm:"column:username;not null;size:100;uniqueIndex;unique" json:"-" validate:"required,printascii,max=100,min=5"`
 	Email                  string `gorm:"column:email;not null;size:255;uniqueIndex;unique" json:"-" validate:"required,email,max=255"`
 	HashedPassword         string `gorm:"column:password;NOT NULL;size:200" json:"-" validate:"required,max=200"`
+	HasLocalPassword       bool   `gorm:"not null;default:true" json:"-"`
 	OtpSecret              string `gorm:"column:otp_secret;size:32" json:"-"`
 	OtpActive              bool   `gorm:"column:otp_active;not null;DEFAULT:0" json:"-"`
 	AllowPasswordlessLogin bool   `gorm:"column:allow_passwordless_login;not null;DEFAULT:1" json:"-"`
@@ -26,6 +28,7 @@ func (u *User) SetPassword(pw string) error {
 
 	if err == nil {
 		u.HashedPassword = string(res)
+		u.HasLocalPassword = true
 	}
 
 	return err

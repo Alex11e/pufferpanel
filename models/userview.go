@@ -1,9 +1,10 @@
 package models
 
 import (
+	"net/url"
+
 	"github.com/pufferpanel/pufferpanel/v3"
 	"gopkg.in/go-playground/validator.v9"
-	"net/url"
 )
 
 type UserView struct {
@@ -12,6 +13,7 @@ type UserView struct {
 	Email                  string `json:"email,omitempty"`
 	OtpActive              bool   `json:"otpActive"`
 	AllowPasswordlessLogin bool   `json:"allowPasswordlessLogin"`
+	HasLocalPassword       bool   `json:"hasLocalPassword"`
 	//ONLY SHOW WHEN COPYING
 	Password    string `json:"password,omitempty"`
 	NewPassword string `json:"newPassword,omitempty"`
@@ -24,6 +26,7 @@ func FromUser(model *User) *UserView {
 		Email:                  model.Email,
 		OtpActive:              model.OtpActive,
 		AllowPasswordlessLogin: model.AllowPasswordlessLogin,
+		HasLocalPassword:       model.HasLocalPassword,
 	}
 }
 

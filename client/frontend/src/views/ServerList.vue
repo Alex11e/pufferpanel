@@ -10,7 +10,7 @@ import { serverIconName } from '@/utils/serverIcon'
 
 const api = inject('api')
 const toast = inject('toast')
-const { t } = useI18n()
+const { t, tm, rt } = useI18n()
 
 const servers = ref([])
 let lastPage = 0
@@ -24,6 +24,8 @@ const search = ref('')
 const selectedTag = ref('')
 const selectedFolder = ref('')
 const selectedStatus = ref('')
+const sortMode = ref('name')
+const favoritesOnly = ref(false)
 const favorites = ref(JSON.parse(localStorage.getItem('favoriteServers') || '[]'))
 const recentActivity = ref([])
 const folders = ref([])
@@ -32,10 +34,32 @@ let interval = null
 
 const tags = computed(() => [...new Set(servers.value.flatMap(server => (server.tags || '').split(',').map(tag => tag.trim()).filter(Boolean)))].sort())
 const summary = computed(() => ({ total: servers.value.length, online: servers.value.filter(server => server.online === 'online').length, offline: servers.value.filter(server => server.online === 'offline').length, favorites: favorites.value.length }))
-const visibleServers = computed(() => servers.value.filter(server => {
+const visibleServers = computed(() => {
+  const filtered = servers.value.filter(server => {
   const text = `${server.name} ${server.type} ${server.tags || ''} ${server.node?.name || ''}`.toLowerCase()
-  return (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
-}).sort((a, b) => Number(favorites.value.includes(b.id)) - Number(favorites.value.includes(a.id)) || a.name.localeCompare(b.name)))
+  return (!favoritesOnly.value || favorites.value.includes(server.id)) && (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
+  })
+  return filtered.sort((a, b) => {
+    const favoriteOrder = Number(favorites.value.includes(b.id)) - Number(favorites.value.includes(a.id))
+    if (favoriteOrder) return favoriteOrder
+
+    if (sortMode.value === 'status') {
+      const statusOrder = { offline: 0, installing: 1, online: 2 }
+      const statusDifference = (statusOrder[a.online] ?? 3) - (statusOrder[b.online] ?? 3)
+      if (statusDifference) return statusDifference
+    }
+
+    if (sortMode.value === 'expiry') {
+      const expiryA = Date.parse(a.expiresAt || '')
+      const expiryB = Date.parse(b.expiresAt || '')
+      const timeA = Number.isFinite(expiryA) ? expiryA : Number.POSITIVE_INFINITY
+      const timeB = Number.isFinite(expiryB) ? expiryB : Number.POSITIVE_INFINITY
+      if (timeA !== timeB) return timeA - timeB
+    }
+
+    return a.name.localeCompare(b.name)
+  })
+})
 
 async function addServers(newServers) {
   newServers.map(server => servers.value.push(server))
@@ -171,7 +195,11 @@ function toggleFavorite(id) {
   localStorage.setItem('favoriteServers', JSON.stringify(favorites.value))
 }
 
-function activityLabel(action) { return t(`servers.activity.${action}`) }
+function activityLabel(action) {
+  const activity = tm('servers.activity')
+  const message = activity?.[action]
+  return typeof message === 'string' ? rt(message) : action
+}
 
 async function copyAddress(server) {
   try {
@@ -192,7 +220,7 @@ async function copyAddress(server) {
       <div class="metric offline"><span>{{ summary.offline }}</span>{{ t('common.Offline') }}</div>
       <div class="metric"><span>{{ summary.favorites }}</span>{{ t('servers.Favorites') }}</div>
     </div>
-    <div class="status-filter"><btn :color="selectedStatus === '' ? 'primary' : undefined" @click="selectedStatus = ''">Minden állapot</btn><btn :color="selectedStatus === 'online' ? 'primary' : undefined" @click="selectedStatus = 'online'">Online</btn><btn :color="selectedStatus === 'offline' ? 'primary' : undefined" @click="selectedStatus = 'offline'">Offline</btn></div>
+    <div class="status-filter"><btn :color="selectedStatus === '' ? 'primary' : undefined" @click="selectedStatus = ''">Minden állapot</btn><btn :color="selectedStatus === 'online' ? 'primary' : undefined" @click="selectedStatus = 'online'">Online</btn><btn :color="selectedStatus === 'offline' ? 'primary' : undefined" @click="selectedStatus = 'offline'">Offline</btn><btn :color="favoritesOnly ? 'primary' : undefined" @click="favoritesOnly = !favoritesOnly"><icon :name="favoritesOnly ? 'star' : 'star-outline'" /> {{ t('servers.FavoritesOnly') }}</btn><select v-model="sortMode" :aria-label="t('servers.SortBy')"><option value="name">{{ t('servers.SortName') }}</option><option value="status">{{ t('servers.SortStatus') }}</option><option value="expiry">{{ t('servers.SortExpiry') }}</option></select></div>
     <text-field v-model="search" :label="t('servers.SearchServers')" icon="search" />
     <div class="folder-tools">
       <select v-model="selectedFolder" aria-label="Szervermappa szűrése"><option value="">Minden szervermappa</option><option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">{{ folder.name }}</option></select>
@@ -247,7 +275,7 @@ async function copyAddress(server) {
 .metric.online span { color: var(--color-success); }
 .metric.offline span { color: var(--color-error); }
 .tag-filter, .folder-tools, .status-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
-.folder-tools input, .folder-tools select, .folder-picker select { background:var(--color-background-secondary); color:var(--color-text); border:1px solid var(--color-background-secondary); border-radius:5px; padding:8px; }
+.folder-tools input, .folder-tools select, .folder-picker select, .status-filter select { background:var(--color-background-secondary); color:var(--color-text); border:1px solid var(--color-background-secondary); border-radius:5px; padding:8px; }
 .server-wrapper { position: relative; }
 .server-title { display: flex; align-items: center; gap: .55rem; min-width: 0; padding-right: 12rem; }
 .server-title .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

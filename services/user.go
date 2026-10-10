@@ -76,6 +76,10 @@ func (us *User) ValidatePasswordLogin(email string, password string) (result Pas
 		err = pufferpanel.ErrInvalidCredentials
 		return
 	}
+	if !result.User.HasLocalPassword {
+		err = pufferpanel.ErrInvalidCredentials
+		return
+	}
 
 	if !us.IsValidCredentials(result.User, password) {
 		err = pufferpanel.ErrInvalidCredentials

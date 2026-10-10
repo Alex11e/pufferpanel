@@ -29,6 +29,8 @@ const confirm = ref({})
 const announcements = ref([])
 let lastWidth = window.innerWidth
 let reauthTimer = null
+let announcementTimer = null
+let announcementsLoading = false
 
 function isSensitiveRequestField(key) {
   const normalized = key.toLowerCase().replace(/[_-]/g, '')
@@ -141,6 +143,10 @@ onMounted(async () => {
   reauthTimer = setInterval(() => {
     if (api.auth.isLoggedIn()) api.auth.reauth()
   }, 1000 * 60 * 15)
+  announcementTimer = setInterval(() => {
+    if (api.auth.isLoggedIn() && !document.hidden) loadAnnouncements()
+  }, 60 * 1000)
+  document.addEventListener('visibilitychange', onVisibilityChange)
   if (api.auth.isLoggedIn()) {
     user.value = await api.self.get()
     api.auth.reauth()
@@ -155,25 +161,46 @@ onUpdated(async () => {
   }
   if (!api.auth.isLoggedIn() && user.value) {
     user.value = undefined
+    announcements.value = []
   }
 })
 
 async function loadAnnouncements() {
+  if (announcementsLoading || !api.auth.isLoggedIn()) return
+  announcementsLoading = true
   try {
     const response = await api.get('/api/announcements')
-    announcements.value = (response.data || []).filter(item => localStorage.getItem(`announcement-dismissed-${item.id}`) !== item.updatedAt)
+    announcements.value = (response.data || []).filter(item => {
+      try {
+        return localStorage.getItem(`announcement-dismissed-${item.id}`) !== item.updatedAt
+      } catch {
+        return true
+      }
+    })
   } catch {
     // A temporary notification failure must never block using the panel.
+  } finally {
+    announcementsLoading = false
   }
 }
 
 function dismissAnnouncement(announcement) {
-  localStorage.setItem(`announcement-dismissed-${announcement.id}`, announcement.updatedAt)
+  try {
+    localStorage.setItem(`announcement-dismissed-${announcement.id}`, announcement.updatedAt)
+  } catch {
+    // Dismiss the message for this session even when persistent storage is unavailable.
+  }
   announcements.value = announcements.value.filter(item => item.id !== announcement.id)
+}
+
+function onVisibilityChange() {
+  if (!document.hidden && api.auth.isLoggedIn()) loadAnnouncements()
 }
 
 onUnmounted(() => {
   clearInterval(reauthTimer)
+  clearInterval(announcementTimer)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
   window.removeEventListener('resize', onResize)
 })
 

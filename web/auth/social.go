@@ -463,16 +463,24 @@ func createSocialUser(db *gorm.DB, email string) (models.User, error) {
 	if err := user.SetPassword(base64.RawURLEncoding.EncodeToString(passwordBytes)); err != nil {
 		return user, err
 	}
-	if err := db.Create(&user).Error; err != nil {
-		return user, err
-	}
-	permissions := &services.Permission{DB: db}
-	perms, err := permissions.GetForUserAndServer(user.ID, "")
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&user).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&user).UpdateColumn("has_local_password", false).Error; err != nil {
+			return err
+		}
+		user.HasLocalPassword = false
+
+		permissions := &services.Permission{DB: tx}
+		perms, err := permissions.GetForUserAndServer(user.ID, "")
+		if err != nil {
+			return err
+		}
+		perms.Scopes = []*scopes.Scope{scopes.ScopeLogin}
+		return permissions.UpdatePermissions(perms)
+	})
 	if err != nil {
-		return user, err
-	}
-	perms.Scopes = []*scopes.Scope{scopes.ScopeLogin}
-	if err = permissions.UpdatePermissions(perms); err != nil {
 		return user, err
 	}
 	return user, nil
