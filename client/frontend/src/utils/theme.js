@@ -25,7 +25,7 @@ export function contrast(color1, color2) {
 
 function deriveContrast(base, config) {
   if (!Array.isArray(config.options)) {
-    console.error('contrast derivation options missing or invalid')
+    console.error('[ERROR] Contrast derivation options missing or invalid')
     return ''
   }
 
@@ -61,7 +61,7 @@ function deriveHueShift(base, config) {
 }
 
 export function deriveColor(base, config) {
-  if (!config.var) console.error('color derivation missing target variable')
+  if (!config.var) console.error('[ERROR] Color derivation missing target variable')
 
   switch (config.type) {
     case 'contrast':
@@ -71,6 +71,6 @@ export function deriveColor(base, config) {
     case 'hueShift':
       return deriveHueShift(base, config)
     default:
-      console.error(`unknown color derivation: ${config.type}`)
+      console.error(`[ERROR] Unknown color derivation: ${config.type}`)
   }
 }

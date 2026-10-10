@@ -33,7 +33,7 @@ function getDefaultValue(name, definition) {
     case 'class': {
       const defaults = definition.options.filter(e => e.default)
       if (defaults.length < 1) {
-        if (!definition.options[0].value) console.error(`no default found for setting '${name}'`)
+        if (!definition.options[0].value) console.error(`[ERROR] No default found for setting '${name}'`)
         return definition.options[0].value
       }
       return defaults[0].value
@@ -58,10 +58,10 @@ function handleSetting(name, definition, value, extra = {}) {
         appendStyle(`#app {\n${definition.var}: ${value};\n${derived}}`)
       } catch (e) {
         if (!extra.isRetry) {
-          console.warn('Applying requested color setting failed', e)
+          console.warn('[WARN] Applying requested color setting failed', e)
           handleSetting(name, definition, undefined, { isRetry: true })
         } else {
-          console.error('Applying color setting failed', e)
+          console.error('[ERROR] Applying color setting failed', e)
         }
       }
       break
@@ -83,7 +83,7 @@ const themeApi = {
     blobs.map(b => URL.revokeObjectURL(b))
     blobs = []
     if (availableThemes.indexOf(newTheme) === -1) {
-      console.error('invalid theme selection, falling back to default')
+      console.error('[ERROR] Invalid theme selection, falling back to default')
       newTheme = 'PufferPanel'
       settings = {}
     }
@@ -173,10 +173,10 @@ const themeApi = {
         })
         return res
       } else {
-        console.warn('Settings could not be deserialized, invalid value', serialized)
+        console.warn('[WARN] Settings could not be deserialized, invalid value', serialized)
       }
     } catch (e) {
-      console.error('Settings could not be deserialized', serialized, e)
+      console.error('[ERROR] Settings could not be deserialized', serialized, e)
     }
 
     return settings
@@ -195,7 +195,7 @@ function initTheme() {
       false
     )
   } catch (e) {
-    console.error('Default settings could not be applied', e)
+    console.error('[ERROR] Default settings could not be applied', e)
     try {
       themeApi.setTheme(
         config.themes.active,
@@ -205,7 +205,7 @@ function initTheme() {
         false
       )
     } catch (e) {
-      console.error('Falling back to default theme setting failed', e)
+      console.error('[ERROR] Falling back to default theme setting failed', e)
     }
   }
 }
