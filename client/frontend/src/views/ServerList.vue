@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, inject, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, inject, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/ui/Icon.vue'
@@ -12,6 +12,33 @@ const api = inject('api')
 const toast = inject('toast')
 const { t, tm, rt } = useI18n()
 
+function readStorage(key) {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function readListPreferences() {
+  try {
+    const stored = JSON.parse(readStorage('serverListPreferences') || '{}')
+    return stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {}
+  } catch {
+    return {}
+  }
+}
+
+function readFavorites() {
+  try {
+    const stored = JSON.parse(readStorage('favoriteServers') || '[]')
+    return Array.isArray(stored) ? stored : []
+  } catch {
+    return []
+  }
+}
+
+const listPreferences = readListPreferences()
 const servers = ref([])
 let lastPage = 0
 let loadingPage = false
@@ -20,24 +47,55 @@ const loaderRef = ref(null)
 const firstEntry = ref(null)
 const loadError = ref('')
 const folderError = ref('')
-const search = ref('')
-const selectedTag = ref('')
-const selectedFolder = ref('')
-const selectedStatus = ref('')
-const sortMode = ref('name')
-const favoritesOnly = ref(false)
-const favorites = ref(JSON.parse(localStorage.getItem('favoriteServers') || '[]'))
+const search = ref(typeof listPreferences.search === 'string' ? listPreferences.search : '')
+const selectedTag = ref(typeof listPreferences.tag === 'string' ? listPreferences.tag : '')
+const selectedFolder = ref(typeof listPreferences.folder === 'string' ? listPreferences.folder : '')
+const selectedStatus = ref(['', 'online', 'offline'].includes(listPreferences.status) ? listPreferences.status : '')
+const sortMode = ref(['name', 'status', 'expiry'].includes(listPreferences.sort) ? listPreferences.sort : 'name')
+const favoritesOnly = ref(listPreferences.favoritesOnly === true)
+const expiringOnly = ref(listPreferences.expiringOnly === true)
+const favorites = ref(readFavorites())
 const recentActivity = ref([])
 const folders = ref([])
 const newFolder = ref('')
 let interval = null
+let statusRefreshRunning = false
+let statusRefreshQueued = false
+
+watch(
+  () => [search.value, selectedTag.value, selectedFolder.value, selectedStatus.value, sortMode.value, favoritesOnly.value, expiringOnly.value],
+  () => {
+    try {
+      localStorage.setItem('serverListPreferences', JSON.stringify({
+        search: search.value,
+        tag: selectedTag.value,
+        folder: selectedFolder.value,
+        status: selectedStatus.value,
+        sort: sortMode.value,
+        favoritesOnly: favoritesOnly.value,
+        expiringOnly: expiringOnly.value
+      }))
+    } catch {
+      // The list remains usable when persistent browser storage is unavailable.
+    }
+  }
+)
 
 const tags = computed(() => [...new Set(servers.value.flatMap(server => (server.tags || '').split(',').map(tag => tag.trim()).filter(Boolean)))].sort())
 const summary = computed(() => ({ total: servers.value.length, online: servers.value.filter(server => server.online === 'online').length, offline: servers.value.filter(server => server.online === 'offline').length, favorites: favorites.value.length }))
+function normalizeSearchText(value) {
+  return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
+
 const visibleServers = computed(() => {
+  const query = normalizeSearchText(search.value)
+  const expiryDeadline = Date.now() + 7 * 24 * 60 * 60 * 1000
   const filtered = servers.value.filter(server => {
-  const text = `${server.name} ${server.type} ${server.tags || ''} ${server.node?.name || ''}`.toLowerCase()
-  return (!favoritesOnly.value || favorites.value.includes(server.id)) && (!search.value || text.includes(search.value.toLowerCase())) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
+    const folderName = folders.value.find(folder => folder.serverIds.includes(server.id))?.name || ''
+    const text = normalizeSearchText(`${server.name} ${server.id} ${server.type} ${server.tags || ''} ${server.node?.name || ''} ${server.ip || ''} ${server.port || ''} ${server.subdomain || ''} ${server.node?.publicHost || ''} ${getServerAddress(server)} ${folderName}`)
+    const expiryTime = Date.parse(server.expiresAt || '')
+    const expiresSoon = Number.isFinite(expiryTime) && expiryTime <= expiryDeadline
+    return (!favoritesOnly.value || favorites.value.includes(server.id)) && (!expiringOnly.value || expiresSoon) && (!query || text.includes(query)) && (!selectedTag.value || (server.tags || '').split(',').map(tag => tag.trim()).includes(selectedTag.value)) && (!selectedFolder.value || folders.value.find(folder => String(folder.id) === selectedFolder.value)?.serverIds.includes(server.id)) && (!selectedStatus.value || server.online === selectedStatus.value)
   })
   return filtered.sort((a, b) => {
     const favoriteOrder = Number(favorites.value.includes(b.id)) - Number(favorites.value.includes(a.id))
@@ -87,16 +145,28 @@ async function assignDefaultFolders(newServers) {
 }
 
 async function refreshServerStatus() {
-  servers.value.map(async s => {
-    if (s.canGetStatus) {
-      s.online = 'loading'
-      try {
-        s.online = await api.server.getStatus(s.id)
-      } catch {
-        s.online = undefined
-      }
-    }
-  })
+  if (statusRefreshRunning) {
+    statusRefreshQueued = true
+    return
+  }
+
+  statusRefreshRunning = true
+  try {
+    do {
+      statusRefreshQueued = false
+      await Promise.all(servers.value.filter(server => server.canGetStatus).map(async server => {
+        const hasKnownStatus = Boolean(server.online && server.online !== 'loading')
+        if (!hasKnownStatus) server.online = 'loading'
+        try {
+          server.online = await api.server.getStatus(server.id)
+        } catch {
+          if (!hasKnownStatus) server.online = undefined
+        }
+      }))
+    } while (statusRefreshQueued)
+  } finally {
+    statusRefreshRunning = false
+  }
 }
 
 function isLoaderVisible() {
@@ -192,7 +262,21 @@ function focusList() {
 
 function toggleFavorite(id) {
   favorites.value = favorites.value.includes(id) ? favorites.value.filter(item => item !== id) : [...favorites.value, id]
-  localStorage.setItem('favoriteServers', JSON.stringify(favorites.value))
+  try {
+    localStorage.setItem('favoriteServers', JSON.stringify(favorites.value))
+  } catch {
+    // Keep the favorite for this page session when persistent storage is unavailable.
+  }
+}
+
+function clearFilters() {
+  search.value = ''
+  selectedTag.value = ''
+  selectedFolder.value = ''
+  selectedStatus.value = ''
+  favoritesOnly.value = false
+  expiringOnly.value = false
+  sortMode.value = 'name'
 }
 
 function activityLabel(action) {
@@ -220,7 +304,7 @@ async function copyAddress(server) {
       <div class="metric offline"><span>{{ summary.offline }}</span>{{ t('common.Offline') }}</div>
       <div class="metric"><span>{{ summary.favorites }}</span>{{ t('servers.Favorites') }}</div>
     </div>
-    <div class="status-filter"><btn :color="selectedStatus === '' ? 'primary' : undefined" @click="selectedStatus = ''">Minden állapot</btn><btn :color="selectedStatus === 'online' ? 'primary' : undefined" @click="selectedStatus = 'online'">Online</btn><btn :color="selectedStatus === 'offline' ? 'primary' : undefined" @click="selectedStatus = 'offline'">Offline</btn><btn :color="favoritesOnly ? 'primary' : undefined" @click="favoritesOnly = !favoritesOnly"><icon :name="favoritesOnly ? 'star' : 'star-outline'" /> {{ t('servers.FavoritesOnly') }}</btn><select v-model="sortMode" :aria-label="t('servers.SortBy')"><option value="name">{{ t('servers.SortName') }}</option><option value="status">{{ t('servers.SortStatus') }}</option><option value="expiry">{{ t('servers.SortExpiry') }}</option></select></div>
+    <div class="status-filter"><btn :color="selectedStatus === '' ? 'primary' : undefined" @click="selectedStatus = ''">Minden állapot</btn><btn :color="selectedStatus === 'online' ? 'primary' : undefined" @click="selectedStatus = 'online'">Online</btn><btn :color="selectedStatus === 'offline' ? 'primary' : undefined" @click="selectedStatus = 'offline'">Offline</btn><btn :color="favoritesOnly ? 'primary' : undefined" @click="favoritesOnly = !favoritesOnly"><icon :name="favoritesOnly ? 'star' : 'star-outline'" /> {{ t('servers.FavoritesOnly') }}</btn><btn :color="expiringOnly ? 'primary' : undefined" @click="expiringOnly = !expiringOnly">{{ t('servers.ExpiringOnly') }}</btn><select v-model="sortMode" :aria-label="t('servers.SortBy')"><option value="name">{{ t('servers.SortName') }}</option><option value="status">{{ t('servers.SortStatus') }}</option><option value="expiry">{{ t('servers.SortExpiry') }}</option></select></div>
     <text-field v-model="search" :label="t('servers.SearchServers')" icon="search" />
     <div class="folder-tools">
       <select v-model="selectedFolder" aria-label="Szervermappa szűrése"><option value="">Minden szervermappa</option><option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">{{ folder.name }}</option></select>
@@ -232,6 +316,8 @@ async function copyAddress(server) {
       <btn v-for="tag in tags" :key="tag" :color="selectedTag === tag ? 'primary' : undefined" @click="selectedTag = selectedTag === tag ? '' : tag">{{ tag }}</btn>
     </div>
     <div v-hotkey="'l'" class="list" @hotkey="focusList()">
+      <div v-if="allServersLoaded && servers.length === 0" class="empty-results">{{ t('servers.NoServers') }}</div>
+      <div v-else-if="allServersLoaded && visibleServers.length === 0" class="empty-results"><span>{{ t('servers.NoServersMatch') }}</span><btn variant="text" @click="clearFilters">{{ t('servers.ClearFilters') }}</btn></div>
       <div v-for="server in visibleServers" :key="server.id" :class="['list-item', 'server-wrapper', `server-wrapper-${server.type || 'none'}`]">
         <btn class="favorite" variant="icon" :tooltip="t('servers.ToggleFavorite')" @click="toggleFavorite(server.id)"><icon :name="favorites.includes(server.id) ? 'star' : 'star-outline'" /></btn>
         <div class="folder-picker" @click.stop><select :value="folderForServer(server.id)" aria-label="Szerver mappája" @change="setServerFolder(server.id, $event)"><option value="">Nincs mappa</option><option v-for="folder in folders" :key="folder.id" :value="folder.id">{{ folder.name }}</option></select></div>
@@ -285,6 +371,7 @@ async function copyAddress(server) {
 .folder-picker select { max-width:140px; padding:4px; font-size:.8rem; }
 .copy-address { position:absolute; right:8px; bottom:8px; z-index:2; }
 .recent-activity { margin-top: 28px; }
+.empty-results { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:18px 12px; color:var(--color-text-secondary); }
 .activity-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--color-background-secondary); }
 .activity-row small { margin-left: auto; color: var(--color-text-secondary); }
 @media (max-width: 640px) { .server-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

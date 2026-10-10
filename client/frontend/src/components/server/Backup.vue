@@ -144,6 +144,12 @@ function promptRestore(file){
 async function restore(file) {
   try {
     loading.value = true
+    backupError.value = ''
+    await loadServerStatus()
+    if (serverStatus.value === 'online' || serverStatus.value === 'installing') {
+      backupError.value = t('backup.ServerMustBeStopped')
+      return
+    }
     await props.server.restoreBackup(file.id);
     toast.success(t('backup.RestoreStarted'))
     await loadBackups()
@@ -201,9 +207,9 @@ const intl = new Intl.DateTimeFormat(
   <div class="backup-manager">
     <h2 v-text="t('backup.Backup')" />
     <p v-if="backupError" class="error" role="alert">{{ backupError }}</p>
+    <p v-if="(server.hasScope('server.backup.create') || server.hasScope('server.backup.restore')) && (serverStatus === 'online' || serverStatus === 'installing')" class="hint" v-text="t('backup.ServerMustBeStopped')" />
     <div v-if="server.hasScope('server.backup.create')">
       <text-field v-model="backupName" :label="t('backup.Name')" />
-      <p v-if="serverStatus === 'online' || serverStatus === 'installing'" class="hint" v-text="t('backup.ServerMustBeStopped')" />
       <btn color="primary" :disabled="!backupName.trim() || isBackingUp() || isLoading() || limitReached() || serverStatus === 'online' || serverStatus === 'installing'" @click="save()">
         <icon v-if="!isBackingUp()" name="plus" />
         <icon v-else name="loading" spin /> {{ t('backup.Create') }}
@@ -242,7 +248,7 @@ const intl = new Intl.DateTimeFormat(
           tabindex="-1"
           variant="icon"
           :tooltip="t('backup.Restore')"
-          :disabled="isBackingUp()"
+          :disabled="isBackingUp() || loading || serverStatus === 'online' || serverStatus === 'installing'"
           @click.stop="promptRestore(backup)"
         >
           <icon name="restore" />

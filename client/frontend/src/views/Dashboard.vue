@@ -15,7 +15,7 @@ const loadError = ref('')
 const totalServers = ref(0)
 const statusUpdatedAt = ref(null)
 const favoriteStats = ref({})
-const favoriteControllers = shallowRef({})
+const serverControllers = shallowRef({})
 let statusInterval = null
 let statusRefreshing = false
 
@@ -57,15 +57,21 @@ async function loadAllServers(firstPage) {
   return firstServers.concat(...remainingPages.map(page => page.servers || []))
 }
 
-async function loadFavoriteControllers() {
-  const favoriteIds = favoriteServers.value.map(server => server.id)
-  const results = await Promise.allSettled(favoriteIds.map(id => api.server.get(id)))
-  const controllers = {}
+async function loadDashboardControllers() {
+  const requiredIds = [...new Set([...favoriteServers.value, ...offlineServers.value].map(server => server.id))]
+  const controllers = { ...serverControllers.value }
+  for (const [id, server] of Object.entries(controllers)) {
+    if (!requiredIds.includes(id)) {
+      server.closeSocket()
+      delete controllers[id]
+    }
+  }
+  const missingIds = requiredIds.filter(id => !controllers[id])
+  const results = await Promise.allSettled(missingIds.map(id => api.server.get(id)))
   for (const result of results) {
     if (result.status === 'fulfilled') controllers[result.value.id] = result.value
   }
-  Object.values(favoriteControllers.value).forEach(server => server.closeSocket())
-  favoriteControllers.value = controllers
+  serverControllers.value = controllers
 }
 
 function address(server) {
@@ -88,7 +94,7 @@ function formatBytes(value) {
 
 async function refreshFavoriteStats() {
   const results = await Promise.all(favoriteServers.value.map(async server => {
-    const controller = favoriteControllers.value[server.id]
+    const controller = serverControllers.value[server.id]
     if (server.online !== 'online' || !controller?.hasScope('server.stats')) return [server.id, null]
     try {
       const stats = await controller.getStats()
@@ -114,6 +120,7 @@ async function refreshStatuses() {
   statusRefreshing = true
   try {
     await updateServerStatuses()
+    await loadDashboardControllers()
     await refreshFavoriteStats()
   } finally {
     statusRefreshing = false
@@ -134,7 +141,7 @@ async function refresh() {
       loadError.value = 'A lejárati figyelmeztetések betöltése nem sikerült.'
     }
     await updateServerStatuses()
-    await loadFavoriteControllers()
+    await loadDashboardControllers()
     await refreshFavoriteStats()
   } else {
     loadError.value = 'A szerverek betöltése nem sikerült.'
@@ -153,7 +160,7 @@ onMounted(() => {
 })
 onUnmounted(() => {
   clearInterval(statusInterval)
-  Object.values(favoriteControllers.value).forEach(server => server.closeSocket())
+  Object.values(serverControllers.value).forEach(server => server.closeSocket())
 })
 </script>
 
@@ -165,10 +172,10 @@ onUnmounted(() => {
       <p v-if="loadError" class="load-error" role="alert">{{ loadError }}</p>
       <div class="metrics"><div><b>{{ totalServers }}</b><span>Szerver</span></div><div class="online"><b>{{ online }}</b><span>Online az első oldalon</span></div><div class="offline"><b>{{ offline }}</b><span>Offline az első oldalon</span></div><div><b>{{ tickets.filter(ticket => ticket.status !== 'closed').length }}</b><span>Nyitott hibajegy</span></div></div>
       <div class="quick"><router-link to="/servers"><btn color="primary"><icon name="server" /> Szervereim</btn></router-link><router-link to="/servers/new"><btn v-if="$api.auth.hasScope('server.create')"><icon name="plus" /> Új szerver</btn></router-link><router-link to="/support"><btn><icon name="help" /> Támogatás</btn></router-link><router-link to="/self"><btn><icon name="account" /> Fiókom</btn></router-link></div>
-      <section v-if="offlineServers.length" class="attention-section"><div class="section-title"><h2>Offline szerverek</h2><router-link to="/servers">Összes szerver</router-link></div><router-link v-for="server in offlineServers" :key="server.id" :to="`/servers/view/${server.id}`" class="attention-row"><span class="attention-marker" /><span class="attention-copy"><strong>{{ server.name }}</strong><small>{{ address(server) }}</small></span><icon name="chevron-right" /></router-link></section>
+      <section v-if="offlineServers.length" class="attention-section"><div class="section-title"><h2>Offline szerverek</h2><router-link to="/servers">Összes szerver</router-link></div><div v-for="server in offlineServers" :key="server.id" class="offline-server-card"><router-link :to="`/servers/view/${server.id}`" class="attention-row"><span class="attention-marker" /><span class="attention-copy"><strong>{{ server.name }}</strong><small>{{ address(server) }}</small></span><icon name="chevron-right" /></router-link><power-controls v-if="serverControllers[server.id]" :server="serverControllers[server.id]" /></div></section>
       <section v-if="expiringServers.length" class="expiry-section"><div class="section-title"><h2>Figyelmet igényel</h2><router-link to="/servers">Összes szerver</router-link></div><router-link v-for="item in expiringServers" :key="item.server.id" :to="`/servers/view/${item.server.id}`" class="expiry-row"><span :class="['expiry-marker', { expired: item.expiryTime <= Date.now() }]" /><span class="expiry-copy"><strong>{{ item.server.name }}</strong><small>{{ item.expiryTime <= Date.now() ? 'Lejárt' : `Lejár ${Math.ceil((item.expiryTime - Date.now()) / 86400000)} napon belül` }} · {{ new Date(item.expiryTime).toLocaleDateString() }}</small></span><icon name="chevron-right" /></router-link></section>
-      <section><div class="section-title"><h2>Kedvenc szerverek</h2><router-link to="/servers">Összes szerver</router-link></div><p v-if="!favoriteServers.length" class="muted">A szerverlistában a csillag ikonra kattintva adhatsz hozzá kedvenceket.</p><div v-else class="server-grid"><div v-for="server in favoriteServers" :key="server.id" class="server-card"><router-link :to="`/servers/view/${server.id}`" class="server-link"><span :class="['dot', server.online]" /><strong>{{ server.name }}</strong><small>{{ address(server) }}</small><small v-if="favoriteStats[server.id]">CPU {{ new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(favoriteStats[server.id].cpu) }}% · RAM {{ formatBytes(favoriteStats[server.id].memory) }}</small></router-link><power-controls v-if="favoriteControllers[server.id]" :server="favoriteControllers[server.id]" /></div></div></section>
-      <section><div class="section-title"><h2>Legutóbbi hibajegyek</h2><router-link to="/support">Összes jegy</router-link></div><p v-if="!recentTickets.length" class="muted">Nincs hibajegyed.</p><router-link v-for="ticket in recentTickets" v-else :key="ticket.id" to="/support" class="ticket"><span :class="['priority', ticket.priority]" /><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong><small>{{ ticket.status }} · {{ ticket.category }}</small></router-link></section>
+      <section><div class="section-title"><h2>Kedvenc szerverek</h2><router-link to="/servers">Összes szerver</router-link></div><p v-if="!favoriteServers.length" class="muted">A szerverlistában a csillag ikonra kattintva adhatsz hozzá kedvenceket.</p><div v-else class="server-grid"><div v-for="server in favoriteServers" :key="server.id" class="server-card"><router-link :to="`/servers/view/${server.id}`" class="server-link"><span :class="['dot', server.online]" /><strong>{{ server.name }}</strong><small>{{ address(server) }}</small><small v-if="favoriteStats[server.id]">CPU {{ new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(favoriteStats[server.id].cpu) }}% · RAM {{ formatBytes(favoriteStats[server.id].memory) }}</small></router-link><power-controls v-if="serverControllers[server.id]" :server="serverControllers[server.id]" /></div></div></section>
+      <section><div class="section-title"><h2>Legutóbbi hibajegyek</h2><router-link to="/support">Összes jegy</router-link></div><p v-if="!recentTickets.length" class="muted">Nincs hibajegyed.</p><router-link v-for="ticket in recentTickets" v-else :key="ticket.id" :to="{ name: 'SupportTickets', query: { ticket: String(ticket.id) } }" class="ticket"><span :class="['priority', ticket.priority]" /><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong><small>{{ ticket.status }} · {{ ticket.category }}</small></router-link></section>
     </template>
   </div>
 </template>
@@ -183,6 +190,7 @@ onUnmounted(() => {
 .expiry-copy { min-width:0; flex:1; }
 .expiry-copy strong, .expiry-copy small { display:block; overflow-wrap:anywhere; }
 .attention-section { border-left:3px solid var(--color-error); }
+.offline-server-card { margin-top:8px; padding-bottom:1px; border-radius:6px; background:var(--color-background); }
 .attention-row { display:flex; align-items:center; gap:10px; margin-top:8px; padding:10px; color:var(--color-text); text-decoration:none; border-radius:6px; background:var(--color-background); }
 .attention-row:hover { outline:1px solid var(--color-primary); }
 .attention-marker { flex:0 0 auto; width:9px; height:9px; border-radius:50%; background:var(--color-error); }

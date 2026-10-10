@@ -31,6 +31,16 @@ const visibleTickets = computed(() => {
 
 async function load() { loading.value = true; loadError.value = ''; try { const response = await api.get('/api/tickets'); tickets.value = response.data || [] } catch (failure) { loadError.value = failure?.msg || failure?.message || 'A hibajegyek betöltése nem sikerült.' } finally { loading.value = false } }
 async function open(ticket) { const response = await api.get(`/api/tickets/${ticket.id}`); active.value = response.data; reply.value = '' }
+async function openRouteTicket(id) {
+  if (typeof id !== 'string') return
+  const ticket = tickets.value.find(item => String(item.id) === id)
+  if (!ticket) return
+  try {
+    await open(ticket)
+  } catch (failure) {
+    error.value = failure?.msg || failure?.message || 'A hibajegy részletei nem tölthetők be.'
+  }
+}
 async function create() { error.value = ''; try { const response = await api.post('/api/tickets', form.value); form.value = { subject: '', serverId: '', category: 'technical', priority: 'normal', message: '' }; await load(); active.value = response.data } catch { error.value = 'A jegy létrehozása nem sikerült.' } }
 async function sendReply() { if (!reply.value.trim() || !active.value) return; try { await api.post(`/api/tickets/${active.value.id}/messages`, { body: reply.value }); await open(active.value); await load() } catch { error.value = 'Az üzenet elküldése nem sikerült.' } }
 async function closeTicket() { if (!active.value) return; error.value = ''; try { await api.put(`/api/tickets/${active.value.id}/status`, { status: 'closed' }); await open(active.value); await load() } catch (failure) { error.value = failure?.msg || failure?.message || 'A hibajegy lezárása nem sikerült.' } }
@@ -38,8 +48,12 @@ async function updatePriority() { if (!active.value || !isAdmin.value) return; e
 watch(() => route.query.q, value => {
   search.value = typeof value === 'string' ? value : ''
 })
+watch(() => route.query.ticket, openRouteTicket)
 
-onMounted(load)
+onMounted(async () => {
+  await load()
+  await openRouteTicket(route.query.ticket)
+})
 </script>
 
 <template>
