@@ -15,10 +15,15 @@ const (
 	webHostingType = "webhosting"
 	dbHostingType  = "dbhosting"
 	discordBotType = "discordbot"
+	jellyfinType   = "jellyfin"
+	storageType    = "storage"
+	gibbonType     = "gibbon"
+	sambaType      = "samba"
 )
 
 func registerHosting(g *gin.RouterGroup) {
 	g.GET("/templates/:kind", middleware.RequiresPermission(scopes.ScopeServerCreate), getHostingTemplate)
+	g.GET("/templates/storage-samba", middleware.RequiresPermission(scopes.ScopeAdmin), getHostingTemplate)
 	g.OPTIONS("/templates/:kind", response.CreateOptions("GET"))
 }
 
@@ -48,6 +53,16 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 	switch kind {
 	case "web":
 		return webHostingTemplate()
+	case "jellyfin":
+		return jellyfinTemplate()
+	case "storage-files":
+		return storageFilesTemplate()
+	case "storage-nextcloud":
+		return nextcloudTemplate()
+	case "storage-samba":
+		return sambaTemplate()
+	case "gibbon":
+		return gibbonTemplate()
 	case "discordbot":
 		return discordBotTemplate("node")
 	case "discordbot-python":
@@ -73,6 +88,131 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 		return phpMyAdminTemplate()
 	}
 	return nil
+}
+
+func sambaTemplate() *pufferpanel.Server {
+	docker := hostingDocker("ghcr.io/servercontainers/samba:smbd-only-latest", "/shares", 445)
+	docker.Metadata["config"] = map[string]interface{}{"user": "0:0"}
+	return &pufferpanel.Server{
+		Type:       pufferpanel.Type{Type: sambaType},
+		Identifier: "samba-storage",
+		Display:    "SMB fájlmegosztás",
+		Variables: map[string]pufferpanel.Variable{
+			"ip":           hostingVar("string", "0.0.0.0", "IP", "Address the SMB service listens on.", true, false),
+			"port":         hostingVar("integer", 445, "SMB port", "Fixed SMB port on the node.", true, false),
+			"smb_password": {Type: pufferpanel.Type{Type: "string"}, Value: "", Display: "SMB password", Description: "Password for the private SMB share account.", Required: true, Internal: true},
+		},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Execution: pufferpanel.Execution{
+			WorkingDirectory: "/shares",
+			EnvironmentVariables: map[string]string{
+				"ACCOUNT_puffer":            "${smb_password}",
+				"SAMBA_VOLUME_CONFIG_files": "path = /shares; browseable = yes; read only = no; guest ok = no; valid users = puffer",
+			},
+		},
+	}
+}
+
+func jellyfinTemplate() *pufferpanel.Server {
+	docker := hostingDocker("jellyfin/jellyfin:10", "/config", 8096)
+	return &pufferpanel.Server{
+		Type:       pufferpanel.Type{Type: jellyfinType},
+		Identifier: "jellyfin",
+		Display:    "Jellyfin",
+		Variables: map[string]pufferpanel.Variable{
+			"ip":   hostingVar("string", "0.0.0.0", "IP", "Address the media server listens on.", true, false),
+			"port": hostingVar("integer", 0, "Port", "Public port of the Jellyfin web interface (allocated automatically).", true, false),
+		},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Installation: []pufferpanel.ConditionalMetadataType{{
+			MetadataType: pufferpanel.MetadataType{Type: "mkdir", Metadata: map[string]interface{}{"target": "media"}},
+		}},
+		Execution: pufferpanel.Execution{WorkingDirectory: "/config"},
+	}
+}
+
+func storageFilesTemplate() *pufferpanel.Server {
+	docker := pufferpanel.MetadataType{Type: "docker", Metadata: map[string]interface{}{
+		"image":         "alpine:3.22",
+		"containerRoot": "/data",
+		"networkName":   "none",
+	}}
+	return &pufferpanel.Server{
+		Type:                  pufferpanel.Type{Type: storageType},
+		Identifier:            "storage-files",
+		Display:               "Fájltár (Fájlok + SFTP)",
+		Variables:             map[string]pufferpanel.Variable{},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Execution: pufferpanel.Execution{
+			Command:          `sh -c "while true; do sleep 3600; done"`,
+			WorkingDirectory: "/data",
+			StopCode:         15,
+		},
+	}
+}
+
+func nextcloudTemplate() *pufferpanel.Server {
+	docker := hostingDocker("nextcloud:apache", "/var/www/html", 80)
+	return &pufferpanel.Server{
+		Type:       pufferpanel.Type{Type: storageType},
+		Identifier: "nextcloud",
+		Display:    "Nextcloud (SQLite)",
+		Variables: map[string]pufferpanel.Variable{
+			"ip":   hostingVar("string", "0.0.0.0", "IP", "Address the Nextcloud web interface listens on.", true, false),
+			"port": hostingVar("integer", 0, "Port", "Public port of the Nextcloud web interface (allocated automatically).", true, false),
+		},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Execution:             pufferpanel.Execution{WorkingDirectory: "/var/www/html"},
+	}
+}
+
+func gibbonTemplate() *pufferpanel.Server {
+	docker := hostingDocker("webdevops/php-apache:8.3", "/var/www/html", 80)
+	step := func(kind string, metadata map[string]interface{}) pufferpanel.ConditionalMetadataType {
+		return pufferpanel.ConditionalMetadataType{MetadataType: pufferpanel.MetadataType{Type: kind, Metadata: metadata}}
+	}
+	variables := map[string]pufferpanel.Variable{
+		"ip":          hostingVar("string", "0.0.0.0", "IP", "Address the Gibbon web interface listens on.", true, false),
+		"port":        hostingVar("integer", 0, "Port", "Public port of the Gibbon web interface (allocated automatically).", true, false),
+		"db_host":     hostingVar("string", "", "Database host", "Private MariaDB connection, provisioned with this Gibbon service.", true, false),
+		"db_port":     hostingVar("integer", 0, "Database port", "Private MariaDB connection port.", true, false),
+		"db_name":     hostingVar("string", "gibbon", "Database name", "Private MariaDB database name.", true, false),
+		"db_user":     hostingVar("string", "gibbon", "Database user", "Private MariaDB user.", true, false),
+		"db_password": hostingVar("string", "", "Database password", "Private MariaDB password.", true, false),
+	}
+	for _, key := range []string{"db_host", "db_port", "db_name", "db_user", "db_password"} {
+		variable := variables[key]
+		variable.Internal = true
+		variables[key] = variable
+	}
+	return &pufferpanel.Server{
+		Type:                  pufferpanel.Type{Type: gibbonType},
+		Identifier:            "gibbon",
+		Display:               "Gibbon EDU",
+		Variables:             variables,
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Installation: []pufferpanel.ConditionalMetadataType{
+			step("download", map[string]interface{}{"files": []string{"https://github.com/GibbonEdu/core/archive/refs/tags/v31.0.00.tar.gz"}}),
+			step("extract", map[string]interface{}{"source": "v31.0.00.tar.gz", "destination": "."}),
+		},
+		Execution: pufferpanel.Execution{
+			Command:          `sh -c "cd /var/www/html/core-31.0.00 && until php -r '$fp = @fsockopen(getenv(\"DB_HOST\"), (int)getenv(\"DB_PORT\"), $errno, $error, 2); if ($fp) { fclose($fp); exit(0); } exit(1);'; do sleep 2; done && COMPOSER_PROCESS_TIMEOUT=0 composer install --no-dev --no-interaction --prefer-dist && exec supervisord"`,
+			WorkingDirectory: "/var/www/html/core-31.0.00",
+			EnvironmentVariables: map[string]string{
+				"WEB_DOCUMENT_ROOT": "/var/www/html/core-31.0.00",
+				"DB_HOST":           "${db_host}",
+				"DB_PORT":           "${db_port}",
+				"DB_NAME":           "${db_name}",
+				"DB_USERNAME":       "${db_user}",
+				"DB_PASSWORD":       "${db_password}",
+			},
+		},
+	}
 }
 
 func discordBotTemplate(language string) *pufferpanel.Server {

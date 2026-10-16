@@ -93,6 +93,52 @@
   "SortName": "Name",
   "SortStatus": "Status",
   "SortExpiry": "Expiration",
+  "services": {
+    "create": "New service",
+    "search": "Search {title} or node",
+    "running": "running",
+    "stopped": "stopped",
+    "noResults": "No matching results.",
+    "jellyfin": {
+      "title": "Jellyfin",
+      "hint": "Your own media server with persistent configuration and media stored in its server files.",
+      "empty": "No Jellyfin servers yet.",
+      "create": "New Jellyfin server",
+      "createHint": "Configuration and the media folder persist in the server's file area; a web interface port is allocated automatically."
+    },
+    "storage": {
+      "title": "Storage",
+      "hint": "Persistent files accessible through SFTP and the panel file manager, or through a Nextcloud web interface.",
+      "empty": "No storage services yet.",
+      "create": "New storage",
+      "kind": "Storage type",
+      "files": "File storage (SFTP + Files)",
+      "filesHint": "Files persist in the server's own directory and are accessible through the panel Files and SFTP interfaces.",
+      "nextcloudHint": "After its first start, Nextcloud can be configured in the browser wizard using SQLite. This suits small installations; MariaDB is recommended for larger deployments."
+    },
+    "gibbon": {
+      "title": "Gibbon EDU",
+      "hint": "School management system with an automatically provisioned MariaDB database.",
+      "empty": "No Gibbon EDU servers yet.",
+      "create": "New Gibbon EDU",
+      "createHint": "Gibbon and MariaDB run on the same node. After installation, finish configuring the school and admin account in the browser wizard.",
+      "created": "The Gibbon and its MariaDB server were created.",
+      "privateHostRequired": "Configure a node private address reachable by containers before provisioning the Gibbon database.",
+      "databasePortMissing": "The MariaDB server was not assigned a port.",
+      "databaseCleanup": "Orphaned MariaDB server ID: {id}",
+      "serverCleanup": "Orphaned Gibbon server ID: {id}"
+    },
+    "smb": {
+      "title": "SMB storage",
+      "hint": "Password-protected Samba share backed by persistent server files.",
+      "empty": "No SMB storage services yet.",
+      "create": "New SMB storage",
+      "createHint": "Administrator-only. The share binds only to the node's private network address; node port 445/tcp can be used by one SMB server.",
+      "username": "SMB username",
+      "password": "SMB password",
+      "privateHostRequired": "Configure a node private address reachable by LAN clients before creating SMB storage."
+    }
+  },
   "SearchServers": "Search servers",
   "AllTags": "All tags",
   "ToggleFavorite": "Toggle favorite",

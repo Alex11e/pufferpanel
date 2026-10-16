@@ -60,3 +60,57 @@ func TestHostingTemplates(t *testing.T) {
 		t.Fatal("engine must be internal")
 	}
 }
+
+func TestMediaAndStorageTemplates(t *testing.T) {
+	jellyfin := hostingTemplate("jellyfin")
+	if jellyfin == nil || jellyfin.Type.Type != jellyfinType {
+		t.Fatal("Jellyfin template should be available as its own server type")
+	}
+	if image := jellyfin.Environment.Metadata["image"]; image != "jellyfin/jellyfin:10" {
+		t.Fatalf("unexpected Jellyfin image: %v", image)
+	}
+	if bindings := jellyfin.Environment.Metadata["portBindings"]; bindings == nil {
+		t.Fatal("Jellyfin must publish its web interface through a panel-allocated port")
+	}
+
+	storage := hostingTemplate("storage-files")
+	if storage == nil || storage.Type.Type != storageType {
+		t.Fatal("file storage template should be available as a storage server")
+	}
+	if storage.Environment.Metadata["containerRoot"] != "/data" || storage.Environment.Metadata["networkName"] != "none" {
+		t.Fatalf("file storage should use a persistent data mount without network exposure: %+v", storage.Environment.Metadata)
+	}
+
+	nextcloud := hostingTemplate("storage-nextcloud")
+	if nextcloud == nil || nextcloud.Type.Type != storageType {
+		t.Fatal("Nextcloud template should be available in the storage section")
+	}
+	if nextcloud.Environment.Metadata["image"] != "nextcloud:apache" {
+		t.Fatalf("unexpected Nextcloud image: %v", nextcloud.Environment.Metadata["image"])
+	}
+	if nextcloud.Type.Type != storageType || nextcloud.Variables["port"].Value != 0 {
+		t.Fatalf("Nextcloud should share the storage section and receive an allocated web port: %+v", nextcloud)
+	}
+
+	gibbon := hostingTemplate("gibbon")
+	if gibbon == nil || gibbon.Type.Type != gibbonType {
+		t.Fatal("Gibbon template should be available as its own server type")
+	}
+	if !gibbon.Variables["db_password"].Internal || gibbon.Variables["db_password"].UserEditable {
+		t.Fatal("Gibbon MariaDB credentials must remain private")
+	}
+	if len(gibbon.Installation) != 2 || gibbon.Execution.EnvironmentVariables["DB_NAME"] != "${db_name}" {
+		t.Fatalf("Gibbon source install and MariaDB environment mapping are required: %+v", gibbon)
+	}
+
+	samba := hostingTemplate("storage-samba")
+	if samba == nil || samba.Type.Type != sambaType {
+		t.Fatal("SMB storage should be available as a separate service")
+	}
+	if !samba.Variables["smb_password"].Internal || samba.Variables["smb_password"].UserEditable {
+		t.Fatal("SMB password must remain private server data")
+	}
+	if samba.Environment.Metadata["portBindings"].([]string)[0] != "${ip}:${port}:445/tcp" {
+		t.Fatalf("SMB must use the node's reserved 445/tcp port: %+v", samba.Environment.Metadata["portBindings"])
+	}
+}

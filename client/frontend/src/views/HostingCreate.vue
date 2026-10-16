@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
@@ -12,9 +13,11 @@ const props = defineProps({
 const api = inject('api')
 const toast = inject('toast')
 const router = useRouter()
+const { t } = useI18n()
 
 const engine = ref('mariadb')
 const botLanguage = ref('node')
+const storageMode = ref('files')
 const template = ref(null)
 const loading = ref(true)
 const loadError = ref('')
@@ -22,7 +25,7 @@ const nodes = ref([])
 const nodeId = ref(null)
 const name = ref('')
 const version = ref('')
-const memory = ref(512)
+const memory = ref(props.kind === 'gibbon' ? 1024 : 512)
 const cpu = ref(1)
 const dbName = ref('app')
 const dbUser = ref('app')
@@ -36,13 +39,23 @@ const pmaPort = ref(3306)
 const pmaDatabase = ref('app')
 const pmaUser = ref('app')
 const pmaPassword = ref('')
+const smbPassword = ref(randomPassword())
 
 const isPma = computed(() => props.kind === 'db' && engine.value === 'phpmyadmin')
 
 const isDb = computed(() => props.kind === 'db')
 const isBot = computed(() => props.kind === 'discordbot')
-const templateKind = computed(() => (isBot.value ? (botLanguage.value === 'python' ? 'discordbot-python' : 'discordbot') : isDb.value ? engine.value : 'web'))
-const versions = computed(() => (template.value?.data?.[isDb.value ? 'version' : 'php_version']?.options || []).map(o => o.value))
+const isWeb = computed(() => props.kind === 'web')
+const isJellyfin = computed(() => props.kind === 'jellyfin')
+const isStorage = computed(() => props.kind === 'storage')
+const isGibbon = computed(() => props.kind === 'gibbon')
+const isSamba = computed(() => props.kind === 'samba')
+const selectedNode = computed(() => nodes.value.find(node => node.value === nodeId.value))
+const templateKind = computed(() => (isBot.value ? (botLanguage.value === 'python' ? 'discordbot-python' : 'discordbot') : isDb.value ? engine.value : isJellyfin.value ? 'jellyfin' : isStorage.value ? (storageMode.value === 'nextcloud' ? 'storage-nextcloud' : 'storage-files') : isGibbon.value ? 'gibbon' : isSamba.value ? 'storage-samba' : 'web'))
+const versions = computed(() => {
+  const versionKey = isDb.value ? 'version' : isWeb.value ? 'php_version' : ''
+  return (template.value?.data?.[versionKey]?.options || []).map(o => o.value)
+})
 const identifier = /^[A-Za-z0-9_]{1,32}$/
 const botToken = ref('')
 
@@ -55,7 +68,8 @@ const canSubmit = computed(() =>
   nodeId.value !== null &&
   Number.isInteger(Number(memory.value)) && Number(memory.value) >= 128 &&
   Number.isFinite(Number(cpu.value)) && Number(cpu.value) > 0 &&
-  (isBot.value ? botToken.value.trim().length > 0 : !isDb.value || (isPma.value
+  (!isSamba.value || (selectedNode.value?.privateHost && !['127.0.0.1', '::1', '0.0.0.0', '::'].includes(selectedNode.value.privateHost))) &&
+  (isBot.value ? botToken.value.trim().length > 0 : isSamba.value ? smbPassword.value.length >= 12 : !isDb.value || (isPma.value
     ? pmaHost.value.trim() !== '' && Number.isInteger(Number(pmaPort.value)) && Number(pmaPort.value) > 0 && Number(pmaPort.value) < 65536 &&
       pmaDatabase.value.trim() !== '' && pmaUser.value.trim() !== '' && pmaPassword.value.length > 0
     : identifier.test(dbName.value) && identifier.test(dbUser.value) &&
@@ -74,7 +88,7 @@ async function loadTemplate() {
   loadError.value = ''
   try {
     template.value = (await api.get(`/api/hosting/templates/${templateKind.value}`)).data
-    if (!isPma.value && !isBot.value) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
+    if (!isPma.value && !isBot.value && (isDb.value || isWeb.value)) version.value = template.value.data[isDb.value ? 'version' : 'php_version'].value
   } catch (failure) {
     loadError.value = errorMessage(failure)
   }
@@ -84,7 +98,7 @@ async function loadSetup() {
   loading.value = true
   loadError.value = ''
   try {
-    nodes.value = (await api.node.list()).map(n => ({ value: n.id, label: n.name }))
+    nodes.value = (await api.node.list()).map(n => ({ value: n.id, label: n.name, privateHost: n.privateHost }))
     if (nodes.value.length === 1) nodeId.value = nodes.value[0].value
     await loadTemplate()
   } catch (failure) {
@@ -104,6 +118,10 @@ watch(botLanguage, () => {
   if (!loading.value) loadTemplate()
 })
 
+watch(storageMode, () => {
+  if (!loading.value) loadTemplate()
+})
+
 async function create() {
   if (!canSubmit.value || creating.value) return
   creating.value = true
@@ -115,11 +133,20 @@ async function create() {
       return
     }
     const self = await api.self.get()
+    if (isGibbon.value) {
+      const created = await createGibbon(self)
+      toast.success(t('servers.services.gibbon.created'))
+      router.push({ name: 'ServerView', params: { id: created.gibbonId }, query: { created: true } })
+      return
+    }
+
     const data = JSON.parse(JSON.stringify(template.value.data))
     // Private databases only listen on the node's loopback address.
-    if (data.ip) data.ip.value = publicAccess.value ? '0.0.0.0' : '127.0.0.1'
+    if (data.ip) data.ip.value = isDb.value ? (publicAccess.value ? '0.0.0.0' : '127.0.0.1') : isSamba.value ? selectedNode.value.privateHost : '0.0.0.0'
     if (isBot.value) {
       data.token.value = botToken.value.trim()
+    } else if (isSamba.value) {
+      data.smb_password.value = smbPassword.value
     } else if (isPma.value) {
       data.pma_host.value = pmaHost.value.trim()
       data.pma_port.value = Number(pmaPort.value)
@@ -132,7 +159,7 @@ async function create() {
       data.db_user.value = dbUser.value
       data.db_password.value = dbPassword.value
       if (data.root_password) data.root_password.value = rootPassword.value
-    } else {
+    } else if (isWeb.value) {
       data.php_version.value = version.value
     }
 
@@ -151,11 +178,98 @@ async function create() {
     creating.value = false
   }
 }
+
+async function createGibbon(self) {
+  const node = nodes.value.find(item => item.value === nodeId.value)
+  if (!node?.privateHost || ['127.0.0.1', '::1', '0.0.0.0', '::'].includes(node.privateHost)) {
+    throw new Error(t('servers.services.gibbon.privateHostRequired'))
+  }
+
+  const dbTemplate = (await api.get('/api/hosting/templates/mariadb')).data
+  const dbData = JSON.parse(JSON.stringify(dbTemplate.data))
+  dbData.ip.value = node.privateHost
+  dbData.db_name.value = 'gibbon'
+  dbData.db_user.value = 'gibbon'
+  dbData.db_password.value = randomPassword()
+  dbData.root_password.value = randomPassword()
+  dbData.version.value = '10.11'
+  const dbEnvironment = JSON.parse(JSON.stringify(dbTemplate.environment))
+  dbEnvironment.hostConfig = { Memory: 512 * 1024 * 1024, MemorySwap: 512 * 1024 * 1024, NanoCpus: 1e9, PidsLimit: 512 }
+
+  let databaseServerId = ''
+Z  let gibbonServerId = ''
+  try {
+    databaseServerId = await api.server.create({
+      ...dbTemplate,
+      name: `${name.value.trim().slice(0, 31)} DB`,
+      node: nodeId.value,
+      environment: dbEnvironment,
+      users: [self.username],
+      data: dbData
+    })
+    await api.server.start(databaseServerId, true)
+    const databaseServer = await api.server.get(databaseServerId, false)
+    if (!databaseServer.port) throw new Error(t('servers.services.gibbon.databasePortMissing'))
+
+    const data = JSON.parse(JSON.stringify(template.value.data))
+    data.db_host.value = node.privateHost
+    data.db_port.value = databaseServer.port
+    data.db_name.value = 'gibbon'
+    data.db_user.value = 'gibbon'
+    data.db_password.value = dbData.db_password.value
+    const environment = JSON.parse(JSON.stringify(template.value.environment))
+    const memoryBytes = Math.floor(Number(memory.value)) * 1024 * 1024
+    environment.hostConfig = { Memory: memoryBytes, MemorySwap: memoryBytes, NanoCpus: Math.round(Number(cpu.value) * 1e9), PidsLimit: 512 }
+
+    gibbonServerId = await api.server.create({
+      ...template.value,
+      name: name.value.trim(),
+      node: nodeId.value,
+      environment,
+      users: [self.username],
+      data
+    })
+    await api.put(`/api/servers/${gibbonServerId}/database`, {
+      databaseServerId,
+      engine: 'mariadb',
+      accessMode: 'private',
+      host: node.privateHost,
+      port: databaseServer.port,
+      databaseName: 'gibbon',
+      username: 'gibbon',
+      password: dbData.db_password.value,
+      variableMapping: {
+        host: 'DB_HOST',
+        port: 'DB_PORT',
+        database: 'DB_NAME',
+        username: 'DB_USERNAME',
+        password: 'DB_PASSWORD'
+      }
+    })
+    return { gibbonId: gibbonServerId, databaseServerId }
+  } catch (failure) {
+    if (gibbonServerId) {
+      try {
+        await api.server.delete(gibbonServerId)
+      } catch {
+        throw new Error(`${errorMessage(failure)} (${t('servers.services.gibbon.serverCleanup', { id: gibbonServerId })})`)
+      }
+    }
+    if (databaseServerId) {
+      try {
+        await api.server.delete(databaseServerId)
+      } catch {
+        throw new Error(`${errorMessage(failure)} (${t('servers.services.gibbon.databaseCleanup', { id: databaseServerId })})`)
+      }
+    }
+    throw failure
+  }
+}
 </script>
 
 <template>
   <div class="hosting-create">
-    <h1><icon name="server" /> {{ isBot ? 'Új Discord bot' : isDb ? 'Új adatbázis' : 'Új webtárhely' }}</h1>
+    <h1><icon name="server" /> {{ isBot ? 'Új Discord bot' : isDb ? 'Új adatbázis' : isJellyfin ? t('servers.services.jellyfin.create') : isStorage ? t('servers.services.storage.create') : isGibbon ? t('servers.services.gibbon.create') : isSamba ? t('servers.services.smb.create') : 'Új webtárhely' }}</h1>
     <loader v-if="loading || (!template && !loadError)" />
     <div v-else-if="loadError" class="error-state" role="alert">
       <p>{{ loadError }}</p>
@@ -172,6 +286,9 @@ async function create() {
       <label v-if="isDb">Adatbázis-motor
         <select v-model="engine"><option value="mariadb">MariaDB (MySQL-kompatibilis)</option><option value="postgres">PostgreSQL</option><option value="phpmyadmin">phpMyAdmin (webes MariaDB/MySQL kezelő)</option></select>
       </label>
+      <label v-if="isStorage">{{ t('servers.services.storage.kind') }}
+        <select v-model="storageMode"><option value="files">{{ t('servers.services.storage.files') }}</option><option value="nextcloud">Nextcloud</option></select>
+      </label>
       <template v-if="isBot">
         <label>Programozási nyelv
           <select v-model="botLanguage"><option value="node">Node.js</option><option value="python">Python</option></select>
@@ -179,9 +296,18 @@ async function create() {
         <label>Discord bot token<input v-model="botToken" type="password" autocomplete="new-password" required></label>
         <p class="hint">A token privát szerveradatként tárolódik, és DISCORD_TOKEN környezeti változóként jut el a bothoz. Fájlokat a Fájlok vagy SFTP felületen tölthetsz fel.</p>
       </template>
-      <label v-if="!isPma && !isBot">{{ isDb ? 'Verzió' : 'PHP verzió' }}
+      <template v-if="isSamba">
+        <p class="hint">{{ t('servers.services.smb.createHint') }}</p>
+        <label>{{ t('servers.services.smb.username') }}<input value="puffer" disabled></label>
+        <label>{{ t('servers.services.smb.password') }}<input v-model="smbPassword" type="password" minlength="12" autocomplete="new-password" required></label>
+      </template>
+      <label v-if="!isPma && !isBot && (isDb || isWeb)">{{ isDb ? 'Verzió' : 'PHP verzió' }}
         <select v-model="version"><option v-for="v in versions" :key="v" :value="v">{{ v }}</option></select>
       </label>
+      <p v-if="isJellyfin" class="hint">{{ t('servers.services.jellyfin.createHint') }}</p>
+      <p v-if="isStorage && storageMode === 'files'" class="hint">{{ t('servers.services.storage.filesHint') }}</p>
+      <p v-if="isStorage && storageMode === 'nextcloud'" class="hint">{{ t('servers.services.storage.nextcloudHint') }}</p>
+      <p v-if="isGibbon" class="hint">{{ t('servers.services.gibbon.createHint') }}</p>
       <label>Memóriakorlát (MB)<input v-model.number="memory" type="number" min="128" step="128"></label>
       <label>CPU korlát (mag)<input v-model.number="cpu" type="number" min="0.25" step="0.25"></label>
       <template v-if="isPma">

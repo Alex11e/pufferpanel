@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import { serverIconName } from '@/utils/serverIcon'
 import Icon from '@/components/ui/Icon.vue'
@@ -8,6 +9,7 @@ import Loader from '@/components/ui/Loader.vue'
 
 const api = inject('api')
 const events = inject('events')
+const { t } = useI18n()
 const search = ref('')
 const selectedStatus = ref('')
 const loadError = ref('')
@@ -16,9 +18,12 @@ const actionError = ref('')
 const props = defineProps({
   type: { type: String, default: 'hypervm' },
   title: { type: String, default: 'VPS' },
+  titleKey: { type: String, default: '' },
   hint: { type: String, default: 'Virtuális gépek (QEMU) saját konzollal, VNC-vel és ISO-kezeléssel.' },
+  hintKey: { type: String, default: '' },
   createRoute: { type: String, default: 'VpsCreate' },
-  empty: { type: String, default: 'Még nincs VPS.' }
+  empty: { type: String, default: 'Még nincs VPS.' },
+  emptyKey: { type: String, default: '' }
 })
 
 const vpsList = ref([])
@@ -27,6 +32,9 @@ const busy = ref({})
 let interval = null
 
 const canCreate = computed(() => api.auth.hasScope('server.create'))
+const titleText = computed(() => props.titleKey ? t(props.titleKey) : props.title)
+const hintText = computed(() => props.hintKey ? t(props.hintKey) : props.hint)
+const emptyText = computed(() => props.emptyKey ? t(props.emptyKey) : props.empty)
 const statusLabels = { online: 'Fut', offline: 'Leállítva', installing: 'Telepítés', unknown: 'Állapot nem érhető el' }
 const visibleVps = computed(() => vpsList.value.filter(vps => {
   const matchesSearch = `${vps.name} ${vps.node?.name || ''}`.toLowerCase().includes(search.value.trim().toLowerCase())
@@ -111,22 +119,22 @@ onUnmounted(() => clearInterval(interval))
   <div class="vps-list">
     <div class="heading">
       <div>
-        <h1><icon name="server" /> {{ title }}</h1>
-        <p class="hint">{{ hint }}</p>
+        <h1><icon name="server" /> {{ titleText }}</h1>
+        <p class="hint">{{ hintText }}</p>
       </div>
-      <router-link v-if="canCreate" :to="{ name: createRoute }"><btn color="primary"><icon name="plus" /> Új</btn></router-link>
+      <router-link v-if="canCreate" :to="{ name: createRoute }"><btn color="primary"><icon name="plus" /> {{ t('servers.services.create') }}</btn></router-link>
     </div>
     <div class="toolbar">
-      <input v-model="search" type="search" :placeholder="`${title} vagy node keresése`" :aria-label="`${title} vagy node keresése`">
+      <input v-model="search" type="search" :placeholder="t('servers.services.search', { title: titleText })" :aria-label="t('servers.services.search', { title: titleText })">
       <btn v-for="filter in [{ value: '', label: 'Mind' }, { value: 'online', label: 'Fut' }, { value: 'offline', label: 'Leállítva' }, { value: 'installing', label: 'Telepítés' }]" :key="filter.value" :color="selectedStatus === filter.value ? 'primary' : undefined" @click="selectedStatus = filter.value">{{ filter.label }}</btn>
       <btn variant="icon" tooltip="Lista frissítése" :disabled="loading" @click="reload"><icon name="reload" /></btn>
     </div>
-    <div class="summary"><span>{{ counts.total }} {{ title }}</span><span>{{ counts.online }} fut</span><span>{{ counts.offline }} leállítva</span></div>
+    <div class="summary"><span>{{ counts.total }} {{ titleText }}</span><span>{{ counts.online }} {{ t('servers.services.running') }}</span><span>{{ counts.offline }} {{ t('servers.services.stopped') }}</span></div>
     <p v-if="loadError" class="error" role="alert">{{ loadError }}</p>
     <p v-if="actionError" class="error" role="alert">{{ actionError }}</p>
     <loader v-if="loading" />
-    <div v-else-if="!vpsList.length && !loadError" class="empty">{{ empty }}</div>
-    <div v-else-if="!visibleVps.length && !loadError" class="empty">Nincs a keresésnek megfelelő találat.</div>
+    <div v-else-if="!vpsList.length && !loadError" class="empty">{{ emptyText }}</div>
+    <div v-else-if="!visibleVps.length && !loadError" class="empty">{{ t('servers.services.noResults') }}</div>
     <div v-for="vps in visibleVps" v-else :key="vps.id" class="vps-card">
       <div class="vps-info">
         <router-link class="vps-name" :to="{ name: 'ServerView', params: { id: vps.id } }"><icon :name="serverIconName(vps)" /><strong>{{ vps.name }}</strong></router-link>

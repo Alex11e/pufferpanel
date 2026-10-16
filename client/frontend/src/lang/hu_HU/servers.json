@@ -93,6 +93,52 @@
   "SortName": "Név szerint",
   "SortStatus": "Állapot szerint",
   "SortExpiry": "Lejárat szerint",
+  "services": {
+    "create": "Új szolgáltatás",
+    "search": "{title} vagy node keresése",
+    "running": "fut",
+    "stopped": "leállítva",
+    "noResults": "Nincs a keresésnek megfelelő találat.",
+    "jellyfin": {
+      "title": "Jellyfin",
+      "hint": "Saját média szerver, tartós konfigurációval és a szerver fájlterületén tárolt médiával.",
+      "empty": "Még nincs Jellyfin szerver.",
+      "create": "Új Jellyfin",
+      "createHint": "A konfiguráció és a media mappa a szerver saját fájlterületén marad; a webes felülethez külön portot foglalunk."
+    },
+    "storage": {
+      "title": "Tárhely",
+      "hint": "Tartós fájltár SFTP-n és a panel fájlkezelőjén keresztül, vagy Nextcloud webes felülettel.",
+      "empty": "Még nincs tárhely.",
+      "create": "Új tárhely",
+      "kind": "Tárhely típusa",
+      "files": "Fájltár (SFTP + Fájlok)",
+      "filesHint": "A fájlok tartósan a szerver saját könyvtárában maradnak. Elérés a panel Fájlok és SFTP felületén.",
+      "nextcloudHint": "A Nextcloud az első indítás után a böngészős varázslóban SQLite adatbázissal állítható be. Kis telepítéshez alkalmas; nagyobb használathoz külön MariaDB javasolt."
+    },
+    "gibbon": {
+      "title": "Gibbon EDU",
+      "hint": "Iskolai adminisztrációs rendszer automatikusan létrehozott MariaDB-adatbázissal.",
+      "empty": "Még nincs Gibbon EDU szerver.",
+      "create": "Új Gibbon EDU",
+      "createHint": "A Gibbon és a MariaDB azonos node-on indul. Telepítés után a böngészős varázslóban fejezd be az iskola és az adminfiók beállítását.",
+      "created": "A Gibbon és a hozzá tartozó MariaDB-szerver létrejött.",
+      "privateHostRequired": "A Gibbon automatikus adatbázisához állíts be a node-on a konténerekből elérhető privát címet.",
+      "databasePortMissing": "A MariaDB-szerver nem kapott portot.",
+      "databaseCleanup": "Az árva MariaDB-szerver azonosítója: {id}",
+      "serverCleanup": "Az árva Gibbon-szerver azonosítója: {id}"
+    },
+    "smb": {
+      "title": "SMB tárhely",
+      "hint": "Jelszóval védett Samba megosztás a tartós szerverfájlokból.",
+      "empty": "Még nincs SMB tárhely.",
+      "create": "Új SMB tárhely",
+      "createHint": "Adminisztrátori funkció. Csak a node privát hálózati címén érhető el; a node 445/tcp portja csak egy SMB-szerverhez használható.",
+      "username": "SMB felhasználónév",
+      "password": "SMB jelszó",
+      "privateHostRequired": "Az SMB-hez állíts be a node-on LAN-kliensekből elérhető privát címet."
+    }
+  },
   "SearchServers": "Szerverek keresése",
   "AllTags": "Minden címke",
   "ToggleFavorite": "Kedvenc ki- vagy bekapcsolása",

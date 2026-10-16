@@ -548,6 +548,10 @@ func createServer(c *gin.Context) {
 		c.JSON(http.StatusPaymentRequired, gin.H{"error": gin.H{"msg": "a paid billing package is required to create a server"}})
 		return
 	}
+	if postBody.Type.Type == sambaType && !admin {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
 	if postBody.BillingPurchaseID > 0 {
 		if requestUser == nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
@@ -579,6 +583,24 @@ func createServer(c *gin.Context) {
 		response.HandleError(c, pufferpanel.ErrNodeInvalid, http.StatusBadRequest)
 		return
 	} else if response.HandleError(c, err, http.StatusInternalServerError) {
+		return
+	}
+	if postBody.Type.Type == sambaType {
+		privateHost := strings.TrimSpace(node.PrivateHost)
+		if privateHost == "" || privateHost == "127.0.0.1" || privateHost == "::1" || privateHost == "0.0.0.0" || privateHost == "::" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "SMB storage requires a node private host reachable by LAN clients"}})
+			return
+		}
+		if postBody.Variables == nil {
+			postBody.Variables = make(map[string]pufferpanel.Variable)
+		}
+		privateIP := postBody.Variables["ip"]
+		privateIP.Type = pufferpanel.Type{Type: "string"}
+		privateIP.Value = privateHost
+		postBody.Variables["ip"] = privateIP
+	}
+	if postBody.Type.Type == sambaType && (node.PortRangeStart > 445 || node.PortRangeEnd < 445) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"msg": "node port range must include TCP 445 for SMB storage"}})
 		return
 	}
 
@@ -638,9 +660,20 @@ func createServer(c *gin.Context) {
 	// When a template exposes the conventional port variable, allocate it from
 	// the node range instead of trusting a user supplied port.
 	if _, usesPort := postBody.Variables["port"]; usesPort {
-		allocation, allocationErr := (&services.Allocation{DB: db}).AllocateNext(node, server.Identifier)
+		allocationService := &services.Allocation{DB: db}
+		var allocation *models.Allocation
+		var allocationErr error
+		if postBody.Type.Type == sambaType {
+			allocation, allocationErr = allocationService.AllocateRange(node, server.Identifier, 445, 445)
+		} else {
+			allocation, allocationErr = allocationService.AllocateNext(node, server.Identifier)
+		}
 		if allocationErr == services.ErrNoPortAvailable {
-			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": "no free port in node range"}})
+			message := "no free port in node range"
+			if postBody.Type.Type == sambaType {
+				message = "SMB port 445 is already allocated on this node"
+			}
+			c.JSON(http.StatusConflict, gin.H{"error": gin.H{"msg": message}})
 			return
 		}
 		if response.HandleError(c, allocationErr, http.StatusInternalServerError) {
@@ -726,6 +759,9 @@ func createServer(c *gin.Context) {
 			scopes.ScopeServerSendCommand,
 			scopes.ScopeServerStats,
 			scopes.ScopeServerStatus,
+		}
+		if postBody.Type.Type == gibbonType {
+			perm.Scopes = append(perm.Scopes, scopes.ScopeServerAdmin)
 		}
 
 		err = ps.UpdatePermissions(perm)

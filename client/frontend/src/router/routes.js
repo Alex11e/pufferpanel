@@ -126,6 +126,58 @@ export default (api) => [
     props: { kind: 'discordbot' }
   },
   {
+    path: '/jellyfin',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'JellyfinList',
+    props: { type: 'jellyfin', titleKey: 'servers.services.jellyfin.title', hintKey: 'servers.services.jellyfin.hint', createRoute: 'JellyfinCreate', emptyKey: 'servers.services.jellyfin.empty' },
+    meta: { tkey: 'servers.services.jellyfin.title', permission: true, icon: 'server', hotkey: 'g j' }
+  },
+  {
+    path: '/jellyfin/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'JellyfinCreate',
+    props: { kind: 'jellyfin' }
+  },
+  {
+    path: '/storage',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'StorageList',
+    props: { type: 'storage', titleKey: 'servers.services.storage.title', hintKey: 'servers.services.storage.hint', createRoute: 'StorageCreate', emptyKey: 'servers.services.storage.empty' },
+    meta: { tkey: 'servers.services.storage.title', permission: true, icon: 'files', hotkey: 'g s t' }
+  },
+  {
+    path: '/storage/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'StorageCreate',
+    props: { kind: 'storage' }
+  },
+  {
+    path: '/gibbon',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'GibbonList',
+    props: { type: 'gibbon', titleKey: 'servers.services.gibbon.title', hintKey: 'servers.services.gibbon.hint', createRoute: 'GibbonCreate', emptyKey: 'servers.services.gibbon.empty' },
+    meta: { tkey: 'servers.services.gibbon.title', permission: true, icon: 'school', hotkey: 'g e' }
+  },
+  {
+    path: '/gibbon/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'GibbonCreate',
+    props: { kind: 'gibbon' }
+  },
+  {
+    path: '/storage/smb',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'SambaStorageList',
+    props: { type: 'samba', titleKey: 'servers.services.smb.title', hintKey: 'servers.services.smb.hint', createRoute: 'SambaStorageCreate', emptyKey: 'servers.services.smb.empty' },
+    meta: { tkey: 'servers.services.smb.title', permission: 'admin', icon: 'server' }
+  },
+  {
+    path: '/storage/smb/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'SambaStorageCreate',
+    props: { kind: 'samba' }
+  },
+  {
     path: '/dashboard',
     component: () => import('@/views/Dashboard.vue'),
     name: 'Dashboard',
