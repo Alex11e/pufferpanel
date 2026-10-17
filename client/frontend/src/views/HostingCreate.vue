@@ -198,7 +198,7 @@ async function createGibbon(self) {
   dbEnvironment.hostConfig = { Memory: 512 * 1024 * 1024, MemorySwap: 512 * 1024 * 1024, NanoCpus: 1e9, PidsLimit: 512 }
 
   let databaseServerId = ''
-Z  let gibbonServerId = ''
+  let gibbonServerId = ''
   try {
     databaseServerId = await api.server.create({
       ...dbTemplate,
