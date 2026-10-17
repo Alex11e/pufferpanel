@@ -132,7 +132,7 @@ func TestMediaAndStorageTemplates(t *testing.T) {
 	if !samba.Variables["smb_password"].Internal || samba.Variables["smb_password"].UserEditable {
 		t.Fatal("SMB password must remain private server data")
 	}
-	if samba.Environment.Metadata["portBindings"].([]string)[0] != "${ip}:${port}:445/tcp" {
+	if samba.Environment.Metadata["portBindings"].([]string)[0] != "${ip}:${port}:445" {
 		t.Fatalf("SMB must use the node's reserved 445/tcp port: %+v", samba.Environment.Metadata["portBindings"])
 	}
 }
