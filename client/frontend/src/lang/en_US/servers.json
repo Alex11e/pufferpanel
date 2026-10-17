@@ -106,6 +106,13 @@
       "create": "New Jellyfin server",
       "createHint": "Configuration and the media folder persist in the server's file area; a web interface port is allocated automatically."
     },
+    "staticduomusic": {
+      "title": "HANGTÁR",
+      "hint": "A web music player that streams from your own music library.",
+      "empty": "No HANGTÁR servers yet.",
+      "create": "New HANGTÁR server",
+      "createHint": "During server installation, the panel downloads the latest Staticduomusic main branch. Music and account data persist in the server's file area."
+    },
     "storage": {
       "title": "Storage",
       "hint": "Persistent files accessible through SFTP and the panel file manager, or through a Nextcloud web interface.",

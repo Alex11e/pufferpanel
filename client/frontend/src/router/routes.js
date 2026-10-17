@@ -139,6 +139,19 @@ export default (api) => [
     props: { kind: 'jellyfin' }
   },
   {
+    path: '/staticduomusic',
+    component: () => import('@/views/VpsList.vue'),
+    name: 'StaticduomusicList',
+    props: { type: 'staticduomusic', titleKey: 'servers.services.staticduomusic.title', hintKey: 'servers.services.staticduomusic.hint', createRoute: 'StaticduomusicCreate', emptyKey: 'servers.services.staticduomusic.empty' },
+    meta: { tkey: 'servers.services.staticduomusic.title', permission: true, icon: 'server', hotkey: 'g m' }
+  },
+  {
+    path: '/staticduomusic/new',
+    component: () => import('@/views/HostingCreate.vue'),
+    name: 'StaticduomusicCreate',
+    props: { kind: 'staticduomusic' }
+  },
+  {
     path: '/storage',
     component: () => import('@/views/VpsList.vue'),
     name: 'StorageList',

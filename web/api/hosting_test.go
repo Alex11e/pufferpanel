@@ -1,6 +1,9 @@
 package api
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestHostingTemplates(t *testing.T) {
 	for _, kind := range []string{"web", "mariadb", "postgres"} {
@@ -71,6 +74,25 @@ func TestMediaAndStorageTemplates(t *testing.T) {
 	}
 	if bindings := jellyfin.Environment.Metadata["portBindings"]; bindings == nil {
 		t.Fatal("Jellyfin must publish its web interface through a panel-allocated port")
+	}
+
+	music := hostingTemplate("staticduomusic")
+	if music == nil || music.Type.Type != staticMusicType {
+		t.Fatal("Staticduomusic should be available as a separate service")
+	}
+	if music.Environment.Metadata["image"] != "node:22-alpine" || music.Environment.Metadata["containerRoot"] != "/app" {
+		t.Fatalf("unexpected Staticduomusic runtime: %+v", music.Environment.Metadata)
+	}
+	if bindings := music.Environment.Metadata["portBindings"].([]string); len(bindings) != 1 || bindings[0] != "${ip}:${port}:4000/tcp" {
+		t.Fatalf("Staticduomusic must use an allocated web port: %+v", bindings)
+	}
+	if len(music.Installation) != 1 || music.Execution.Command != "node server/index.js" ||
+		music.Execution.EnvironmentVariables["HOST"] != "0.0.0.0" || music.Execution.EnvironmentVariables["PORT"] != "4000" {
+		t.Fatalf("unexpected Staticduomusic installation or startup configuration: %+v", music)
+	}
+	commands, _ := music.Installation[0].Metadata["commands"].([]string)
+	if len(commands) != 1 || !strings.Contains(commands[0], "refs/heads/main") {
+		t.Fatalf("new servers must install the latest main branch: %+v", commands)
 	}
 
 	storage := hostingTemplate("storage-files")

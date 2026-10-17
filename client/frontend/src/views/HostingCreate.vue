@@ -47,11 +47,12 @@ const isDb = computed(() => props.kind === 'db')
 const isBot = computed(() => props.kind === 'discordbot')
 const isWeb = computed(() => props.kind === 'web')
 const isJellyfin = computed(() => props.kind === 'jellyfin')
+const isStaticduomusic = computed(() => props.kind === 'staticduomusic')
 const isStorage = computed(() => props.kind === 'storage')
 const isGibbon = computed(() => props.kind === 'gibbon')
 const isSamba = computed(() => props.kind === 'samba')
 const selectedNode = computed(() => nodes.value.find(node => node.value === nodeId.value))
-const templateKind = computed(() => (isBot.value ? (botLanguage.value === 'python' ? 'discordbot-python' : 'discordbot') : isDb.value ? engine.value : isJellyfin.value ? 'jellyfin' : isStorage.value ? (storageMode.value === 'nextcloud' ? 'storage-nextcloud' : 'storage-files') : isGibbon.value ? 'gibbon' : isSamba.value ? 'storage-samba' : 'web'))
+const templateKind = computed(() => (isBot.value ? (botLanguage.value === 'python' ? 'discordbot-python' : 'discordbot') : isDb.value ? engine.value : isJellyfin.value ? 'jellyfin' : isStaticduomusic.value ? 'staticduomusic' : isStorage.value ? (storageMode.value === 'nextcloud' ? 'storage-nextcloud' : 'storage-files') : isGibbon.value ? 'gibbon' : isSamba.value ? 'storage-samba' : 'web'))
 const versions = computed(() => {
   const versionKey = isDb.value ? 'version' : isWeb.value ? 'php_version' : ''
   return (template.value?.data?.[versionKey]?.options || []).map(o => o.value)
@@ -269,7 +270,7 @@ Z  let gibbonServerId = ''
 
 <template>
   <div class="hosting-create">
-    <h1><icon name="server" /> {{ isBot ? 'Új Discord bot' : isDb ? 'Új adatbázis' : isJellyfin ? t('servers.services.jellyfin.create') : isStorage ? t('servers.services.storage.create') : isGibbon ? t('servers.services.gibbon.create') : isSamba ? t('servers.services.smb.create') : 'Új webtárhely' }}</h1>
+    <h1><icon name="server" /> {{ isBot ? 'Új Discord bot' : isDb ? 'Új adatbázis' : isJellyfin ? t('servers.services.jellyfin.create') : isStaticduomusic ? t('servers.services.staticduomusic.create') : isStorage ? t('servers.services.storage.create') : isGibbon ? t('servers.services.gibbon.create') : isSamba ? t('servers.services.smb.create') : 'Új webtárhely' }}</h1>
     <loader v-if="loading || (!template && !loadError)" />
     <div v-else-if="loadError" class="error-state" role="alert">
       <p>{{ loadError }}</p>
@@ -305,6 +306,7 @@ Z  let gibbonServerId = ''
         <select v-model="version"><option v-for="v in versions" :key="v" :value="v">{{ v }}</option></select>
       </label>
       <p v-if="isJellyfin" class="hint">{{ t('servers.services.jellyfin.createHint') }}</p>
+      <p v-if="isStaticduomusic" class="hint">{{ t('servers.services.staticduomusic.createHint') }}</p>
       <p v-if="isStorage && storageMode === 'files'" class="hint">{{ t('servers.services.storage.filesHint') }}</p>
       <p v-if="isStorage && storageMode === 'nextcloud'" class="hint">{{ t('servers.services.storage.nextcloudHint') }}</p>
       <p v-if="isGibbon" class="hint">{{ t('servers.services.gibbon.createHint') }}</p>

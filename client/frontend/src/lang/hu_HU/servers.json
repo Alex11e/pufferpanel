@@ -106,6 +106,13 @@
       "create": "Új Jellyfin",
       "createHint": "A konfiguráció és a media mappa a szerver saját fájlterületén marad; a webes felülethez külön portot foglalunk."
     },
+    "staticduomusic": {
+      "title": "HANGTÁR",
+      "hint": "Saját zenekönyvtárból streamelő webes zenelejátszó.",
+      "empty": "Még nincs HANGTÁR szerver.",
+      "create": "Új HANGTÁR",
+      "createHint": "A szerver telepítésekor a panel letölti a Staticduomusic legfrissebb main verzióját. A zenék és a fiókadatok a szerver fájlterületén maradnak."
+    },
     "storage": {
       "title": "Tárhely",
       "hint": "Tartós fájltár SFTP-n és a panel fájlkezelőjén keresztül, vagy Nextcloud webes felülettel.",

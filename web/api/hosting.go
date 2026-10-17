@@ -12,13 +12,14 @@ import (
 )
 
 const (
-	webHostingType = "webhosting"
-	dbHostingType  = "dbhosting"
-	discordBotType = "discordbot"
-	jellyfinType   = "jellyfin"
-	storageType    = "storage"
-	gibbonType     = "gibbon"
-	sambaType      = "samba"
+	webHostingType  = "webhosting"
+	dbHostingType   = "dbhosting"
+	discordBotType  = "discordbot"
+	jellyfinType    = "jellyfin"
+	staticMusicType = "staticduomusic"
+	storageType     = "storage"
+	gibbonType      = "gibbon"
+	sambaType       = "samba"
 )
 
 func registerHosting(g *gin.RouterGroup) {
@@ -55,6 +56,8 @@ func hostingTemplate(kind string) *pufferpanel.Server {
 		return webHostingTemplate()
 	case "jellyfin":
 		return jellyfinTemplate()
+	case "staticduomusic":
+		return staticduomusicTemplate()
 	case "storage-files":
 		return storageFilesTemplate()
 	case "storage-nextcloud":
@@ -130,6 +133,35 @@ func jellyfinTemplate() *pufferpanel.Server {
 			MetadataType: pufferpanel.MetadataType{Type: "mkdir", Metadata: map[string]interface{}{"target": "media"}},
 		}},
 		Execution: pufferpanel.Execution{WorkingDirectory: "/config"},
+	}
+}
+
+func staticduomusicTemplate() *pufferpanel.Server {
+	docker := hostingDocker("node:22-alpine", "/app", 4000)
+	return &pufferpanel.Server{
+		Type:       pufferpanel.Type{Type: staticMusicType},
+		Identifier: "staticduomusic",
+		Display:    "HANGTÁR (Staticduomusic)",
+		Variables: map[string]pufferpanel.Variable{
+			"ip":   hostingVar("string", "0.0.0.0", "IP", "Address the music server listens on.", true, false),
+			"port": hostingVar("integer", 0, "Port", "Public port of the music server (allocated automatically).", true, false),
+		},
+		Environment:           docker,
+		SupportedEnvironments: []pufferpanel.MetadataType{docker},
+		Installation: []pufferpanel.ConditionalMetadataType{{
+			MetadataType: pufferpanel.MetadataType{Type: "command", Metadata: map[string]interface{}{
+				"commands": []string{`sh -c "wget -qO /tmp/staticduomusic.tar.gz https://codeload.github.com/Alex11e/Staticduomusic/tar.gz/refs/heads/main && tar -xzf /tmp/staticduomusic.tar.gz --strip-components=1 -C /app && npm ci && npm run build && npm prune --omit=dev"`},
+			}},
+		}},
+		Execution: pufferpanel.Execution{
+			Command:          "node server/index.js",
+			StopCode:         15,
+			WorkingDirectory: "/app",
+			EnvironmentVariables: map[string]string{
+				"HOST": "0.0.0.0",
+				"PORT": "4000",
+			},
+		},
 	}
 }
 
