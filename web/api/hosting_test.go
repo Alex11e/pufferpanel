@@ -83,7 +83,7 @@ func TestMediaAndStorageTemplates(t *testing.T) {
 	if music.Environment.Metadata["image"] != "node:22-alpine" || music.Environment.Metadata["containerRoot"] != "/app" {
 		t.Fatalf("unexpected Staticduomusic runtime: %+v", music.Environment.Metadata)
 	}
-	if bindings := music.Environment.Metadata["portBindings"].([]string); len(bindings) != 1 || bindings[0] != "${ip}:${port}:4000/tcp" {
+	if bindings := music.Environment.Metadata["portBindings"].([]string); len(bindings) != 1 || bindings[0] != "${ip}:${port}:4000" {
 		t.Fatalf("Staticduomusic must use an allocated web port: %+v", bindings)
 	}
 	if len(music.Installation) != 1 || music.Execution.Command != "node server/index.js" ||
