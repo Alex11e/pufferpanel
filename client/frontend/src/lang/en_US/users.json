@@ -11,6 +11,8 @@
   "ChangeInfo": "Change Account Details",
   "InfoChanged": "Your information has been changed",
   "PreferencesUpdated": "Your preferences has been updated",
+  "ThemeLoadFailed": "Could not load theme settings.",
+  "ThemeSaveFailed": "Could not save the selected theme. Please try again.",
   "PasswordChanged": "Your password has been changed",
   "AccountPassword": "Account Password",
   "Edit": "Edit User",

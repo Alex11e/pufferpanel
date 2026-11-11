@@ -13,32 +13,60 @@ const toast = inject('toast')
 const themeApi = inject('theme')
 
 const loading = ref(false)
+const saving = ref(false)
+const themeReady = ref(false)
 const theme = ref(themeApi.getActiveTheme())
 const themeSettings = ref({})
 const selectedLocale = ref(locale.value)
 
 onMounted(async () => {
   loading.value = true
-  themeSettings.value = await themeApi.getThemeSettings()
-  loading.value = false
+  try {
+    themeSettings.value = await themeApi.getThemeSettings()
+    themeReady.value = true
+  } catch (error) {
+    console.error('Could not load theme settings', error)
+    toast.error(t('users.ThemeLoadFailed'))
+  } finally {
+    loading.value = false
+  }
 })
 
 async function themeChanged() {
-  themeSettings.value = await themeApi.getThemeSettings(theme.value)
+  loading.value = true
+  themeReady.value = false
+  try {
+    themeSettings.value = await themeApi.getThemeSettings(theme.value)
+    themeReady.value = true
+  } catch (error) {
+    console.error('Could not load selected theme', error)
+    toast.error(t('users.ThemeLoadFailed'))
+    theme.value = themeApi.getActiveTheme()
+  } finally {
+    loading.value = false
+  }
 }
 
-function savePreferences() {
-  if (locale.value !== selectedLocale.value) {
-    updateLocale(selectedLocale.value)
-  }
-
+async function savePreferences() {
+  if (saving.value) return
   const settings = {}
   Object.keys(themeSettings.value).map(key => {
     settings[key] = themeSettings.value[key].current
   })
 
-  themeApi.setTheme(theme.value, settings)
-  toast.success(t('users.PreferencesUpdated'))
+  saving.value = true
+  try {
+    if (locale.value !== selectedLocale.value) {
+      await updateLocale(selectedLocale.value)
+    }
+    await themeApi.setTheme(theme.value, settings)
+    toast.success(t('users.PreferencesUpdated'))
+  } catch (error) {
+    console.error('Could not save theme preferences', error)
+    toast.error(t('users.ThemeSaveFailed'))
+  } finally {
+    saving.value = false
+  }
 }
 
 function updateThemeSetting(name, newSetting) {
@@ -63,6 +91,6 @@ function updateThemeSetting(name, newSetting) {
     </dropdown>
     <dropdown v-model="theme" :options="$theme.getThemes()" :label="t('common.theme.Theme')" @change="themeChanged()" />
     <theme-setting v-for="(setting, name) in themeSettings" :key="name" :model-value="setting" @update:modelValue="updateThemeSetting(name, $event)" />
-    <btn color="primary" @click="savePreferences()"><icon name="save" />{{ t('users.SavePreferences') }}</btn>
+    <btn color="primary" :disabled="saving || !themeReady" @click="savePreferences()"><icon name="save" />{{ t('users.SavePreferences') }}</btn>
   </div>
 </template>

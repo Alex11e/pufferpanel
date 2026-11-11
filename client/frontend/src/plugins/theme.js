@@ -86,17 +86,11 @@ const themeApi = {
   getThemes: () => availableThemes,
   getActiveTheme: () => activeTheme.value,
   setTheme: async (newTheme, settings = {}, save = true) => {
-    blobs.map(b => URL.revokeObjectURL(b))
-    blobs = []
     if (availableThemes.indexOf(newTheme) === -1) {
       console.error('[ERROR] Invalid theme selection, falling back to default')
       newTheme = 'PufferPanel'
       settings = {}
     }
-    activeTheme.value = newTheme
-    themeSettings.value = {}
-    rootClasses.value = []
-    generatedStyles.textContent = ''
     const themeData = { files: [] }
     const builtIn = getBuiltinManifest(newTheme)
     if (!builtIn) {
@@ -113,6 +107,11 @@ const themeApi = {
         }
       })
       if (!manifestSeen) throw 'no theme manifest found'
+    }
+    const manifest = builtIn || themeData.manifest
+    blobs.map(b => URL.revokeObjectURL(b))
+    blobs = []
+    if (!builtIn) {
       if (themeData.css) {
         themeData.files.map(file => {
           const url = URL.createObjectURL(file.blob)
@@ -123,7 +122,10 @@ const themeApi = {
         })
       }
     }
-    const manifest = builtIn || themeData.manifest
+    activeTheme.value = newTheme
+    themeSettings.value = {}
+    rootClasses.value = []
+    generatedStyles.textContent = ''
     styles.textContent = builtIn ? defaultStyles : (manifest.keepDefaultCss ? defaultStyles + '\n' + themeData.css : themeData.css)
     sidebarClosedBelow.value = manifest.sidebarClosedBelow || 1200
     if (manifest.keepDefaultCss && !builtIn) {
@@ -162,7 +164,7 @@ const themeApi = {
     return definition
   },
   setThemeSettings: (settings, save = true) => {
-    themeApi.setTheme(activeTheme.value, settings, save)
+    return themeApi.setTheme(activeTheme.value, settings, save)
   },
   serializeThemeSettings: (settings) => {
     const res = {}
@@ -193,9 +195,9 @@ const themeApi = {
   getThemeClasses: () => [...rootClasses.value]
 }
 
-function initTheme() {
+async function initTheme() {
   try {
-    themeApi.setTheme(
+    await themeApi.setTheme(
       userSettings.get('theme') || config.themes.active,
       JSON.parse(
         userSettings.get('themeSettings') || config.themes.settings
@@ -205,7 +207,7 @@ function initTheme() {
   } catch (e) {
     console.error('[ERROR] Default settings could not be applied', e)
     try {
-      themeApi.setTheme(
+      await themeApi.setTheme(
         config.themes.active,
         JSON.parse(
           config.themes.settings
@@ -214,6 +216,11 @@ function initTheme() {
       )
     } catch (e) {
       console.error('[ERROR] Falling back to default theme setting failed', e)
+      try {
+        await themeApi.setTheme('PufferPanel', {}, false)
+      } catch (fallbackError) {
+        console.error('[ERROR] Applying built-in theme failed', fallbackError)
+      }
     }
   }
 }

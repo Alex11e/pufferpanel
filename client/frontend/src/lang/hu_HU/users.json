@@ -11,6 +11,8 @@
   "ChangeInfo": "Fiókadatok változtatása",
   "InfoChanged": "Az adataid módosítva lettek",
   "PreferencesUpdated": "A beállításaid frissítve lettek",
+  "ThemeLoadFailed": "A témabeállításokat nem sikerült betölteni.",
+  "ThemeSaveFailed": "A kiválasztott témát nem sikerült menteni. Próbáld újra.",
   "PasswordChanged": "A jelszavad módosítva lett",
   "AccountPassword": "Fiók jelszava",
   "Edit": "Felhasználó szerkesztése",

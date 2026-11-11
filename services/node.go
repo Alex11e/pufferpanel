@@ -17,7 +17,6 @@ import (
 	"github.com/pufferpanel/pufferpanel/v3/config"
 	"github.com/pufferpanel/pufferpanel/v3/logging"
 	"github.com/pufferpanel/pufferpanel/v3/models"
-	"github.com/spf13/cast"
 	"gorm.io/gorm"
 )
 
@@ -34,36 +33,21 @@ func init() {
 }
 
 func SyncNodeToConfig() {
-	var masterUrl = strings.TrimSuffix(strings.TrimPrefix(strings.TrimPrefix(config.MasterUrl.Value(), "http://"), "https://"), "/")
-	var masterParts = strings.SplitN(masterUrl, ":", 2)
-	models.LocalNode.PublicHost = strings.Split(masterUrl, ":")[0]
-	models.LocalNode.PrivateHost = strings.Split(masterUrl, ":")[0]
-
-	if len(masterParts) == 2 {
-		port, err := cast.ToUint16E(masterParts[1])
-		if err == nil {
-			models.LocalNode.PublicPort = port
-			models.LocalNode.PrivatePort = port
-		}
+	host, port, err := panelNodeAddress(config.MasterUrl.Value())
+	if err != nil {
+		logging.Error.Printf("cannot configure LocalNode from panel URL: %v", err)
 	} else {
-		//default port to 80 or 443 as the url doesn't have one, so we can assume one or other
-		if strings.HasPrefix(config.MasterUrl.Value(), "https://") {
-			models.LocalNode.PublicPort = 443
-			models.LocalNode.PrivatePort = 443
-		} else {
-			models.LocalNode.PublicPort = 80
-			models.LocalNode.PrivatePort = 80
-		}
+		models.LocalNode.PublicHost = host
+		models.LocalNode.PrivateHost = host
+		models.LocalNode.PublicPort = port
+		models.LocalNode.PrivatePort = port
 	}
 
-	sftpHost := config.SftpHost.Value()
-	sftpParts := strings.SplitN(sftpHost, ":", 2)
-
-	if len(sftpParts) == 2 {
-		port, err := cast.ToUint16E(sftpParts[1])
-		if err == nil {
-			models.LocalNode.SFTPPort = port
-		}
+	sftpPort, err := sftpNodePort(config.SftpHost.Value())
+	if err != nil {
+		logging.Error.Printf("cannot configure LocalNode SFTP port: %v", err)
+	} else {
+		models.LocalNode.SFTPPort = sftpPort
 	}
 	models.LocalNode.PortRangeStart = uint16(config.LocalNodePortRangeStart.Value())
 	models.LocalNode.PortRangeEnd = uint16(config.LocalNodePortRangeEnd.Value())
@@ -221,7 +205,7 @@ func (ns *Node) OpenSocket(node *models.Node, path string, writer http.ResponseW
 	if ssl {
 		scheme = "wss"
 	}
-	addr := fmt.Sprintf("%s:%d", node.PrivateHost, node.PrivatePort)
+	addr := nodeHostPort(node.PrivateHost, node.PrivatePort)
 
 	u := fmt.Sprintf("%s://%s%s", scheme, addr, path)
 	logging.Debug.Printf("Proxying connection to %s", u)
@@ -273,7 +257,7 @@ func doesDaemonUseSSLWithContext(ctx context.Context, node *models.Node) (bool, 
 		return false, nil
 	}
 
-	path := fmt.Sprintf("://%s:%d/daemon", node.PrivateHost, node.PrivatePort)
+	path := "://" + nodeHostPort(node.PrivateHost, node.PrivatePort) + "/daemon"
 
 	//we want to do options so we can avoid auth
 	u, err := url.Parse("https" + path)
@@ -322,7 +306,7 @@ func createNodeURLWithContext(ctx context.Context, node *models.Node, path strin
 		protocol = "https"
 	}
 
-	return fmt.Sprintf("%s://%s:%d/%s", protocol, node.PrivateHost, node.PrivatePort, path), nil
+	return fmt.Sprintf("%s://%s/%s", protocol, nodeHostPort(node.PrivateHost, node.PrivatePort), path), nil
 }
 
 func proxyRead(source, dest *websocket.Conn, ch chan error) {
