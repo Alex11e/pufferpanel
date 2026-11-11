@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
+import { prepareGibbonDefinition } from '@/utils/gibbon.mjs'
 
 const props = defineProps({
   kind: { type: String, default: 'web' }
@@ -209,10 +210,11 @@ async function createGibbon(self) {
       data: dbData
     })
     await api.server.start(databaseServerId, true)
-    const databaseServer = await api.server.get(databaseServerId, false)
+    const { server: databaseServer } = await api.server.get(databaseServerId, false)
     if (!databaseServer.port) throw new Error(t('servers.services.gibbon.databasePortMissing'))
 
-    const data = JSON.parse(JSON.stringify(template.value.data))
+    const definition = prepareGibbonDefinition(template.value)
+    const data = JSON.parse(JSON.stringify(definition.data))
     data.db_host.value = node.privateHost
     data.db_port.value = databaseServer.port
     data.db_name.value = 'gibbon'
@@ -223,7 +225,7 @@ async function createGibbon(self) {
     environment.hostConfig = { Memory: memoryBytes, MemorySwap: memoryBytes, NanoCpus: Math.round(Number(cpu.value) * 1e9), PidsLimit: 512 }
 
     gibbonServerId = await api.server.create({
-      ...template.value,
+      ...definition,
       name: name.value.trim(),
       node: nodeId.value,
       environment,
@@ -249,20 +251,27 @@ async function createGibbon(self) {
     })
     return { gibbonId: gibbonServerId, databaseServerId }
   } catch (failure) {
+    const cleanupErrors = []
+    let gibbonCleanupFailed = false
     if (gibbonServerId) {
       try {
         await api.server.delete(gibbonServerId)
       } catch {
-        throw new Error(`${errorMessage(failure)} (${t('servers.services.gibbon.serverCleanup', { id: gibbonServerId })})`)
+        gibbonCleanupFailed = true
+        cleanupErrors.push(t('servers.services.gibbon.serverCleanup', { id: gibbonServerId }))
       }
     }
-    if (databaseServerId) {
+    if (databaseServerId && !gibbonCleanupFailed) {
       try {
         await api.server.delete(databaseServerId)
       } catch {
-        throw new Error(`${errorMessage(failure)} (${t('servers.services.gibbon.databaseCleanup', { id: databaseServerId })})`)
+        cleanupErrors.push(t('servers.services.gibbon.databaseCleanup', { id: databaseServerId }))
       }
     }
+    if (databaseServerId && gibbonCleanupFailed) {
+      cleanupErrors.push(t('servers.services.gibbon.databaseCleanup', { id: databaseServerId }))
+    }
+    if (cleanupErrors.length) throw new Error(`${errorMessage(failure)} (${cleanupErrors.join('; ')})`)
     throw failure
   }
 }

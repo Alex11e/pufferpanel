@@ -7,7 +7,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/buildkite/shellwords"
 	"github.com/pufferpanel/pufferpanel/v3"
 	"github.com/spf13/cast"
 )
@@ -84,7 +83,9 @@ func pterodactylEggToTemplate(raw json.RawMessage) (*pufferpanel.Server, error) 
 	command := pterodactylTokens(startup)
 	if pterodactylNeedsShell(startup) {
 		// Panel commands are split into arguments without a shell, but eggs rely on one.
-		command = "bash -c " + shellwords.QuotePosix(pterodactylShellTokens(startup))
+		script := pterodactylShellTokens(startup)
+		script = strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(script)
+		command = `bash -c "` + script + `"`
 	}
 	result := &pufferpanel.Server{
 		Type: pufferpanel.Type{Type: "generic"}, Identifier: name, Display: cast.ToString(egg["name"]),
@@ -196,6 +197,7 @@ func pterodactylInstallScript(scripts interface{}) string {
 
 var pterodactylToken = regexp.MustCompile(`{{\s*([A-Za-z0-9_.]+)\s*}}`)
 var slugInvalid = regexp.MustCompile(`[^a-z0-9-]+`)
+var pterodactylLeadingAssignment = regexp.MustCompile(`^\s*[A-Za-z_][A-Za-z0-9_]*=`)
 
 func pterodactylTokens(command string) string {
 	return pterodactylToken.ReplaceAllStringFunc(command, func(token string) string {
@@ -203,9 +205,10 @@ func pterodactylTokens(command string) string {
 		return "${" + pterodactylVariableKey(match[1]) + "}"
 	})
 }
+
 // pterodactylNeedsShell reports whether a startup line uses shell syntax that plain argument splitting would break.
 func pterodactylNeedsShell(startup string) bool {
-	return strings.ContainsAny(startup, "|;<>`") || strings.Contains(startup, "$(") || strings.Contains(startup, "&&")
+	return pterodactylLeadingAssignment.MatchString(startup) || strings.ContainsAny(startup, "|;<>`") || strings.Contains(startup, "$(") || strings.Contains(startup, "&&")
 }
 
 // pterodactylShellTokens turns {{NAME}} into ${NAME:-}, read from the container environment at run time.

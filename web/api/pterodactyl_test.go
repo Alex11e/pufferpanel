@@ -3,7 +3,45 @@ package api
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/pufferpanel/pufferpanel/v3/utils"
 )
+
+func TestPterodactylEggConversionLeadingEnvironmentAssignments(t *testing.T) {
+	raw := json.RawMessage(`{
+		"name":"Subnautica",
+		"startup":"SUBNAUTICA_INSTALLATION_PATH=/home/container/subnautica XDG_CONFIG_HOME=/home/container/.config ./nitrox/server --save nitrox_world"
+	}`)
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	command, ok := template.Execution.Command.(string)
+	if !ok {
+		t.Fatal("expected a string startup command")
+	}
+	executable, args := utils.SplitArguments(command)
+	if executable != "bash" || len(args) != 2 || args[0] != "-c" || args[1] != "SUBNAUTICA_INSTALLATION_PATH=/home/container/subnautica XDG_CONFIG_HOME=/home/container/.config ./nitrox/server --save nitrox_world" {
+		t.Fatalf("unexpected startup command: %#v", args)
+	}
+	if pterodactylNeedsShell("java -Dfoo=bar -jar server.jar") {
+		t.Fatal("an argument containing = must not require a shell")
+	}
+}
+
+func TestPterodactylEggShellCommandUsesPanelArgumentParsing(t *testing.T) {
+	raw := json.RawMessage(`{"name":"S","startup":"echo \"${HOME}\" && printf '%s\\n' {{SERVER_PORT}}"}`)
+	template, err := pterodactylEggToTemplate(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	command := template.Execution.Command.(string)
+	executable, args := utils.SplitArguments(command)
+	want := `echo "${HOME}" && printf '%s\n' ${SERVER_PORT:-}`
+	if executable != "bash" || len(args) != 2 || args[0] != "-c" || args[1] != want {
+		t.Fatalf("unexpected startup: %q %#v", executable, args)
+	}
+}
 
 func TestPterodactylEggConversionPreservesVariableRequirements(t *testing.T) {
 	raw := json.RawMessage(`{

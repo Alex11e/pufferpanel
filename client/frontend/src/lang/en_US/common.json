@@ -34,6 +34,7 @@
     "mode": {
       "Light": "Light",
       "Dark": "Dark",
+      "Ocean": "Dark blue",
       "DarkHighContrast": "Dark (High Contrast)",
       "Auto": "Auto"
     },

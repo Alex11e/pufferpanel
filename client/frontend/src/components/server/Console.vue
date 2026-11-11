@@ -6,7 +6,7 @@ import Btn from '@/components/ui/Btn.vue'
 import TextField from '@/components/ui/TextField.vue'
 
 import ConsoleWorker from '@/utils/consoleWorker.js?worker&inline'
-const worker = new ConsoleWorker()
+let worker = new ConsoleWorker()
 let lastElem = null
 
 const { t } = useI18n()
@@ -15,7 +15,13 @@ const panelName = config.branding.name
 
 const command = ref('')
 const console = ref(null)
+const loadError = ref('')
+const commandError = ref('')
+const sending = ref(false)
 let lastMessageTime = 0
+let snapshotLoaded = false
+let loading = false
+let mounted = false
 
 const props = defineProps({
   server: { type: Object, required: true }
@@ -23,34 +29,56 @@ const props = defineProps({
 
 let unbindEvent = null
 let task = null
-onMounted(async () => {
+onMounted(() => {
+  mounted = true
   worker.addEventListener("message", onWorkerMessage)
-  unbindEvent = props.server.on('console', onMessage)
-
-  onMessage(await props.server.getConsole())
-  task = props.server.startTask(async () => {
-    if (props.server.needsPolling() && props.server.hasScope('server.console')) {
-      onMessage(await props.server.getConsole(lastMessageTime))
-    }
-  }, 5000)
+  if (props.server.hasScope('server.console')) {
+    unbindEvent = props.server.on('console', onMessage)
+    task = props.server.startTask(() => {
+      if (!snapshotLoaded || props.server.needsPolling()) loadConsole()
+    }, 5000)
+  }
 })
 
 onUnmounted(() => {
+  mounted = false
   if (unbindEvent) unbindEvent()
   if (task) props.server.stopTask(task)
+  worker.removeEventListener('message', onWorkerMessage)
+  worker.terminate()
   clearConsole()
 })
 
-function onMessage(e) {
-  if ('epoch' in e) {
-    lastMessageTime = e.epoch
-  } else {
-    lastMessageTime = Date.now()
+async function loadConsole() {
+  if (loading) return
+  loading = true
+  try {
+    const result = await props.server.getConsole(snapshotLoaded ? lastMessageTime : 0)
+    if (!mounted) return
+    if (!snapshotLoaded) {
+      worker.removeEventListener('message', onWorkerMessage)
+      worker.terminate()
+      worker = new ConsoleWorker()
+      worker.addEventListener('message', onWorkerMessage)
+      clearConsole()
+    }
+    snapshotLoaded = true
+    loadError.value = ''
+    onMessage(result)
+  } catch {
+    if (mounted) loadError.value = t('servers.ConsoleLoadFailed')
+  } finally {
+    loading = false
   }
+}
+
+function onMessage(e) {
+  if (e.epoch > 0) lastMessageTime = e.epoch
   worker.postMessage({ ...e, panelName })
 }
 
 function onWorkerMessage(e) {
+  if (!console.value) return
   const newElems = []
   e.data.map(update => {
     if (update.op === 'update' && lastElem) {
@@ -72,7 +100,7 @@ function onWorkerMessage(e) {
 }
 
 function clearConsole() {
-  if (console.value) console.value.replaceChildren([])
+  if (console.value) console.value.replaceChildren()
   lastElem = null
 }
 
@@ -80,9 +108,19 @@ const history = ref([])
 const historyIndex = ref(-1)
 const temporaryCommand = ref('')
 
-function sendCommand() {
+async function sendCommand() {
   const sentCommand = command.value.trim()
-  if (!sentCommand) return
+  if (!sentCommand || sending.value) return
+  commandError.value = ''
+  sending.value = true
+  try {
+    await props.server.sendCommand(sentCommand)
+  } catch {
+    commandError.value = t('servers.ConsoleSendFailed')
+    return
+  } finally {
+    sending.value = false
+  }
 
   if (historyIndex.value !== -1) {
     history.value.splice(historyIndex.value, 1)
@@ -99,8 +137,7 @@ function sendCommand() {
     history.value.splice(0, 1)
   }
 
-  props.server.sendCommand(sentCommand)
-  command.value = ''
+  if (command.value.trim() === sentCommand) command.value = ''
 }
 
 function clearCommandHistory() {
@@ -142,6 +179,11 @@ function nextCommand() {
 <template>
   <div>
     <h2 v-text="t('servers.Console')" />
+    <div v-if="loadError" class="alert error" role="alert">
+      {{ loadError }}
+      <btn @click="loadConsole">{{ t('servers.Retry') }}</btn>
+    </div>
+    <div v-if="commandError" class="alert error" role="alert">{{ commandError }}</div>
     <icon v-if="server.hasScope('server.console')" v-hotkey="'c x'" name="clear-console" @click="clearConsole()" />
     <div v-if="server.hasScope('server.console')" dir="ltr" class="console-wrapper">
       <div ref="console" class="console" />

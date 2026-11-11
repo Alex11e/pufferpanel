@@ -34,6 +34,7 @@
     "mode": {
       "Light": "Világos",
       "Dark": "Sötét",
+      "Ocean": "Sötétkék",
       "DarkHighContrast": "Sötét (Magas Kontraszt)",
       "Auto": "Automatikus"
     },

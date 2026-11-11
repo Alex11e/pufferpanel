@@ -18,13 +18,19 @@ const userField = ref(null)
 const hostCopied = ref(false)
 const userCopied = ref(false)
 const userEncoded = ref('')
+const loadError = ref('')
 
 onMounted(async () => {
-  host.value = (props.server.node.publicHost !== '127.0.0.1' && props.server.node.publicHost !== 'localhost') ? props.server.node.publicHost : window.location.hostname
-  host.value = host.value + ':' + props.server.node.sftpPort
-  const u = await api.self.get()
-  user.value = `${u.email}#${props.server.id}`
-  userEncoded.value = encodeURIComponent(user.value);
+  let hostname = (props.server.node.publicHost !== '127.0.0.1' && props.server.node.publicHost !== 'localhost') ? props.server.node.publicHost : window.location.hostname
+  if (hostname.includes(':') && !hostname.startsWith('[')) hostname = `[${hostname}]`
+  host.value = hostname + ':' + props.server.node.sftpPort
+  try {
+    const u = await api.self.get()
+    user.value = `${u.email}#${props.server.id}`
+    userEncoded.value = encodeURIComponent(user.value)
+  } catch {
+    loadError.value = t('servers.SftpAccountLoadFailed')
+  }
 })
 
 function copyHost() {
@@ -51,6 +57,7 @@ function copyUser() {
 <template>
   <div>
     <h2 v-text="t('servers.SFTPInfo')" />
+    <p v-if="loadError" class="alert error" role="alert">{{ loadError }}</p>
     <div>
       <b>{{t('common.Host')}}/{{t('common.Port')}}: </b>
       <span>{{host}}</span>
@@ -61,7 +68,7 @@ function copyUser() {
     <div>
       <b>{{t('users.Username')}}: </b>
       <span>{{user}}</span>
-      <btn variant="icon" :tooltip="t('common.Copy')" @click="copyUser()"><icon name="copy" /></btn>
+      <btn variant="icon" :disabled="!user" :tooltip="t('common.Copy')" @click="copyUser()"><icon name="copy" /></btn>
       <span v-if="userCopied" class="copied" v-text="t('common.Copied')" />
     </div>
     <input ref="userField" :value="user" style="width:1px;height:1px;position:fixed;left:-100vw;" />
@@ -69,6 +76,20 @@ function copyUser() {
       <b>{{t('users.Password')}}: </b>
       <span>{{t('users.AccountPassword')}}</span>
     </div>
-    <a :href="`sftp://${userEncoded}@${host}`"><btn color="primary" v-text="t('servers.SftpConnection')" /></a>
+    <a v-if="userEncoded" :href="`sftp://${userEncoded}@${host}`"><btn color="primary" v-text="t('servers.SftpConnection')" /></a>
+    <section class="vscode-guide">
+      <h3>{{ t('servers.SftpVSCodeTitle') }}</h3>
+      <p>{{ t('servers.SftpVSCodeHint') }}</p>
+      <ol>
+        <li>{{ t('servers.SftpVSCodeStep1') }}</li>
+        <li>{{ t('servers.SftpVSCodeStep2') }}</li>
+        <li>{{ t('servers.SftpVSCodeStep3') }}</li>
+      </ol>
+      <p>{{ t('servers.SftpVSCodeSecurity') }}</p>
+    </section>
   </div>
 </template>
+
+<style scoped>
+.vscode-guide { margin-top: 1.5rem; padding: 1rem; border: 1px solid var(--color-background); border-radius: .5rem; background: var(--color-background-secondary); }
+</style>

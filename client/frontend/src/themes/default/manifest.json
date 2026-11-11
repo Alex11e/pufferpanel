@@ -20,6 +20,10 @@
           "tkey": "common.theme.mode.Dark"
         },
         {
+          "value": "mode-dark mode-ocean",
+          "tkey": "common.theme.mode.Ocean"
+        },
+        {
           "value": "mode-dark-highcontrast",
           "tkey": "common.theme.mode.DarkHighContrast"
         }

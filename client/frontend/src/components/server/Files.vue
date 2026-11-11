@@ -7,6 +7,8 @@ import Icon from '@/components/ui/Icon.vue'
 import Loader from '@/components/ui/Loader.vue'
 import Overlay from '@/components/ui/Overlay.vue'
 import Editor, { skipDownload } from './files/Editor.vue'
+import FileTree from './files/FileTree.vue'
+import { sortFiles, visibleFiles as filterVisibleFiles } from './files/fileView.mjs'
 import Upload from './files/Upload.vue'
 import TextField from '@/components/ui/TextField.vue'
 import Toggle from '@/components/ui/Toggle.vue'
@@ -34,15 +36,20 @@ const createFileOpen = ref(false)
 const createFolderOpen = ref(false)
 const archiveSelectedOpen = ref(false)
 const newItemName = ref('')
+const viewMode = ref('list')
+const treeGeneration = ref(0)
+const fileError = ref('')
+const search = ref('')
+let fileRequest = 0
+let openRequest = 0
 const selection = computed(() => {
   return (files.value || []).filter(f => f.isSelected)
 })
+const visibleFiles = computed(() => filterVisibleFiles(files.value || [], search.value))
 
 let task
 let unbindEvent
 onMounted(() => {
-  refresh()
-
   unbindEvent = props.server.on('status', () => {
     if (selection.value.length === 0) refresh()
   })
@@ -53,33 +60,36 @@ onMounted(() => {
 })
 
 onUnmounted(async () => {
+  fileRequest++
+  openRequest++
   if (unbindEvent) unbindEvent()
   if (task) props.server.stopTask(task)
 })
 
-watch(currentPath, async (newPath) => {
-  const res = await props.server.getFile(newPath.map(e => e.name).join('/'))
-  files.value = res.sort(sortFiles)
-}, {deep: true})
+watch(currentPath, () => refresh(), {deep: true})
 
 async function refresh(manual = false) {
+  const request = ++fileRequest
+  const path = getCurrentPath()
+  fileError.value = ''
   if (manual) files.value = null // cause visual feedback on manual refresh
-  const res = await props.server.getFile(getCurrentPath())
-  files.value = res.sort(sortFiles)
-}
-
-function sortFiles(a, b) {
-  if (a.isFile && !b.isFile) return 1
-  if (!a.isFile && b.isFile) return -1
-  if (a.name.toLowerCase() < b.name.toLowerCase()) return -1
-  return 1
+  try {
+    const res = await props.server.getFile(path)
+    if (request === fileRequest) files.value = res.sort(sortFiles)
+  } catch {
+    if (request === fileRequest) {
+      files.value = null
+      fileError.value = t('files.LoadFailed')
+    }
+  }
+  if (request === fileRequest) treeGeneration.value++
 }
 
 function getCurrentPath() {
   return currentPath.value.map(e => e.name).join('/')
 }
 
-async function openFile(f, overrideWarn = false) {
+async function openFile(f, overrideWarn = false, explicitPath = null) {
   if (f.isFile) {
     if (!skipDownload(f) && !overrideWarn && f.size > 30 * Math.pow(2, 20)) {
       fileSizeWarnSubject.value = f
@@ -89,11 +99,16 @@ async function openFile(f, overrideWarn = false) {
 
     fileSizeWarn.value = false
     loading.value = true
-    const path = getCurrentPath() + `/${f.name}`
-    const content = skipDownload(f) ? null : await props.server.getFile(path, true)
-    file.value = { ...f, content, url: props.server.getFileUrl(path) }
-    editorOpen.value = true
-    loading.value = false
+    const request = ++openRequest
+    const path = explicitPath || getCurrentPath() + `/${f.name}`
+    try {
+      const content = skipDownload(f) ? null : await props.server.getFile(path, true)
+      if (request !== openRequest) return
+      file.value = { ...f, path, content, originalContent: content, url: props.server.getFileUrl(path) }
+      editorOpen.value = viewMode.value === 'list'
+    } finally {
+      if (request === openRequest) loading.value = false
+    }
   } else {
     if (f.name === '..') {
       currentPath.value.pop()
@@ -104,13 +119,41 @@ async function openFile(f, overrideWarn = false) {
 }
 
 async function saveFile({close}) {
-  await props.server.uploadFile(`${getCurrentPath()}/${file.value.name}`, file.value.content)
+  const savedFile = file.value
+  const savedContent = savedFile.content
+  await props.server.uploadFile(savedFile.path, savedContent)
   toast.success(t('files.Saved'))
-  if (close) {
+  if (!file.value || file.value.path !== savedFile.path) return
+  file.value.originalContent = savedContent
+  if (close && file.value.content === savedContent) {
     editorOpen.value = false
     file.value = null
   }
   refresh()
+}
+
+function openTreeFile(entry, path) {
+  if (!confirmDiscard()) return
+  currentPath.value = path.split('/').slice(0, -1).map(name => ({ name }))
+  openFile(entry, false, path)
+}
+
+function confirmDiscard() {
+  return !file.value || file.value.content === file.value.originalContent || window.confirm(t('files.DiscardChanges'))
+}
+
+function closeTreeFile() {
+  if (confirmDiscard()) file.value = null
+}
+
+function changeView(mode) {
+  if (viewMode.value === mode || !confirmDiscard()) return
+  openRequest++
+  loading.value = false
+  if (files.value) deselectAll()
+  viewMode.value = mode
+  file.value = null
+  editorOpen.value = false
 }
 
 function getIcon(file) {
@@ -374,17 +417,22 @@ function deselectAll() {
 
 function selectAll() {
   if (files.value === null) return
+  const visible = new Set(visibleFiles.value)
   files.value = files.value.map(f => {
-    f.isSelected = f.name !== '..'
+    if (visible.has(f)) f.isSelected = f.name !== '..'
     return f
   })
 }
 </script>
 
 <template>
-  <div v-hotkey="'Control+a'" class="file-manager" @hotkey="selectAll()">
+  <div class="file-manager">
     <div class="header">
       <h2 v-text="t('servers.Files')" />
+      <div class="file-view-controls" role="group" :aria-label="t('files.ViewMode')">
+        <btn :color="viewMode === 'list' ? 'primary' : undefined" :aria-pressed="viewMode === 'list'" @click="changeView('list')">{{ t('files.ListView') }}</btn>
+        <btn :color="viewMode === 'tree' ? 'primary' : undefined" :aria-pressed="viewMode === 'tree'" @click="changeView('tree')">{{ t('files.TreeView') }}</btn>
+      </div>
       <h3>
         <a @click="currentPath = []"><icon name="server-root" /></a>
         <span v-for="segment, index in currentPath" :key="index">
@@ -408,10 +456,26 @@ function selectAll() {
         <btn v-hotkey="'Escape'" variant="icon" :tooltip="t('files.DeselectAll')" @click="deselectAll()"><icon name="close" /></btn>
       </span>
     </div>
-    <div v-hotkey="'f l'" class="file-list" @hotkey="fileListHotkey">
-      <loader v-if="!Array.isArray(files)" />
+    <div v-if="fileError" class="alert error" role="alert">
+      {{ fileError }} <btn @click="refresh(true)">{{ t('files.Refresh') }}</btn>
+    </div>
+    <div v-if="viewMode === 'tree'" class="tree-layout">
+      <aside class="tree-sidebar" :aria-label="t('files.TreeView')">
+        <FileTree :server="server" :generation="treeGeneration" root @open="openTreeFile" />
+      </aside>
+      <section class="tree-editor">
+        <editor v-if="file" :key="file.path" v-model="file" :read-only="!canEdit" @save="saveFile($event)" @close="closeTreeFile" />
+        <p v-else class="tree-placeholder">{{ t('files.SelectFromTree') }}</p>
+      </section>
+    </div>
+    <div v-else v-hotkey="['f l', 'Control+a']" class="file-list" @hotkey="keys => keys === 'Control+a' ? selectAll() : fileListHotkey()">
+      <label class="file-search">
+        <span>{{ t('files.Search') }}</span>
+        <input v-model="search" type="search" :placeholder="t('files.SearchPlaceholder')">
+      </label>
+      <loader v-if="!Array.isArray(files) && !fileError" />
       <!-- eslint-disable-next-line vue/no-template-shadow -->
-      <a v-for="(file, index) in files" v-else :key="file.name" :ref="trackFileEl(index)" tabindex="0" :class="['file', file.isSelected ? 'selected' : '']" @click="openFile(file)" @keydown.enter="openFile(file)" @keydown.space="file.isSelected = !file.isSelected">
+      <a v-for="(file, index) in visibleFiles" v-else :key="file.name" :ref="trackFileEl(index)" tabindex="0" :class="['file', file.isSelected ? 'selected' : '']" @click="openFile(file)" @keydown.enter="openFile(file)" @keydown.space="file.isSelected = !file.isSelected">
         <icon class="file-icon" :name="getIcon(file)" />
         <div class="details">
           <div class="name">{{ file.name }}</div>
@@ -425,6 +489,21 @@ function selectAll() {
               <span v-if="file.isFile" class="size" v-text="formatFileSize(file.size)" />
             </li>
           </template>
+
+          <style scoped>
+          .file-view-controls { display: flex; gap: .35rem; }
+          .tree-layout { display: grid; grid-template-columns: minmax(180px, 250px) minmax(0, 1fr); gap: .75rem; min-height: 28rem; }
+          .tree-sidebar, .tree-editor { padding: .75rem; border: 1px solid var(--color-background); border-radius: .5rem; background: var(--color-background-secondary); overflow: auto; }
+          .tree-editor { min-width: 0; }
+          .tree-placeholder { color: var(--color-text-secondary); text-align: center; margin: 8rem 1rem; }
+          .file-search { display: flex; align-items: center; gap: .75rem; margin: .75rem 0; }
+          .file-search input { min-width: 0; flex: 1; padding: .5rem; border: 1px solid var(--color-background); border-radius: .35rem; background: var(--color-background-secondary); color: inherit; }
+          .tree-editor :deep(.file-editor) { width: 100%; }
+          @media (max-width: 700px) {
+            .tree-layout { grid-template-columns: 1fr; }
+            .tree-sidebar { max-height: 18rem; }
+          }
+          </style>
           <template #activator="contextMenu">
             <btn v-if="contextMenu.canOpen" tabindex="-1" variant="icon" @click.stop="contextMenu.onClick">
               <icon name="menu" />

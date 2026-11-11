@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineAsyncComponent, inject, onMounted, onUnmounted } from 'vue'
+import { ref, computed, defineAsyncComponent, inject, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -80,6 +80,14 @@ const props = defineProps({
   server: { type: Object, required: true }
 })
 
+const gibbonUrl = computed(() => {
+  if (props.server.type !== 'gibbon' || !props.server.node?.publicHost || !props.server.port) return ''
+  let host = props.server.node.publicHost
+  if (host === '127.0.0.1' || host === 'localhost') host = window.location.hostname
+  if (host.includes(':') && !host.startsWith('[')) host = `[${host}]`
+  return `http://${host}:${props.server.port}/`
+})
+
 let task = null
 onMounted(() => {
   if (route.query.created && props.server.hasScope('server.install')) {
@@ -121,6 +129,11 @@ onUnmounted(() => {
   <div :class="http ? 'http-fallback' : ''">
     <server-header :key="nameUpdateHack" :server="server" />
 
+    <p v-if="gibbonUrl" class="gibbon-link">
+      <a :href="gibbonUrl" target="_blank" rel="noopener noreferrer">
+        {{ t('servers.services.gibbon.open') }}
+      </a>
+    </p>
     <tabs anchors>
       <tab
         v-if="server.hasScope('server.console') || server.hasScope('server.console.send')"
