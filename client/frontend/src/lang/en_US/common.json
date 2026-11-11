@@ -35,6 +35,9 @@
       "Light": "Light",
       "Dark": "Dark",
       "Ocean": "Dark blue",
+      "Midnight": "Midnight violet",
+      "Forest": "Forest green",
+      "Daylight": "Daylight blue",
       "DarkHighContrast": "Dark (High Contrast)",
       "Auto": "Auto"
     },

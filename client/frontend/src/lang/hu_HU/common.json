@@ -35,6 +35,9 @@
       "Light": "Világos",
       "Dark": "Sötét",
       "Ocean": "Sötétkék",
+      "Midnight": "Éjféli lila",
+      "Forest": "Erdei zöld",
+      "Daylight": "Világoskék",
       "DarkHighContrast": "Sötét (Magas Kontraszt)",
       "Auto": "Automatikus"
     },

@@ -84,6 +84,8 @@ func RegisterServerRoutes(e *gin.RouterGroup) {
 		l.DELETE("/:serverId/file/*filename", middleware.ResolveServerNode, deleteFile)
 		l.POST("/:serverId/file/*filename", middleware.ResolveServerNode, response.NotImplemented)
 		l.OPTIONS("/:serverId/file/*filename", response.CreateOptions("GET", "PUT", "DELETE", "POST"))
+		l.PUT("/:serverId/file-create/*filename", middleware.ResolveServerNode, putFileExclusive)
+		l.OPTIONS("/:serverId/file-create/*filename", response.CreateOptions("PUT"))
 
 		l.GET("/:serverId/console", middleware.ResolveServerNode, getLogs)
 		l.POST("/:serverId/console", middleware.ResolveServerNode, postConsole)
@@ -699,6 +701,14 @@ func getFile(c *gin.Context) {
 // @Router /api/servers/{id}/file/{filepath} [put]
 // @Security OAuth2Application[server.files.edit]
 func putFile(c *gin.Context) {
+	putFileWithMode(c, false)
+}
+
+func putFileExclusive(c *gin.Context) {
+	putFileWithMode(c, true)
+}
+
+func putFileWithMode(c *gin.Context, exclusive bool) {
 	server := getServerFromGin(c)
 
 	targetPath := getFullFilename(c)
@@ -712,6 +722,10 @@ func putFile(c *gin.Context) {
 
 	_, mkFolder := c.GetQuery("folder")
 	if mkFolder {
+		if exclusive {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 		err = server.GetFileServer().MkdirAll(targetPath, 0755)
 		if response.HandleError(c, err, http.StatusInternalServerError) {
 			return
@@ -732,8 +746,12 @@ func putFile(c *gin.Context) {
 		sourceFile = c.Request.Body
 	}
 
-	file, err := server.GetFileServer().OpenFile(targetPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
+	file, err := server.GetFileServer().OpenFile(targetPath, uploadOpenFlags(exclusive), 0644)
 	defer utils.Close(file)
+	if exclusive && errors.Is(err, os.ErrExist) {
+		c.AbortWithStatus(http.StatusConflict)
+		return
+	}
 	if response.HandleError(c, err, http.StatusInternalServerError) {
 		return
 	}

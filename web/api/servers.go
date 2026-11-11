@@ -114,6 +114,8 @@ func registerServers(g *gin.RouterGroup) {
 	g.DELETE("/:serverId/file/*filename", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, proxyServerRequest)
 	g.POST("/:serverId/file/*filename", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, proxyServerRequest)
 	g.OPTIONS("/:serverId/file/*filename", response.CreateOptions("GET", "PUT", "DELETE", "POST"))
+	g.PUT("/:serverId/file-create/*filename", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, proxyServerRequest)
+	g.OPTIONS("/:serverId/file-create/*filename", response.CreateOptions("PUT"))
 	g.POST("/:serverId/plugins/download", middleware.RequiresPermission(scopes.ScopeServerFileEdit), middleware.ResolveServerPanel, downloadPlugin)
 	g.OPTIONS("/:serverId/plugins/download", response.CreateOptions("POST"))
 	g.GET("/:serverId/plugins/search", middleware.RequiresPermission(scopes.ScopeServerFileView), searchModrinthPlugins)

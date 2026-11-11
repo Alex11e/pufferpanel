@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import Btn from '@/components/ui/Btn.vue'
 import Icon from '@/components/ui/Icon.vue'
 import Overlay from '@/components/ui/Overlay.vue'
+import { uploadFiles as uploadFileBatch } from './uploadFiles.mjs'
 
 const { t } = useI18n()
 const toast = inject('toast')
@@ -25,71 +26,35 @@ function trigger() {
   input.value.click()
 }
 
-async function prepareFolders(files) {
-  uploadState.value = { state: 'create folders' }
-  const toCreate = new Set()
-  const exist = new Set()
-  for (let i = 0; i < files.length; i++) {
-    let filePath = files[i].webkitRelativePath.split('/')
-    filePath.pop()
-    filePath = [props.path, ...filePath].join('/')
-    if (toCreate.has(filePath) || exist.has(filePath)) continue
-    const type = await props.server.fileExists(filePath)
-
-    if (!type) toCreate.add(filePath)
-    if (type === 'folder') exist.add(filePath)
-    if (type === 'file') throw `${filePath} exists as file`
-  }
-
-  for (let path of toCreate) {
-    await props.server.createFolder(path)
-  }
-}
-
-function onUploadProgress(event) {
-  const i = uploadState.value.current
-  const file = uploadState.value.files[i]
-  file.progress = Math.min(event.loaded, file.size)
-}
-
 async function uploadFiles(event) {
-  uploadState.value = { state: 'preparing' }
+  const inputElement = event.target
+  const files = Array.from(inputElement.files)
+  if (!files.length || uploading.value) return
+  const destination = props.path
+  uploadState.value = {
+    state: 'preparing',
+    current: 0,
+    total: files.length,
+    files: files.map(file => ({ name: file.webkitRelativePath || file.name, size: file.size, progress: 0 }))
+  }
   uploading.value = true
   try {
-    if (event.target.webkitdirectory) await prepareFolders(event.target.files)
-    uploadState.value = {
-      state: 'upload files',
-      current: 0,
-      total: event.target.files.length,
-      files: []
-    }
-    for (let i = 0; i < event.target.files.length; i++) {
-      const file = event.target.files[i]
-      uploadState.value.files[i + 1] = {
-        name: file.webkitRelativePath || file.name,
-        size: file.size,
-        progress: 0
-      }
-    }
-    for (let i = 0; i < event.target.files.length; i++) {
-      uploadState.value.current = i + 1
-      const file = event.target.files[i]
-      let path = props.path + '/'
-      if (file.webkitRelativePath) {
-        path = path + file.webkitRelativePath
-      } else {
-        path = path + file.name
-      }
-      await props.server.uploadFile(path, file, onUploadProgress)
-    }
-  } catch(e) {
-    console.error('file upload failed', e)
-    toast.error(t('files.UploadFailed'))
-  } finally {
+    await uploadFileBatch(props.server, destination, files, props.folder, state => {
+      uploadState.value.state = state
+    }, (index, loaded) => {
+      uploadState.value.current = index
+      uploadState.value.files[index].progress = Math.min(loaded, files[index].size)
+    }, path => window.confirm(t('files.ConfirmOverwrite', { path })))
     toast.success(t('files.UploadSuccess'))
+  } catch(e) {
+    if (e.code !== 'UPLOAD_CANCELLED') console.error('file upload failed', e)
+    const key = e.code === 'UPLOAD_CANCELLED' ? 'files.UploadCancelled' : e.code === 'CREATE_UNAVAILABLE' ? 'files.CreateUnavailable' : 'files.UploadFailed'
+    toast.error(t(key))
+  } finally {
     emit('uploaded')
     uploading.value = false
     uploadState.value = null
+    inputElement.value = ''
   }
 }
 </script>
@@ -101,20 +66,20 @@ async function uploadFiles(event) {
     </btn>
     <input ref="input" type="file" multiple :webkitdirectory="folder" @change="uploadFiles" />
     <overlay v-model="uploading" class="file-upload-progress" :title="t('files.UploadProgress')">
-      <div v-if="uploadState.state === 'preparing'">
+      <div v-if="uploadState && uploadState.state === 'preparing'">
         <div class="progress">
           <span v-text="t('files.PreparingUpload')" />
           <progress />
         </div>
       </div>
-      <div v-if="uploadState.state === 'create folders'">
+      <div v-if="uploadState && uploadState.state === 'create folders'">
         <div class="progress">
           <span v-text="t('files.CreatingFolders')" />
           <progress />
         </div>
       </div>
-      <div v-if="uploadState.state === 'upload files'">
-        <div class="upload-file-count" v-text="t('files.CurrentlyUploading', { current: uploadState.current, total: uploadState.total })" />
+      <div v-if="uploadState && uploadState.state === 'upload files'">
+        <div class="upload-file-count" v-text="t('files.CurrentlyUploading', { current: uploadState.current + 1, total: uploadState.total })" />
         <div class="upload-file-name" v-text="uploadState.files[uploadState.current].name" />
         <div class="progress">
           <span v-text="t('files.Current')" />

@@ -34,6 +34,12 @@ Run one of the following commands from the repository root:
 
 The setup saves configuration, logs, and server data under the `data/` directory and exposes the web interface at `http://localhost:8080`.
 
+The file manager asks before an upload replaces an existing file; creating a new
+file never overwrites an existing one.
+Both the panel and every remote node must be updated for this protection; older
+nodes reject these operations until upgraded. Existing files can still be edited
+and saved through the file editor.
+
 #### Remote Server Setup (Debian / Ubuntu)
 For a fresh Debian or Ubuntu server, run the automated installation script:
 
@@ -89,4 +95,3 @@ PUFFER_CONTABO_API_PASSWORD=<your_api_password>
 * Certain JavaScript and CSS dependencies are licensed under MIT, Apache 2.0, or GPL licenses (see header files for details).
 * Images and logos are copyrighted by their respective owners.
 * Repositories hosted by [packagecloud](https://packagecloud.io).
-

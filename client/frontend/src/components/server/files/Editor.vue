@@ -40,6 +40,7 @@ export default {
   },
   props: {
     readOnly: { type: Boolean, default: () => false },
+    saving: { type: Boolean, default: false },
     modelValue: { type: Object, required: true }
   },
   emits: ['update:modelValue', 'save', 'close'],
@@ -59,7 +60,8 @@ export default {
   <div>
     <div class="overlay-header">
       <h1 class="title" v-text="modelValue.name" />
-      <btn v-if="!readOnly && !((extensions[modelValue.extension] || {}).disableSave)" variant="text" @click="emit('save', {close: true})"><icon name="save" /> {{ t('common.Save') }}</btn>
+      <span v-if="modelValue.content !== modelValue.originalContent" class="unsaved" role="status">{{ t('files.Unsaved') }}</span>
+      <btn v-if="!readOnly && !((extensions[modelValue.extension] || {}).disableSave)" variant="text" :disabled="saving" @click="emit('save', {close: true})"><icon name="save" /> {{ t('common.Save') }}</btn>
       <btn v-hotkey="'Escape'" variant="icon" @click="emit('close')"><icon name="close" /></btn>
     </div>
     <img v-if="getType(modelValue) === 'image'" class="file-viewer" :src="modelValue.url" />
@@ -74,3 +76,7 @@ export default {
     <ace v-else id="file-editor" :read-only="readOnly" :model-value="modelValue.content" class="file-editor" :file="modelValue.name" theme="monokai" @update:modelValue="emitUpdate" @save="emit('save', {close: false})" />
   </div>
 </template>
+
+<style scoped>
+.unsaved { color: var(--color-text-secondary); font-size: .875rem; }
+</style>

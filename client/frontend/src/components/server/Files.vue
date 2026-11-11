@@ -8,7 +8,7 @@ import Loader from '@/components/ui/Loader.vue'
 import Overlay from '@/components/ui/Overlay.vue'
 import Editor, { skipDownload } from './files/Editor.vue'
 import FileTree from './files/FileTree.vue'
-import { sortFiles, visibleFiles as filterVisibleFiles } from './files/fileView.mjs'
+import { deleteFiles, retainSelection, selectedPaths, sortFiles, validItemName, visibleFiles as filterVisibleFiles } from './files/fileView.mjs'
 import Upload from './files/Upload.vue'
 import TextField from '@/components/ui/TextField.vue'
 import Toggle from '@/components/ui/Toggle.vue'
@@ -32,10 +32,13 @@ const fileSizeWarnSubject = ref(null)
 const currentPath = ref([])
 const editorOpen = ref(false)
 const loading = ref(false)
+const saving = ref(false)
 const createFileOpen = ref(false)
 const createFolderOpen = ref(false)
 const archiveSelectedOpen = ref(false)
 const newItemName = ref('')
+const createError = ref('')
+const creating = ref(false)
 const viewMode = ref('list')
 const treeGeneration = ref(0)
 const fileError = ref('')
@@ -66,16 +69,20 @@ onUnmounted(async () => {
   if (task) props.server.stopTask(task)
 })
 
-watch(currentPath, () => refresh(), {deep: true})
+watch(currentPath, () => {
+  files.value = null
+  refresh()
+}, { deep: true, flush: 'sync' })
 
 async function refresh(manual = false) {
   const request = ++fileRequest
   const path = getCurrentPath()
   fileError.value = ''
+  const previous = files.value || []
   if (manual) files.value = null // cause visual feedback on manual refresh
   try {
     const res = await props.server.getFile(path)
-    if (request === fileRequest) files.value = res.sort(sortFiles)
+    if (request === fileRequest) files.value = retainSelection(res, files.value || previous).sort(sortFiles)
   } catch {
     if (request === fileRequest) {
       files.value = null
@@ -91,21 +98,27 @@ function getCurrentPath() {
 
 async function openFile(f, overrideWarn = false, explicitPath = null) {
   if (f.isFile) {
+    const path = explicitPath || getCurrentPath() + `/${f.name}`
+    const request = ++openRequest
+    loading.value = false
     if (!skipDownload(f) && !overrideWarn && f.size > 30 * Math.pow(2, 20)) {
-      fileSizeWarnSubject.value = f
+      fileSizeWarnSubject.value = { file: f, path }
       fileSizeWarn.value = true
       return
     }
 
     fileSizeWarn.value = false
     loading.value = true
-    const request = ++openRequest
-    const path = explicitPath || getCurrentPath() + `/${f.name}`
     try {
       const content = skipDownload(f) ? null : await props.server.getFile(path, true)
       if (request !== openRequest) return
       file.value = { ...f, path, content, originalContent: content, url: props.server.getFileUrl(path) }
       editorOpen.value = viewMode.value === 'list'
+    } catch (error) {
+      if (request === openRequest) {
+        console.error('Could not open file', error)
+        toast.error(t('files.OpenFailed'))
+      }
     } finally {
       if (request === openRequest) loading.value = false
     }
@@ -119,17 +132,27 @@ async function openFile(f, overrideWarn = false, explicitPath = null) {
 }
 
 async function saveFile({close}) {
+  if (!canEdit || saving.value || !file.value) return
   const savedFile = file.value
   const savedContent = savedFile.content
-  await props.server.uploadFile(savedFile.path, savedContent)
-  toast.success(t('files.Saved'))
-  if (!file.value || file.value.path !== savedFile.path) return
-  file.value.originalContent = savedContent
-  if (close && file.value.content === savedContent) {
-    editorOpen.value = false
-    file.value = null
+  const request = openRequest
+  saving.value = true
+  try {
+    await props.server.uploadFile(savedFile.path, savedContent)
+    toast.success(t('files.Saved'))
+    if (request !== openRequest || !file.value || file.value.path !== savedFile.path) return
+    file.value.originalContent = savedContent
+    if (close && file.value.content === savedContent) {
+      editorOpen.value = false
+      file.value = null
+    }
+    await refresh()
+  } catch (error) {
+    console.error('Could not save file', error)
+    toast.error(t('files.SaveFailed'))
+  } finally {
+    saving.value = false
   }
-  refresh()
 }
 
 function openTreeFile(entry, path) {
@@ -143,7 +166,10 @@ function confirmDiscard() {
 }
 
 function closeTreeFile() {
-  if (confirmDiscard()) file.value = null
+  if (!confirmDiscard()) return
+  openRequest++
+  file.value = null
+  editorOpen.value = false
 }
 
 function changeView(mode) {
@@ -163,6 +189,7 @@ function getIcon(file) {
 }
 
 function deleteFile(file) {
+  const path = `${getCurrentPath()}/${file.name}`
   events.emit(
     'confirm',
     t('files.ConfirmDelete', { name: file.name }),
@@ -171,7 +198,7 @@ function deleteFile(file) {
       icon: 'remove',
       color: 'error',
       action: async () => {
-        await props.server.deleteFile(getCurrentPath() + '/' + file.name)
+        await props.server.deleteFile(path)
         await refresh()
       }
     },
@@ -193,26 +220,39 @@ function formatFileSize(size) {
 
 function startCreateFile() {
   newItemName.value = ''
+  createError.value = ''
   createFileOpen.value = true
 }
 
 function startCreateFolder() {
   newItemName.value = ''
+  createError.value = ''
   createFolderOpen.value = true
 }
 
 async function createFile() {
-  if (!newItemName.value || newItemName.value.trim() === '') return
-  await props.server.uploadFile(`${getCurrentPath()}/${newItemName.value}`, '')
-  const file = { name: newItemName.value, size: 0, isFile: true }
-  createFileOpen.value = false
-  newItemName.value = ''
-  await openFile(file)
-  await refresh()
+  if (!validItemName(newItemName.value) || creating.value) return
+  if (!confirmDiscard()) return
+  const name = newItemName.value
+  const path = `${getCurrentPath()}/${name}`
+  creating.value = true
+  createError.value = ''
+  try {
+    await props.server.uploadFile(path, '', undefined, true)
+    createFileOpen.value = false
+    newItemName.value = ''
+    await openFile({ name, size: 0, isFile: true }, false, path)
+    await refresh()
+  } catch (error) {
+    console.error('Could not create file', error)
+    createError.value = t(error.code === 'FILE_EXISTS' ? 'files.FileExists' : error.code === 'CREATE_UNAVAILABLE' ? 'files.CreateUnavailable' : 'files.CreateFailed')
+  } finally {
+    creating.value = false
+  }
 }
 
 async function createFolder() {
-  if (!newItemName.value || newItemName.value.trim() === '') return
+  if (!validItemName(newItemName.value) || creating.value) return
   await props.server.createFolder(`${getCurrentPath()}/${newItemName.value}`)
   const folder = { name: newItemName.value, isFile: false }
   createFolderOpen.value = false
@@ -255,10 +295,10 @@ async function extract(file) {
   }
 }
 
-async function makeArchiveName(fileName) {
-  let destination = `${getCurrentPath()}/${fileName}.zip`
+async function makeArchiveName(fileName, directory) {
+  let destination = `${directory}/${fileName}.zip`
   for (let i = 2; await props.server.fileExists(destination); i++) {
-    destination = `${getCurrentPath()}/${fileName} (${i}).zip`
+    destination = `${directory}/${fileName} (${i}).zip`
   }
   return destination
 }
@@ -266,6 +306,7 @@ async function makeArchiveName(fileName) {
 async function archiveCurrentDirectory() {
   loading.value = true
   try {
+    const directory = getCurrentPath()
     const item = currentPath.value[currentPath.value.length - 1];
     let lastPathEntry = props.server.id
     if (item !== undefined) {
@@ -273,8 +314,8 @@ async function archiveCurrentDirectory() {
     }
 
     await props.server.archiveFile(
-      await makeArchiveName(lastPathEntry),
-      `${getCurrentPath()}`
+      await makeArchiveName(lastPathEntry, directory),
+      directory
     )
   } finally {
     setTimeout(() => {
@@ -287,9 +328,10 @@ async function archiveCurrentDirectory() {
 async function archive(file) {
   loading.value = true
   try {
+    const directory = getCurrentPath()
     await props.server.archiveFile(
-      await makeArchiveName(file.name),
-      `${getCurrentPath()}/${file.name}`
+      await makeArchiveName(file.name, directory),
+      `${directory}/${file.name}`
     )
   } finally {
     setTimeout(() => {
@@ -364,15 +406,20 @@ function contextActionsForFile(file) {
 
 async function archiveSelected() {
   const archiveName = newItemName.value
+  const directory = getCurrentPath()
+  const paths = selectedPaths(directory, selection.value)
+  if (!paths.length) {
+    archiveSelectedOpen.value = false
+    toast.error(t('files.NoSelection'))
+    return
+  }
   newItemName.value = ''
   archiveSelectedOpen.value = false
   loading.value = true
   try {
     await props.server.archiveFile(
-      await makeArchiveName(archiveName),
-      selection.value.map(f => {
-        return `${getCurrentPath()}/${f.name}`
-      })
+      await makeArchiveName(archiveName, directory),
+      paths
     )
   } finally {
     setTimeout(async () => {
@@ -383,9 +430,11 @@ async function archiveSelected() {
 }
 
 function deleteSelected() {
+  const paths = selectedPaths(getCurrentPath(), selection.value)
+  if (!paths.length) return
   events.emit(
     'confirm',
-    t('files.ConfirmDeleteSelected', undefined, selection.value.length),
+    t('files.ConfirmDeleteSelected', undefined, paths.length),
     {
       text: t('files.Delete'),
       icon: 'remove',
@@ -393,9 +442,11 @@ function deleteSelected() {
       action: async () => {
         loading.value = true
         try {
-          await Promise.all(
-            selection.value.map(f => props.server.deleteFile(getCurrentPath() + '/' + f.name))
-          )
+          const failures = await deleteFiles(props.server, paths)
+          if (failures.length) {
+            console.error('Some files could not be deleted', failures)
+            toast.error(t('files.DeletePartialFailure', { count: failures.length }))
+          }
         } finally {
           await refresh()
           loading.value = false
@@ -464,7 +515,7 @@ function selectAll() {
         <FileTree :server="server" :generation="treeGeneration" root @open="openTreeFile" />
       </aside>
       <section class="tree-editor">
-        <editor v-if="file" :key="file.path" v-model="file" :read-only="!canEdit" @save="saveFile($event)" @close="closeTreeFile" />
+        <editor v-if="file" :key="file.path" v-model="file" :read-only="!canEdit" :saving="saving" @save="saveFile($event)" @close="closeTreeFile" />
         <p v-else class="tree-placeholder">{{ t('files.SelectFromTree') }}</p>
       </section>
     </div>
@@ -490,20 +541,6 @@ function selectAll() {
             </li>
           </template>
 
-          <style scoped>
-          .file-view-controls { display: flex; gap: .35rem; }
-          .tree-layout { display: grid; grid-template-columns: minmax(180px, 250px) minmax(0, 1fr); gap: .75rem; min-height: 28rem; }
-          .tree-sidebar, .tree-editor { padding: .75rem; border: 1px solid var(--color-background); border-radius: .5rem; background: var(--color-background-secondary); overflow: auto; }
-          .tree-editor { min-width: 0; }
-          .tree-placeholder { color: var(--color-text-secondary); text-align: center; margin: 8rem 1rem; }
-          .file-search { display: flex; align-items: center; gap: .75rem; margin: .75rem 0; }
-          .file-search input { min-width: 0; flex: 1; padding: .5rem; border: 1px solid var(--color-background); border-radius: .35rem; background: var(--color-background-secondary); color: inherit; }
-          .tree-editor :deep(.file-editor) { width: 100%; }
-          @media (max-width: 700px) {
-            .tree-layout { grid-template-columns: 1fr; }
-            .tree-sidebar { max-height: 18rem; }
-          }
-          </style>
           <template #activator="contextMenu">
             <btn v-if="contextMenu.canOpen" tabindex="-1" variant="icon" @click.stop="contextMenu.onClick">
               <icon name="menu" />
@@ -514,25 +551,40 @@ function selectAll() {
     </div>
     <overlay v-model="fileSizeWarn" closable :title="t('files.OpenLargeFile')">
       <btn color="error" @click="fileSizeWarn = false"><icon name="close" />{{ t('common.Cancel') }}</btn>
-      <btn color="primary" @click="openFile(fileSizeWarnSubject, true)"><icon name="check" />{{ t('files.OpenAnyways') }}</btn>
+      <btn color="primary" @click="openFile(fileSizeWarnSubject.file, true, fileSizeWarnSubject.path)"><icon name="check" />{{ t('files.OpenAnyways') }}</btn>
     </overlay>
     <overlay v-model="createFileOpen" closable :title="t('files.CreateFile')">
-      <text-field v-model="newItemName" />
-      <btn color="primary" :disabled="!newItemName || newItemName.trim() === ''" @click="createFile()"><icon name="check" />{{ t('files.CreateFile') }}</btn>
+      <text-field v-model="newItemName" :error="createError || (newItemName && !validItemName(newItemName) ? t('files.InvalidName') : '')" />
+      <btn color="primary" :disabled="!validItemName(newItemName) || creating" @click="createFile()"><icon name="check" />{{ t('files.CreateFile') }}</btn>
     </overlay>
     <overlay v-model="createFolderOpen" closable :title="t('files.CreateFolder')">
-      <text-field v-model="newItemName" />
-      <btn color="primary" :disabled="!newItemName || newItemName.trim() === ''" @click="createFolder()"><icon name="check" />{{ t('files.CreateFolder') }}</btn>
+      <text-field v-model="newItemName" :error="newItemName && !validItemName(newItemName) ? t('files.InvalidName') : ''" />
+      <btn color="primary" :disabled="!validItemName(newItemName)" @click="createFolder()"><icon name="check" />{{ t('files.CreateFolder') }}</btn>
     </overlay>
     <overlay v-model="archiveSelectedOpen" closable :title="t('files.ArchiveSelectedName')">
-      <text-field v-model="newItemName" />
-      <btn color="primary" :disabled="!newItemName || newItemName.trim() === ''" @click="archiveSelected()"><icon name="check" />{{ t('files.ArchiveSelected') }}</btn>
+      <text-field v-model="newItemName" :error="newItemName && !validItemName(newItemName) ? t('files.InvalidName') : ''" />
+      <btn color="primary" :disabled="!validItemName(newItemName)" @click="archiveSelected()"><icon name="check" />{{ t('files.ArchiveSelected') }}</btn>
     </overlay>
     <overlay v-model="loading" class="loader-overlay">
       <loader />
     </overlay>
     <overlay v-model="editorOpen" class="editor">
-      <editor v-if="file" v-model="file" :read-only="!canEdit" @save="saveFile($event)" @close="editorOpen = false" />
+      <editor v-if="file" v-model="file" :read-only="!canEdit" :saving="saving" @save="saveFile($event)" @close="closeTreeFile" />
     </overlay>
   </div>
 </template>
+
+<style scoped>
+.file-view-controls { display: flex; gap: .35rem; }
+.tree-layout { display: grid; grid-template-columns: minmax(180px, 250px) minmax(0, 1fr); gap: .75rem; min-height: 28rem; }
+.tree-sidebar, .tree-editor { padding: .75rem; border: 1px solid var(--color-background); border-radius: .5rem; background: var(--color-background-secondary); overflow: auto; }
+.tree-editor { min-width: 0; }
+.tree-placeholder { color: var(--color-text-secondary); text-align: center; margin: 8rem 1rem; }
+.file-search { display: flex; align-items: center; gap: .75rem; margin: .75rem 0; }
+.file-search input { min-width: 0; flex: 1; padding: .5rem; border: 1px solid var(--color-background); border-radius: .35rem; background: var(--color-background-secondary); color: inherit; }
+.tree-editor :deep(.file-editor) { width: 100%; }
+@media (max-width: 700px) {
+  .tree-layout { grid-template-columns: 1fr; }
+  .tree-sidebar { max-height: 18rem; }
+}
+</style>

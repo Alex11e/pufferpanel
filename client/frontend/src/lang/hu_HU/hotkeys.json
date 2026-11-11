@@ -1,5 +1,15 @@
 {
   "Title": "Gyorsbillentyűk",
+  "CustomHelp": "A módosítások ebben a böngészőben tárolódnak. A más oldalak gyorsbillentyűivel való ütközés elkerülésére az új kombináció Control+Alt és egy betű vagy szám legyen. Shift vagy Meta módosító és további két, szóközzel elválasztott billentyű is megadható. Üresen hagyva letiltható.",
+  "Edit": "Módosítás",
+  "Reset": "Alapértelmezett",
+  "Save": "Mentés",
+  "Cancel": "Mégse",
+  "Disabled": "Letiltva",
+  "NewShortcut": "Új gyorsbillentyű",
+  "Conflict": "Ez a gyorsbillentyű ütközik egy másik gyorsbillentyűvel.",
+  "Invalid": "Érvénytelen gyorsbillentyű. Például: Control+Alt+k vagy Control+Alt+g s.",
+  "SaveError": "A gyorsbillentyűket nem sikerült elmenteni ebben a böngészőben.",
   "Global": {
     "Title": "Globális",
     "g a": "Fiók",

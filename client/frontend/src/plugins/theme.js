@@ -4,6 +4,7 @@ import { extract } from '@/utils/tar'
 
 import defaultStyles from '@/themes/default/theme.scss?inline'
 import defaultManifest from '@/themes/default/manifest.json'
+import { builtinManifest, builtinPresets } from '@/themes/default/builtinThemes.mjs'
 
 let api = null
 let config = null
@@ -21,7 +22,12 @@ const activeTheme = ref('')
 const themeSettings = ref({})
 const rootClasses = ref([])
 const sidebarClosedBelow = ref(1200)
-const availableThemes = ['PufferPanel']
+const availableThemes = Object.keys(builtinPresets)
+
+function getBuiltinManifest(name) {
+  if (name !== 'PufferPanel' && config.themes.available.includes(name)) return null
+  return builtinManifest(name, defaultManifest)
+}
 
 function appendStyle(style) {
   generatedStyles.textContent = generatedStyles.textContent + '\n' + style
@@ -92,7 +98,8 @@ const themeApi = {
     rootClasses.value = []
     generatedStyles.textContent = ''
     const themeData = { files: [] }
-    if (newTheme !== 'PufferPanel') {
+    const builtIn = getBuiltinManifest(newTheme)
+    if (!builtIn) {
       const themeFiles = extract(await api.getTheme(newTheme))
       let manifestSeen = false
       themeFiles.map(file => {
@@ -116,10 +123,10 @@ const themeApi = {
         })
       }
     }
-    const manifest = newTheme === 'PufferPanel' ? defaultManifest : themeData.manifest
-    styles.textContent = newTheme === 'PufferPanel' ? defaultStyles : (manifest.keepDefaultCss ? defaultStyles + '\n' + themeData.css : themeData.css)
+    const manifest = builtIn || themeData.manifest
+    styles.textContent = builtIn ? defaultStyles : (manifest.keepDefaultCss ? defaultStyles + '\n' + themeData.css : themeData.css)
     sidebarClosedBelow.value = manifest.sidebarClosedBelow || 1200
-    if (manifest.keepDefaultCss && newTheme !== 'PufferPanel') {
+    if (manifest.keepDefaultCss && !builtIn) {
       Object.keys(defaultManifest.settings).filter(key => !manifest.settings[key]).map(key => {
         handleSetting(key, defaultManifest.settings[key])
       })
@@ -134,8 +141,9 @@ const themeApi = {
   },
   getThemeSettings: async (theme = activeTheme.value) => {
     let definition
-    if (theme === 'PufferPanel') {
-      definition = {...defaultManifest.settings}
+    const builtIn = getBuiltinManifest(theme)
+    if (builtIn) {
+      definition = builtIn.settings
     } else {
       const themeData = extract(await api.getTheme(theme))
       const manifest = themeData.find(t => t.name === 'manifest.json')
@@ -218,7 +226,7 @@ export default (conf) => {
       app.provide('theme', themeApi)
       app.provide('themeClasses', rootClasses)
       app.provide('sidebarClosedBelow', sidebarClosedBelow)
-      config.themes.available.filter(e => e !== 'PufferPanel').map(e => availableThemes.push(e))
+      config.themes.available.filter(e => !availableThemes.includes(e)).map(e => availableThemes.push(e))
       availableThemes.sort()
       api = app.config.globalProperties.$api
       userSettings = app.config.globalProperties.$userSettings

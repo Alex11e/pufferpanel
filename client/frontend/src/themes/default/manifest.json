@@ -24,6 +24,18 @@
           "tkey": "common.theme.mode.Ocean"
         },
         {
+          "value": "mode-dark mode-midnight",
+          "tkey": "common.theme.mode.Midnight"
+        },
+        {
+          "value": "mode-dark mode-forest",
+          "tkey": "common.theme.mode.Forest"
+        },
+        {
+          "value": "mode-light mode-daylight",
+          "tkey": "common.theme.mode.Daylight"
+        },
+        {
           "value": "mode-dark-highcontrast",
           "tkey": "common.theme.mode.DarkHighContrast"
         }

@@ -218,7 +218,7 @@ export class ServerApi {
     }
   }
 
-  async uploadFile(id, path, content, onUploadProgress) {
+  async uploadFile(id, path, content, onUploadProgress, createOnly = false) {
     if (path.indexOf('/') === 0) path = path.substring(1)
     let blob = null
     if (content instanceof Blob || content instanceof File) {
@@ -232,13 +232,27 @@ export class ServerApi {
     const data = new FormData()
     data.append('file', blob)
 
-    await this._api.put(
-      this.getFileUrl(id, path),
+    const url = this.getFileUrl(id, path)
+    const response = await this._api.put(
+      createOnly ? url.replace(`/api/servers/${id}/file/`, `/api/servers/${id}/file-create/`) : url,
       data,
       undefined,
       { 'Content-Type': 'multipart/formdata' },
-      { onUploadProgress }
+      {
+        onUploadProgress,
+        onError: createOnly ? error => [404, 409].includes(error.response?.status) ? error.response : false : undefined
+      }
     )
+    if (createOnly && response?.status === 409) {
+      const error = new Error('File already exists')
+      error.code = 'FILE_EXISTS'
+      throw error
+    }
+    if (createOnly && response?.status === 404) {
+      const error = new Error('Exclusive file creation is not supported by this node')
+      error.code = 'CREATE_UNAVAILABLE'
+      throw error
+    }
     return true
   }
 
@@ -652,8 +666,8 @@ class Server {
     return await this._api.server.fileExists(this.id, path)
   }
 
-  async uploadFile(path, content, onUploadProgress) {
-    return await this._api.server.uploadFile(this.id, path, content, onUploadProgress)
+  async uploadFile(path, content, onUploadProgress, createOnly = false) {
+    return await this._api.server.uploadFile(this.id, path, content, onUploadProgress, createOnly)
   }
 
   async createFolder(path) {

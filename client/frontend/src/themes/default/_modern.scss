@@ -34,6 +34,54 @@
   --shell-nav-muted: #9cafa5;
 }
 
+#root.mode-ocean {
+  --shell-canvas: #101a2d;
+  --shell-surface: #1b2942;
+  --shell-raised: #263955;
+  --shell-border: #3a5171;
+  --shell-ink: #edf5ff;
+  --shell-muted: #b0c5de;
+  --shell-nav: #0c1628;
+  --shell-nav-ink: #edf5ff;
+  --shell-nav-muted: #a4bad7;
+}
+
+#root.mode-midnight {
+  --shell-canvas: #171425;
+  --shell-surface: #242036;
+  --shell-raised: #322c46;
+  --shell-border: #4a4162;
+  --shell-ink: #f3edff;
+  --shell-muted: #c4b8d7;
+  --shell-nav: #110f1d;
+  --shell-nav-ink: #f3edff;
+  --shell-nav-muted: #bbadd2;
+}
+
+#root.mode-forest {
+  --shell-canvas: #0e201c;
+  --shell-surface: #1a3029;
+  --shell-raised: #264139;
+  --shell-border: #406055;
+  --shell-ink: #e7f6ed;
+  --shell-muted: #b0cbba;
+  --shell-nav: #0a1915;
+  --shell-nav-ink: #e7f6ed;
+  --shell-nav-muted: #aac6b5;
+}
+
+#root.mode-daylight {
+  --shell-canvas: #eaf1fa;
+  --shell-surface: #ffffff;
+  --shell-raised: #f6f9ff;
+  --shell-border: #cad9ed;
+  --shell-ink: #203652;
+  --shell-muted: #536e8a;
+  --shell-nav: #173a68;
+  --shell-nav-ink: #f2f7ff;
+  --shell-nav-muted: #b4cbe6;
+}
+
 #root.mode-dark-highcontrast {
   --shell-canvas: #000000;
   --shell-surface: #000000;

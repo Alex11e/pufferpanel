@@ -1,5 +1,15 @@
 {
   "Title": "Keyboard Shortcuts",
+  "CustomHelp": "Changes are stored in this browser. To avoid conflicts with shortcuts on other pages, start each custom shortcut with Control+Alt and a letter or digit. You can add Shift or Meta and up to two more keys separated by spaces. Leave empty to disable.",
+  "Edit": "Edit",
+  "Reset": "Reset",
+  "Save": "Save",
+  "Cancel": "Cancel",
+  "Disabled": "Disabled",
+  "NewShortcut": "New shortcut",
+  "Conflict": "This shortcut conflicts with another shortcut.",
+  "Invalid": "Invalid shortcut. For example, use Control+Alt+k or Control+Alt+g s.",
+  "SaveError": "Could not save shortcuts in this browser.",
   "Global": {
     "Title": "Global",
     "g a": "Go to Account",
